@@ -1,0 +1,104 @@
+.module {
+  @extend .card;
+  .module-days {
+    grid-template-columns: 0.85fr 4fr;
+    @include mq(lg) {
+      grid-template-columns: 0.85fr 7fr;
+    }
+  }
+}
+.module-date {
+  @extend .card-header;
+}
+.module-header {
+  @extend .card-header;
+}
+.module-body {
+  @extend .card-body;
+}
+.module-days {
+  border-bottom: $border $border-color;
+  border-top: $border $border-color;
+  &:first-child {
+    border-top: none;
+  }
+  &:last-child {
+    border-bottom: none;
+  }
+  .module-day,
+  .module-event {
+    margin: 0;
+    @include mq(sm) {
+      padding: $sp-2 $sp-2;
+    }
+    &.main {
+      border-top: $border $border-color;
+      &:first-of-type {
+        border-top: none;
+      }
+    }
+    p {
+      display: inline-block;
+      margin: 0;
+      width: 100%;
+      padding: 0px 10px 0px 0px;
+      @include mq(sm) {
+        vertical-align: top;
+        width: 85%;
+      }
+      +p {
+        width: auto;
+      }
+    }
+  }
+  .module-day {
+    grid-column-start: 1;
+  }
+  .module-event {
+    grid-column-start: 2;
+    +.module-event {
+      padding-top: 0;
+    }
+    // Updated colors for WCAG AA compliance (4.5:1 contrast ratio)
+    .label-lab { 
+      background-color: #006B6B; 
+      color: #ffffff;
+    }
+    .label-quiz { 
+      background-color: #B22222; 
+      color: #ffffff;
+    }
+    .label-lec { 
+      background-color: #1E4A8C; 
+      color: #ffffff;
+    }
+    .label-hw { 
+      background-color: #3C2D00; 
+      color: #ffffff;
+    }
+    .label-proj { 
+      background-color: #333333; 
+      color: #ffffff;
+    }
+    .label-exam { 
+      background-color: #556B2F; 
+      color: #ffffff;
+    }
+    .label-review { 
+      background-color: #8B4A9C; 
+      color: #ffffff;
+    }
+    .label-synch { 
+      background-color: #C41E3A; 
+      color: #ffffff;
+    }
+    .label-parti { 
+      background-color: #CC4125; 
+      color: #ffffff;
+    }
+    .label-green { 
+      background-color: #006B5B; 
+      color: #ffffff;
+    }
+  }
+}

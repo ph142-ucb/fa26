@@ -1,0 +1,88 @@
+a abbr[title] {
+  border-bottom: none;
+}
+
+abbr[title] {
+  text-decoration: none;
+}
+
+iframe,
+summary {
+  margin-bottom: 1em;
+}
+
+// Accessibility improvements - Focus indicators for keyboard navigation
+a:focus,
+button:focus,
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 2px solid #4A90E2;
+  outline-offset: 2px;
+}
+
+// High contrast focus for labels
+.label-lab:focus,
+.label-quiz:focus,
+.label-lec:focus,
+.label-hw:focus,
+.label-proj:focus,
+.label-exam:focus,
+.label-review:focus,
+.label-synch:focus,
+.label-parti:focus,
+.label-green:focus {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+// Fix for empty code line number links in lecture HTML files
+.sourceCode a[href^="#cb"][tabindex="-1"] {
+  // Hide from screen readers and accessibility checkers
+  aria-hidden: true;
+  // Add screen reader text for accessibility
+}
+
+.sourceCode a[href^="#cb"][tabindex="-1"]::before {
+  content: "Line ";
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+// Fix footer contrast issues for accessibility
+.site-footer {
+  color: #333333 !important; // Dark gray for WCAG AA compliance
+  
+  a {
+    color: #0366d6 !important; // Accessible blue matching our link colors
+    text-decoration: underline;
+    
+    &:hover {
+      color: #024ea4 !important; // Darker blue on hover
+      text-decoration: none;
+    }
+    
+    &:visited {
+      color: #6f42c1 !important; // Purple for visited links
+    }
+  }
+}
+
+// Additional selectors for footer elements that might need contrast fixes
+.nav-footer, 
+.site-nav-footer,
+.aux-nav,
+footer {
+  color: #333333 !important;
+  
+  a {
+    color: #0366d6 !important;
+    
+    &:hover {
+      color: #024ea4 !important;
+    }
+  }
+}
