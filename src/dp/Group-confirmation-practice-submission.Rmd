@@ -1,0 +1,42 @@
+---
+title: "Data Project Group Confirmation"
+output: pdf_document
+---
+
+If you have any questions about your group membership, please connect with your supporting GSI or email 142gsi@berkeley.edu 
+
+The purpose of this assignment is:
+
+1) to check that all students have been assigned to a group and have connected with their group members
+
+2) to suggest some points of discussion for your group to agree on how you will work together
+
+2) to practice submitting a group assignment on gradescope so that everyone in the group gets credit for the assignment.  
+
+
+This assignment should be submitted on gradescope (one per group) with all group members added to the submission.  It is your responsibility to confirm that you have been included on the group submission. 
+
+Q1:  Who are your group members?  List them here:
+
+
+Q2:  Who is your supporting GSI for the data project?
+
+<<answer here>>
+
+Some suggestions for discussion in your group:
+
+Who will be responsible for submitting the work on gradescope?
+
+When and where/how will you meet to work on the project?
+
+How does your group want to split up responsibility/tasks?  Will you all work together at the same time, or will some group members have primary responsibility for a given question? 
+
+How will you share files?  
+
+What kind of data do you want to work on? 
+
+Does anyone have data or know of a dataset that is of interest to the group?
+
+Once you have confirmed your group membership, please "knit" this document and submit it on gradescope for course participation credit.  Only one person should submit the assignment - they should enter the submission and then add the other group members to the submission.  
+
+
