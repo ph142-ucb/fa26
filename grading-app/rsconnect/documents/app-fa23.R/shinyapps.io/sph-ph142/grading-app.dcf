@@ -1,0 +1,11 @@
+name: grading-app
+title: grading-app
+username:
+account: sph-ph142
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 6431346
+bundleId: 9349039
+url: https://sph-ph142.shinyapps.io/grading-app/
+asMultiple: FALSE
+asStatic: FALSE
