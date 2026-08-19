@@ -1,0 +1,91 @@
+,L#,Topic,"Lab (W, Th, Fri)",Readings,Problem Sets/ Other Info
+,,,,,
+Week 1,,,,,
+1/19/26,--,No Lecture: Holiday,Lab01: Introduction,--,--
+,,,to R and RStudio on,,
+,,,Datahub,,
+1/21/26,1,"Intro to PH142, the Cloud, and PPDAC",--,Lab01 Released,
+,,,,HW01 Released,
+1/23/26,2,Working with Data in R and Rstudio,--,Lab01 Due,
+Week 2,,,,,
+1/26/26,3,Visualizing data in R and RStudio (ggplot2 package),Lab02: Visualization of global Cesarean delivery rates,--,Lab02 Released
+,,,,,HW02 Released
+1/28/26,4,"Visualizing distributions for one variable, numerically summarizing spread and central tendency",Ch. 1 & 2,--,
+1/30/26,5,Exploring relationships between two variables,Ch. 3,Lab02 Due ,
+,,,,Quiz01 Due,
+Week 3,,,,,
+2/2/26,6,Introduction to Regression,Lab03: Relationship,Ch. 4,Lab03 Released
+,,,between global cesarean rates and GDP,,HW03 Released
+2/4/26,7,Two-way tables (Relationships between two categorical variables),Ch. 5,--,
+2/6/26,8,Samples and observational studies,Ch. 6,Lab03 Due ,
+,,,,Quiz02 Due,
+Week 4,,,,,
+2/9/26,9,Desigining Experiments/Ethics,Lab04: Screening and Precision Public Health,Ch. 7,--
+2/11/26,10,Catchup - summary part 1,--,--,
+2/13/26,11,Introduction to probability,Ch. 9,Lab04 Due,
+,,,,Quiz03 Due,
+Week 5,,,,,
+2/16/26,--,No Lecture: Holiday,Midterm I Review,--,Lab04 Released
+,,,Session (Optional),,HW04 Released
+2/18/26,--,Midterm 1,--,--,
+2/20/26,12,General rules of probability,Ch. 10,--,
+Week 6,,,,,
+2/23/26,13,"General rules of probability (conditional prob, baye's theorem)","Lab05: Independence, Screening, and Normal Distribution",Ch. 10,Lab05 Released
+,,,,,HW05 Released
+2/25/26,14,The Normal distribution,Ch. 11,--,
+2/27/26,15,Normal and Binomial distribution,Ch. 11,Lab05 Due,
+,,,,Quiz04 Due,
+,,,,Project Part I Due,
+Week 7,,,,,
+3/2/26,16,Binomial distribution,"Lab06: Normal, Binomial, and Poisson Distribution",Ch. 12,Lab06 Released
+,,,,,HW06 Released
+3/4/26,17,Poisson distribution,Ch. 12,--,
+3/6/26,18,Sampling distribution and the central limit theorem,Ch. 13,Lab06 Due,
+,,,,Quiz05 Due,
+Week 8,,,,,
+3/9/26,19,Confidence intervals (known SD),"Lab07: Confidence Intervals, P-Values, P-Hacking",Ch. 14,--
+3/11/26,20,Hypothesis testing,Ch. 15,--,
+3/13/26,21,"Power, type I and type II error, sample size",Ch. 15,Lab07 Due,
+,,,,Quiz06 Due,
+Week 9,,,,,
+3/16/26,22,Sample size for hypothesis tests and intro to z - testing,Midterm II Review,Ch. 15,Lab07 Released
+,,,Session (Optional),,HW07 Released
+3/18/26,23,Summary of Part 2,--,--,
+3/20/26,--,Midterm 2,--,--,
+Week 10,,,,,
+3/23/26,--,No Lecture: Holiday,Holiday; No Lab,--,--
+3/25/26,--,No Lecture: Holiday,--,--,
+3/27/26,--,No Lecture: Holiday,--,--,
+Week 11,,,,,
+3/30/26,24,One sample t tests and paired t tests,Lab08: Paired and,Ch. 18,Lab08 Released
+,,,Two Sample t-tests,,HW08 Released
+4/1/26,25,Comparing two means,Ch. 18,--,
+4/3/26,26,ANOVA,Ch. 24,Lab08 Due,
+,,,,Quiz07 Due,
+,,,,Project Part II Due,
+Week 12,,,,,
+4/6/26,27,"Tukey's HSD, non parametric testing",Lab09: T tests and ANOVA,Ch. 24,Lab09 Released
+,,,,,HW09 Released
+4/8/26,28,Non-parametric testing,--,,
+4/10/26,29,"Inference for regression I: assumptions of regression, checking assumptions",--,Lab09 Due,
+,,,,Quiz08 Due,
+Week 13,,,,,
+4/13/26,30,Inference for a population proportion,Lab10: Proportions and Inference for Regression,Ch. 23,Lab10 Released 
+,,,,,HW10 Released
+4/15/26,31,Comparing two proportions,Ch. 24,,
+4/17/26,32,Bootstrapping confidence intervals,Ch. 24,Lab10 Due,
+,,,,Quiz09 Due,
+Week 14,,,,,
+4/20/26,33,The Chi-square test for goodness of fit,Lab 11: Problem set,Ch. 21,--
+,,,on the Chi-square,,
+,,,test,,
+4/22/26,34,The Chi-square test for two way tables,Ch. 22,--,
+4/24/26,35,Permutation tests,--,Lab11 Due,
+,,,,Quiz10 Due,
+Week 15,,,,,
+4/27/26,36,Catch up - TBD,Final Exam Review Session (Optional),--,--
+4/29/26,37,Summary of Part 3,--,--,
+5/1/26,38,GSI-led Midterm Review,--,Project Part III Due,
+Week 16,,RRR Week,,,
+Week 17,,Finals Week,,,
+[final exam],,,,,
