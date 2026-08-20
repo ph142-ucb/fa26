@@ -33,7 +33,7 @@ nav_links:
   Ed:
     - 'https://edstem.org/us/courses/93012/discussion'
   Datahub:
-    - 'https://publichealth.datahub.berkeley.edu/hub/login?next=%2Fhub%2Fuser-redirect%2Fgit-pull%3Frepo%3Dhttps%253A%252F%252Fgithub.com%252Fph142-ucb%252Fph142-fa26%26urlpath%3Drstudio%252F%26branch%3Dmain'
+    - 'https://publichealth.datahub.berkeley.edu/hub/user-redirect/git-pull?repo=https%3A%2F%2Fgithub.com%2Fph142-ucb%2Fph142-fa26&urlpath=rstudio%2F&branch=main'
  # Grade Calculator:
   #  - 'https://xiangyu-yu.shinyapps.io/ph142-grading/'
     
