@@ -6,10 +6,9 @@ output: pdf_document
 
 Due Dates:
 
-- Group Confirmation Form: February 13th **10:00pm** (counts towards participation grade)
-- Part I: February 27th 11:59pm
-- Part II: April 3rd 11:59pm
-- Part III: May 1st **5:00pm**
+- Part I: September 25, 2026
+- Part II: October 23, 2026
+- Part III: December 4, 2026
 
 **Make sure to provide enough time for Gradescope submission to be uploaded if you include large visualizations.**
 
@@ -68,4 +67,3 @@ An example from a recent issue of the BMJ (Woolf, Masters, and Aron BMJ 2021;373
 "Contributors: SHW led the production of this manuscript and had primary responsibility for the composition. He is guarantor. RKM contributed revisions and had primary responsibility for data acquisition and analysis, the modeling results that form the basis for this study, and production of the supplementary material. LYA contributed revisions and had primary responsibility for dealing with the study’s policy implications in the discussion section. The corresponding author attests that all listed authors meet authorship criteria and that no others meeting the criteria have been omitted."
 
 For your project, please craft a statement indicating the contributions of each group member. If your group divided the assignment responsibilities by question you may use question numbers to indicate which member had primary responsibility for each question (for example : Member XX had primary responsibility for questions x,x,x..). 
-

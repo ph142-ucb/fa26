@@ -6,7 +6,7 @@ description: Resources for students
 ---
 # Resources
 
-- [Lab Section Materials](https://github.com/ph142-ucb/ph142-sp26/tree/main/lab/)
+- [Lab Section Materials](https://github.com/ph142-ucb/ph142-su26/tree/main/lab/)
 - [PH 142 Course Overview Interactive Presentation](https://prezi.com/p/xpqdo6z9nbhw/learning-from-data/)
 - [FAQs and Common Errors]({{ site.baseurl }}/src/resources/faq/)
 - [RStudio Cheatsheets](https://www.rstudio.com/resources/cheatsheets/)
@@ -62,4 +62,3 @@ description: Resources for students
 |                | [Sp21 Final Gradescope]({{ site.baseurl }}/src/resources/final/final_sp21_timed.pdf) | [Sp21 Final Gradescope Solutions]({{ site.baseurl }}/src/resources/final/final_sp21_timed_SOLUTIONS.pdf) | N/A |
 |                | [Fa21 Final]({{ site.baseurl }}/src/resources/final/final_fa21.pdf) | [Fa21 Final Solutions]({{ site.baseurl }}/src/resources/final/final_fa21_SOLUTIONS.pdf) | N/A |
 |                | [Fa23 Final]({{ site.baseurl }}/src/resources/final/Final_Fa2023.pdf) | [Fa23 Final Solutions]({{ site.baseurl }}/src/resources/final/Final_Fa2023_solutions.pdf) | N/A |
-

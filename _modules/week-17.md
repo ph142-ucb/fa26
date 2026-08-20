@@ -1,7 +1,7 @@
 ---
 title: Week 17
 days:
-  - date: 2026-05-11
+  - date: 2026-12-16
     events:
-      "**Exam**{: .label .label-exam} **Final Exam: In-Person** TBD":
+      "**Exam**{: .label .label-exam} **Final Exam**":
 ---

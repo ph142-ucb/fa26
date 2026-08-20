@@ -1,23 +1,19 @@
 ---
 title: Week 8
 days:
-  - date: 2026-03-09
+  - date: 2026-10-12
     events:
-      "**Lecture 19**{: .label .label-lec} [Confidence Intervals for a Mean with Known Standard Deviation](https://ph142-ucb.github.io/sp26/src/lec/l19-confidence.pdf) [(Video)](https://bcourses.berkeley.edu/courses/1552011/pages/lecture-19)":
+      "**Lecture 19**{: .label .label-lec} [Confidence intervals for a mean with known standard deviation](https://ph142-ucb.github.io/fa26/src/lec/l19-confidence.pdf)":
         "Ch. 14"
-      "**Lab 7**{: .label .label-lab} [Confidence Intervals, P-Values, P-Hacking](https://publichealth.datahub.berkeley.edu/hub/user-redirect/git-pull?repo=https%3A%2F%2Fgithub.com%2Fph142-ucb%2Fph142-sp26&urlpath=rstudio%2F&branch=main)":
-      "**Homework 7**{: .label .label-hw} [Released - on Datahub](https://publichealth.datahub.berkeley.edu/hub/user-redirect/git-pull?repo=https%3A%2F%2Fgithub.com%2Fph142-ucb%2Fph142-sp26&urlpath=rstudio%2F&branch=main)":
-      "**Data Project**{: .label .label-proj} Part II instructions [Released](https://ph142-ucb.github.io/sp26/data-proj/)":
-        
-  - date: 2026-03-11
+      "**Lab 7**{: .label .label-lab} Classroom simulation on the Central Limit Theorem and confidence intervals — Released":
+  - date: 2026-10-14
     events:
-      "**Lecture 20**{: .label .label-lec} [Hypothesis testing](https://ph142-ucb.github.io/sp26/src/lec/l20-hypothesis.pdf) [(Video)](https://bcourses.berkeley.edu/courses/1552011/pages/lecture-20)": 
+      "**Lecture 20**{: .label .label-lec} [Hypothesis tests for a mean with known standard deviation](https://ph142-ucb.github.io/fa26/src/lec/l20-hypothesis.pdf)":
         "Ch. 15"
-      
-  - date: 2026-03-13
+  - date: 2026-10-16
     events:
-      "**Lecture 21**{: .label .label-lec} [Power, Type I and Type II Error, Sample Size](https://ph142-ucb.github.io/sp26/src/lec/l21-power.pdf) [(Video)](https://bcourses.berkeley.edu/courses/1552011/pages/l21-power)":
-      "**Quiz 6**{: .label .label-quiz} Due Saturday at noon [on Gradescope](https://www.gradescope.com/courses/1223977)":
+      "**Lecture 21**{: .label .label-lec} [Power, type I and type II error, sample size (part I)](https://ph142-ucb.github.io/fa26/src/lec/l21-power.pdf)":
+        "Ch. 15"
       "**Lab 7**{: .label .label-lab} Due":
-      
+      "**Quiz 6**{: .label .label-quiz} Due":
 ---

@@ -92,7 +92,7 @@ app_ui = ui.page_fluid(
     
     ui.div(
         ui.h1("PH 142 Grade Estimator", style="font-weight: 800; color: #2c3e50; text-align: center;"),
-        ui.p("Spring 2026 Semester", style="text-align: center; color: #7f8c8d; font-size: 1.2em; margin-bottom: 40px;"),
+        ui.p("Fall 2026 Semester", style="text-align: center; color: #7f8c8d; font-size: 1.2em; margin-bottom: 40px;"),
         
         ui.layout_columns(
             # LEFT COLUMN: Inputs

@@ -3,7 +3,7 @@ name: Xiudi Li (he/his)
 role: Instructor
 email: xiudil@berkeley.edu
 website: https://publichealth.berkeley.edu/people/mi-suk-kang-dufour/](https://vcresearch.berkeley.edu/faculty/xiudi-li
-photo: https://ph142-ucb.github.io/sp26/img/mi-suk.jpeg
+photo: https://ph142-ucb.github.io/fa26/img/mi-suk.jpeg
 ---
 
 **Office Hours:** By appointment only. 

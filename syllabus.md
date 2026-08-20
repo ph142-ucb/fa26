@@ -10,6 +10,4 @@ description: >-
 
 <hr>
 
-<a href="https://ph142-ucb.github.io/sp26/src/ph142-syllabus-sp26.pdf">Download as PDF</a>
-
-<iframe src="https://ph142-ucb.github.io/sp26/src/ph142-syllabus-sp26.pdf" width="100%" height="800"></iframe>
+The Fall 2026 syllabus will be posted here when it is finalized.

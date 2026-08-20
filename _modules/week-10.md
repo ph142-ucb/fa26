@@ -1,13 +1,19 @@
 ---
 title: Week 10
 days:
-  - date: 2026-03-23
+  - date: 2026-10-26
     events:
-      "**No Lecture**{: .label .label-purple} **Holiday**":
-  - date: 2026-03-25
+      "**Lecture 25**{: .label .label-lec} [Matched comparisons](https://ph142-ucb.github.io/fa26/src/lec/paired-t.pdf)":
+        "Ch. 17"
+      "**Lab 8**{: .label .label-lab} Paired and two sample t-tests — Released":
+      "**Homework 7**{: .label .label-hw} Released":
+  - date: 2026-10-28
     events:
-      "**No Lecture**{: .label .label-purple} **Holiday**":
-  - date: 2026-03-27
+      "**Lecture 26**{: .label .label-lec} [Inference for a population proportion](https://ph142-ucb.github.io/fa26/src/lec/inf_proportions_sp26.pdf)":
+        "Ch. 19"
+  - date: 2026-10-30
     events:
-      "**No Lecture**{: .label .label-purple} **Holiday**":
+      "**Exam**{: .label .label-exam} **Midterm 2**":
+      "**Lab 8**{: .label .label-lab} Due":
+      "**Quiz 7**{: .label .label-quiz} Due":
 ---
