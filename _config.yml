@@ -14,10 +14,10 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 title: PH 142
-description: Website for PH 142 Spring 2026
+description: Website for PH 142 Fall 2026
 author: PH 142 Staff
 email: 142gsi@berkeley.edu
-baseurl: '/sp26' # the subpath of your site, e.g. /blog
+baseurl: '/fa26' # the subpath of your site, e.g. /blog
 url: 'https://ph142-ucb.github.io' # the base hostname & protocol for your site, e.g. http://example.com
 exclude: ["Gemfile", "Gemfile.lock", "LICENSE", "README.md", "schedule.md"]
 
@@ -29,13 +29,13 @@ heading_anchors: false
 permalink: pretty
 nav_links:
   Gradescope:
-    - 'https://www.gradescope.com/courses/1223977'
+    - 'https://www.gradescope.com/courses/1354579'
   Ed:
     - 'https://edstem.org/us/courses/93012/discussion'
   Datahub:
-    - 'https://publichealth.datahub.berkeley.edu/hub/user-redirect/git-pull?repo=https%3A%2F%2Fgithub.com%2Fph142-ucb%2Fph142-sp26&urlpath=rstudio%2F&branch=main'
-  Grade Calculator:
-    - 'https://xiangyu-yu.shinyapps.io/ph142-grading/'
+    - 'https://publichealth.datahub.berkeley.edu/hub/login?next=%2Fhub%2Fuser-redirect%2Fgit-pull%3Frepo%3Dhttps%253A%252F%252Fgithub.com%252Fph142-ucb%252Fph142-su26%26urlpath%3Drstudio%252F%26branch%3Dmain'
+ # Grade Calculator:
+  #  - 'https://xiangyu-yu.shinyapps.io/ph142-grading/'
     
 nav_footer_content: "Powered by <a href=\"https://github.com/kevinlin1/just-the-class\">Just the Class</a>"
 
