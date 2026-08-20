@@ -55,7 +55,7 @@ You can have one student in your group following these instructions, or have man
 group members do this and send files back and forth to one another to work on the 
 project together.
 
-1. Create a new folder in your ph142-su26/ directory called project/.
+1. Create a new folder in your ph142-fa26/ directory called project/.
 2. In this project/ folder, create an .Rmd for your project.  Edit the header of this .rmd to include the names of each of your group members.
 3. Find a dataset you’re interested in a upload it into this project/ folder. *You can click “Upload” in the File Viewer to upload your data onto Datahub. Make sure to use a data format you know how to read into R, such as csv, xlsx, etc. You can copy and paste your file into an Excel sheet first to get it into an appropriate format.
 4. Copy and paste the questions below into your Rmd file and complete them. 
@@ -115,7 +115,6 @@ set and import it first. This can help you isolate the problem. Some
 datasets you find will be thousands or even millions of rows. Given that this may
 be your first time importing data, we recommend you choose something smaller!
 * To make your report look presentable, check out [this cheat sheet style guide on .rmd](https://rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf).
-
 
 
 

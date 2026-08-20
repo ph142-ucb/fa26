@@ -25,11 +25,11 @@ Q: What is Datahub?
 
 > Datahub is an online computational environment open to all UC Berkeley students and faculty. Each individual has their own independent Datahub server, which allows you to work on projects without having to worry about taking up local storage space or being limited by your computers specifications. In a more pedagogical context, it allows course staff to set up packages and libraries that are unique to each class. 
 
-> As this class is under the UC Berkeley Public Health department, we will be using the [Public Health Hub](https://publichealth.datahub.berkeley.edu/hub/login?next=%2Fhub%2Fuser-redirect%2Fgit-pull%3Frepo%3Dhttps%253A%252F%252Fgithub.com%252Fph142-ucb%252Fph142-su26%26urlpath%3Drstudio%252F%26branch%3Dmain). The Public Health Datahub automatically configured to run RStudio (instead of Jupyter Notebook, which you might be familiar with if you have taken other courses like Data 8).
+> As this class is under the UC Berkeley Public Health department, we will be using the [Public Health Hub](https://publichealth.datahub.berkeley.edu/hub/login?next=%2Fhub%2Fuser-redirect%2Fgit-pull%3Frepo%3Dhttps%253A%252F%252Fgithub.com%252Fph142-ucb%252Fph142-fa26%26urlpath%3Drstudio%252F%26branch%3Dmain). The Public Health Datahub automatically configured to run RStudio (instead of Jupyter Notebook, which you might be familiar with if you have taken other courses like Data 8).
 
 Q: How do I access Datahub?
 
-> You may access Datahub by clicking on the [Datahub](https://publichealth.datahub.berkeley.edu/hub/login?next=%2Fhub%2Fuser-redirect%2Fgit-pull%3Frepo%3Dhttps%253A%252F%252Fgithub.com%252Fph142-ucb%252Fph142-su26%26urlpath%3Drstudio%252F%26branch%3Dmain) link that is located on the sidebar of the page. The Datahub link on the side and all the links on the course schedule are specially made to retrieve any new assignments that we release. Therefore, **it is important that you click on one of these links whenever you want to access Datahub**. At the end of the semester, these links will be converted back to regular datahub links.
+> You may access Datahub by clicking on the [Datahub](https://publichealth.datahub.berkeley.edu/hub/login?next=%2Fhub%2Fuser-redirect%2Fgit-pull%3Frepo%3Dhttps%253A%252F%252Fgithub.com%252Fph142-ucb%252Fph142-fa26%26urlpath%3Drstudio%252F%26branch%3Dmain) link that is located on the sidebar of the page. The Datahub link on the side and all the links on the course schedule are specially made to retrieve any new assignments that we release. Therefore, **it is important that you click on one of these links whenever you want to access Datahub**. At the end of the semester, these links will be converted back to regular datahub links.
 
 Q: Can I use a local version of RStudio instead of Datahub?
 
@@ -83,7 +83,7 @@ Just refresh your page. Make sure to periodically save your work to avoid losing
 
 1. At the same page where you're getting the error, click on 'Control Panel' located on the top banner of the page.
 2. Click on 'My Server'
-3. Go to the *terminal* and type `cd; cd ph142-su26`
+3. Go to the *terminal* and type `cd; cd ph142-fa26`
 4. Type the following into the terminal and press enter after each line of code:
 - `git config --global user.email nbgitpuller@nbgitpuller.link`
 - `git config --global user.name nbgitpuller`

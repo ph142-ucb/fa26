@@ -6,7 +6,7 @@ description: Resources for students
 ---
 # Resources
 
-- [Lab Section Materials](https://github.com/ph142-ucb/ph142-su26/tree/main/lab/)
+- [Lab Section Materials](https://github.com/ph142-ucb/ph142-fa26/tree/main/lab/)
 - [PH 142 Course Overview Interactive Presentation](https://prezi.com/p/xpqdo6z9nbhw/learning-from-data/)
 - [FAQs and Common Errors]({{ site.baseurl }}/src/resources/faq/)
 - [RStudio Cheatsheets](https://www.rstudio.com/resources/cheatsheets/)
