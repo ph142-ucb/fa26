@@ -1,8 +1,8 @@
 ---
-name: Mi-Suk Kang Dufour (she/her/hers)
+name: Xiudi Li (he/his)
 role: Instructor
-email: mi-suk@berkeley.edu
-website: https://publichealth.berkeley.edu/people/mi-suk-kang-dufour/
+email: xiudil@berkeley.edu
+website: https://publichealth.berkeley.edu/people/mi-suk-kang-dufour/](https://vcresearch.berkeley.edu/faculty/xiudi-li
 photo: https://ph142-ucb.github.io/sp26/img/mi-suk.jpeg
 ---
 
