@@ -3,16 +3,16 @@ title: Week 8
 days:
   - date: 2026-10-12
     events:
-      "**Lecture 19**{: .label .label-lec} [Confidence intervals for a mean with known standard deviation](https://ph142-ucb.github.io/fa26/src/lec/l19-confidence.pdf)":
+      "**Lecture 19**{: .label .label-lec} Confidence intervals for a mean with known standard deviation":
         "Ch. 14"
       "**Lab 7**{: .label .label-lab} Classroom simulation on the Central Limit Theorem and confidence intervals — Released":
   - date: 2026-10-14
     events:
-      "**Lecture 20**{: .label .label-lec} [Hypothesis tests for a mean with known standard deviation](https://ph142-ucb.github.io/fa26/src/lec/l20-hypothesis.pdf)":
+      "**Lecture 20**{: .label .label-lec} Hypothesis tests for a mean with known standard deviation":
         "Ch. 15"
   - date: 2026-10-16
     events:
-      "**Lecture 21**{: .label .label-lec} [Power, type I and type II error, sample size (part I)](https://ph142-ucb.github.io/fa26/src/lec/l21-power.pdf)":
+      "**Lecture 21**{: .label .label-lec} Power, type I and type II error, sample size (part I)":
         "Ch. 15"
       "**Lab 7**{: .label .label-lab} Due":
       "**Quiz 6**{: .label .label-quiz} Due":
