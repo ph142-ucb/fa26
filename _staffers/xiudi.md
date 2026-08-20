@@ -1,5 +1,5 @@
 ---
-name: Xiudi Li (he/his)
+name: Xiudi Li
 role: Instructor
 email: xiudil@berkeley.edu
 website: https://publichealth.berkeley.edu/people/mi-suk-kang-dufour/](https://vcresearch.berkeley.edu/faculty/xiudi-li

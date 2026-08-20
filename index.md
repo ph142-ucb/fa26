@@ -8,7 +8,7 @@ description: >-
 
 # Introduction to Probability and Statistics in Biology and Public Health
 {: .mb-2 }
-PH 142,Fall 2026
+PH 142 Fall 2026
 {: .mb-0 .fs-6 .text-grey-dk-000 }
 
 **Instructor**: [Xiudi Li]({{ site.baseurl }}/staff)
