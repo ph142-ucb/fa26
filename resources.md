@@ -39,6 +39,7 @@ description: Resources for students
 | [Data Manipulation](https://www.youtube.com/watch?v=96A0TuJ43hk)                                                                                                                                                                |
 | [Categorizing Variables](https://youtu.be/wyJu6lX-2Vc)                                                                                                                                                                         |
 
+{% comment %}
 <hr>
 
 ### Exam Resources
@@ -62,3 +63,4 @@ description: Resources for students
 |                | [Sp21 Final Gradescope]({{ site.baseurl }}/src/resources/final/final_sp21_timed.pdf) | [Sp21 Final Gradescope Solutions]({{ site.baseurl }}/src/resources/final/final_sp21_timed_SOLUTIONS.pdf) | N/A |
 |                | [Fa21 Final]({{ site.baseurl }}/src/resources/final/final_fa21.pdf) | [Fa21 Final Solutions]({{ site.baseurl }}/src/resources/final/final_fa21_SOLUTIONS.pdf) | N/A |
 |                | [Fa23 Final]({{ site.baseurl }}/src/resources/final/Final_Fa2023.pdf) | [Fa23 Final Solutions]({{ site.baseurl }}/src/resources/final/Final_Fa2023_solutions.pdf) | N/A |
+{% endcomment %}

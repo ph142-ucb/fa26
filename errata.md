@@ -3,6 +3,7 @@ layout: page
 title: Exam Errata
 description: Corrections and additional explanations of exam solutions
 nav_order: 8
+nav_exclude: true
 ---
 
 # Exam Errata
