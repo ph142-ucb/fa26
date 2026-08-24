@@ -10,4 +10,6 @@ description: >-
 
 <hr>
 
-The Fall 2026 syllabus will be posted here when it is finalized.
+<a href="{{ site.baseurl }}/src/ph142-syllabus-fa26.pdf">Download as PDF</a>
+
+<iframe src="{{ site.baseurl }}/src/ph142-syllabus-fa26.pdf" width="100%" height="800"></iframe>
