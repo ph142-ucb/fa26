@@ -3,7 +3,7 @@ name: Alex Kwong (he/him)
 role: Tutor
 email: 
 website: 
-photo: https://ph142-ucb.github.io/fa25/img/alex.jpg
+photo: https://ph142-ucb.github.io/fa26/img/alex.png
 ---
 
 2nd Year MPH Epidemiology/Biostatistics & Master of City Planning Dual-Degree Program
