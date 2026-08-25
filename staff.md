@@ -45,7 +45,7 @@ For lab section and office hour schedules for each GSI, see the [calendar]({{ si
   {% endfor %}
 </div>
 
-## Tutor
+## Tutor (only for graduate students)
 
 <div class="role">
   {% assign tutor = site.staffers | where: 'role', 'Tutor' %}
