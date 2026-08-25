@@ -15,15 +15,15 @@ PH 142 Fall 2026
 
 ## Important Information
 
-- **Questions & Discussion**: Please use [Ed](https://edstem.org/us/courses/93012/discussion) for all course-related questions
+- **Questions & Discussion**: Please use [Ed](https://edstem.org/us/courses/101874) for all course-related questions
 - **Non-content inquiries**: [142gsi@berkeley.edu](mailto:142gsi@berkeley.edu)
 - **Lectures**: Monday, Wednesday, & Friday, 8:00 to 8:59 AM PST
-- **Location**: Internet/Online [Zoom Link](https://berkeley.zoom.us/s/94315815933) Passcode: 065749
+- **Zoom**: [Zoom Link](https://berkeley.zoom.us/s/94315815933) — Passcode: `065749`
 - **Content**: Please refer to the [course schedule]({{ site.baseurl }}/course-schedule)
 - **Course number**: #31216
 
 {% if site.announcements %}
-We will not be updating this page with announcements. For the latest announcements, make sure to check our [Ed](https://edstem.org/us/courses/93012/discussion).
+We will not be updating this page with announcements. For the latest announcements, make sure to check our [Ed](https://edstem.org/us/courses/101874).
 {% endif %}
 
 ## Course Description
