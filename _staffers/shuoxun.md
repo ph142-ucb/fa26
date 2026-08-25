@@ -6,4 +6,4 @@ website:
 photo: https://ph142-ucb.github.io/fa26/img/shuoxun.jpg
 ---
 
-Hi, my name is Shuoxun Xu! I am a 2nd year PhD in biostatistics.
+Hi, my name is Shuoxun Xu and I am a 3rd year PhD candidate in biostatistics.

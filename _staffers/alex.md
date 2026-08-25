@@ -6,10 +6,6 @@ website:
 photo: https://ph142-ucb.github.io/fa26/img/alex.png
 ---
 
-2nd Year MPH Epidemiology/Biostatistics & Master of City Planning Dual-Degree Program
+**Alex Kwong:** Hi, my name is Alex! I'm a 3rd year student in the Epidemiology & Biostatistics MPH and Master of City Planning Dual Degree Program. My research interests include data visualization, spatial epidemiology, urban health disparities, and community safety. Some of my hobbies include running, working out, cooking, and collecting and listening to vinyl records.
 
-**Interests:** Data visualization, spatial epidemiology, urban health disparities, and community safety.
-
-**Non-academic interests:** Running, biking, cooking, and trying new food spots and coffee shops!
-
-**Tutoring Schedule:** Thursdays 6-8 PM via Zoom: [https://berkeley.zoom.us/j/99036721842](https://berkeley.zoom.us/j/99036721842)
+**Tutoring Schedule:** Tuesdays 5:30-7:00 PM via Zoom: [https://berkeley.zoom.us/j/98225562946](https://berkeley.zoom.us/j/98225562946)
