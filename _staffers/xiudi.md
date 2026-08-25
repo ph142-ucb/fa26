@@ -1,7 +1,7 @@
 ---
 name: Xiudi Li
 role: Instructor
-email: xiudil@berkeley.edu
+email:
 website: https://vcresearch.berkeley.edu/faculty/xiudi-li
 photo: https://ph142-ucb.github.io/fa26/img/xiudi.jpg
 ---
