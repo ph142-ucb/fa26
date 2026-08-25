@@ -1,5 +1,5 @@
 ---
-name: Candus
+name: Candus Yuina Shi
 role: GSI
 email:
 website:

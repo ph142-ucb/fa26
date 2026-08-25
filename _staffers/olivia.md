@@ -1,5 +1,5 @@
 ---
-name: Olivia
+name: Olivia Tucci
 role: GSI
 email:
 website:

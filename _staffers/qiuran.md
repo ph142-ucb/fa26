@@ -1,5 +1,5 @@
 ---
-name: Qiuran (Rita) Lyu
+name: Rita Lyu
 role: Tech GSI
 email:
 website:

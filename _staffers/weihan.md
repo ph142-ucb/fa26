@@ -1,5 +1,5 @@
 ---
-name: Weihan
+name: Weihan Zhang
 role: GSI
 email:
 website:
