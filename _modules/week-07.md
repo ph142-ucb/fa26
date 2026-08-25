@@ -15,6 +15,8 @@ days:
     events:
       "**Lecture 18**{: .label .label-lec} Sampling distributions for a mean and proportion and The Central Limit Theorem":
         "Ch. 13"
-      "**Lab 6**{: .label .label-lab} Due":
-      "**Quiz 5**{: .label .label-quiz} Due":
+      "**Quiz 5**{: .label .label-quiz} Due at 11:59 PM":
+  - date: 2026-10-10
+    events:
+      "**Lab 6**{: .label .label-lab} Due at 11:59 AM":
 ---

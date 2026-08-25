@@ -13,5 +13,7 @@ days:
   - date: 2026-11-13
     events:
       "**Lecture 31**{: .label .label-lec} Permutation tests":
-      "**Lab 10**{: .label .label-lab} Due":
+  - date: 2026-11-14
+    events:
+      "**Lab 10**{: .label .label-lab} Due at 11:59 AM":
 ---

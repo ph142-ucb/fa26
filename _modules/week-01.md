@@ -13,5 +13,7 @@ days:
   - date: 2026-08-28
     events:
       "**Lecture 2**{: .label .label-lec} [Working with data in R and RStudio (dplyr package)](https://ph142-ucb.github.io/fa26/src/lec/L02_working-with-data.pdf)":
-      "**Lab 1**{: .label .label-lab} Due":
+  - date: 2026-08-29
+    events:
+      "**Lab 1**{: .label .label-lab} Due at 11:59 AM":
 ---

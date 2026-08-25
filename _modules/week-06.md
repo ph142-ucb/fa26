@@ -14,6 +14,10 @@ days:
   - date: 2026-10-02
     events:
       "**Exam**{: .label .label-exam} **Midterm 1**":
-      "**Lab 5**{: .label .label-lab} Due":
-      "**Quiz 4**{: .label .label-quiz} Due":
+  - date: 2026-10-03
+    events:
+      "**Quiz 4**{: .label .label-quiz} Due at 11:59 PM":
+  - date: 2026-10-04
+    events:
+      "**Lab 5**{: .label .label-lab} Due at 11:59 AM":
 ---

@@ -14,6 +14,8 @@ days:
     events:
       "**Lecture 10**{: .label .label-lec} Designing Experiments":
         "Ch. 7"
-      "**Lab 4**{: .label .label-lab} Due":
-      "**Quiz 3**{: .label .label-quiz} Due":
+      "**Quiz 3**{: .label .label-quiz} Due at 11:59 PM":
+  - date: 2026-09-19
+    events:
+      "**Lab 4**{: .label .label-lab} Due at 11:59 AM":
 ---

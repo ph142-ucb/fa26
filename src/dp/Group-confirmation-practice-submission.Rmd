@@ -3,7 +3,7 @@ title: "Data Project Group Confirmation"
 output: pdf_document
 ---
 
-If you have any questions about your group membership, please connect with your supporting GSI or email 142gsi@berkeley.edu 
+If you have any questions about your group membership, please connect with your supporting GSI or email ph142gsi@berkeley.edu
 
 The purpose of this assignment is:
 
@@ -38,5 +38,4 @@ What kind of data do you want to work on?
 Does anyone have data or know of a dataset that is of interest to the group?
 
 Once you have confirmed your group membership, please "knit" this document and submit it on gradescope for course participation credit.  Only one person should submit the assignment - they should enter the submission and then add the other group members to the submission.  
-
 

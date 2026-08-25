@@ -14,6 +14,8 @@ days:
     events:
       "**Lecture 5**{: .label .label-lec} Exploring relationships between two variables":
         "Ch. 3"
-      "**Lab 2**{: .label .label-lab} Due":
-      "**Quiz 1**{: .label .label-quiz} Due":
+      "**Quiz 1**{: .label .label-quiz} Due at 11:59 PM":
+  - date: 2026-09-05
+    events:
+      "**Lab 2**{: .label .label-lab} Due at 11:59 AM":
 ---

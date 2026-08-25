@@ -14,6 +14,8 @@ days:
     events:
       "**Lecture 29**{: .label .label-lec} The Chi-square test for goodness of fit":
         "Ch. 21"
-      "**Lab 9**{: .label .label-lab} Due":
-      "**Quiz 8**{: .label .label-quiz} Due":
+      "**Quiz 8**{: .label .label-quiz} Due at 11:59 PM":
+  - date: 2026-11-07
+    events:
+      "**Lab 9**{: .label .label-lab} Due at 11:59 AM":
 ---

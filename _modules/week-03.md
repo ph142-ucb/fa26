@@ -14,6 +14,8 @@ days:
     events:
       "**Lecture 7**{: .label .label-lec} Two-way tables (relationships between two categorical variables)":
         "Ch. 5"
-      "**Lab 3**{: .label .label-lab} Due":
-      "**Quiz 2**{: .label .label-quiz} Due":
+      "**Quiz 2**{: .label .label-quiz} Due at 11:59 PM":
+  - date: 2026-09-12
+    events:
+      "**Lab 3**{: .label .label-lab} Due at 11:59 AM":
 ---

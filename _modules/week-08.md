@@ -14,6 +14,8 @@ days:
     events:
       "**Lecture 21**{: .label .label-lec} Power, type I and type II error, sample size (part I)":
         "Ch. 15"
-      "**Lab 7**{: .label .label-lab} Due":
-      "**Quiz 6**{: .label .label-quiz} Due":
+      "**Quiz 6**{: .label .label-quiz} Due at 11:59 PM":
+  - date: 2026-10-17
+    events:
+      "**Lab 7**{: .label .label-lab} Due at 11:59 AM":
 ---

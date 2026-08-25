@@ -16,7 +16,7 @@ PH 142 Fall 2026
 ## Important Information
 
 - **Questions & Discussion**: Please use [Ed](https://edstem.org/us/courses/101874) for all course-related questions
-- **Non-content inquiries**: [142gsi@berkeley.edu](mailto:142gsi@berkeley.edu)
+- **Non-content inquiries**: [ph142gsi@berkeley.edu](mailto:ph142gsi@berkeley.edu)
 - **Lectures**: Monday, Wednesday, & Friday, 8:00 to 8:59 AM PST
 - **Zoom**:
 - **Content**: Please refer to the [course schedule]({{ site.baseurl }}/course-schedule)
