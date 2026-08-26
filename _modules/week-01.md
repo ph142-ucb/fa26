@@ -7,7 +7,7 @@ days:
       "**Lab 1**{: .label .label-lab} [Introduction to R and RStudio on Datahub](https://publichealth.datahub.berkeley.edu/hub/user-redirect/git-pull?repo=https%3A%2F%2Fgithub.com%2Fph142-ucb%2Fph142-fa26&urlpath=rstudio%2F&branch=main)":
   - date: 2026-08-26
     events:
-      "**Lecture 1**{: .label .label-lec} [Introduction to the course, the cloud, and PPDAC](https://ph142-ucb.github.io/fa26/src/lec/l01-intro-alt-text.pdf)":
+      "**Lecture 1**{: .label .label-lec} [Introduction to the course, the cloud, and PPDAC](https://ph142-ucb.github.io/fa26/src/lec/l01-intro-alt-text.pdf) [(Recording)](https://bcourses.berkeley.edu/courses/1557633/files/folder/lecture%20recordings)":
       "**Lab 1**{: .label .label-lab} Released":
       "**Homework 1**{: .label .label-hw} Released":
   - date: 2026-08-28
