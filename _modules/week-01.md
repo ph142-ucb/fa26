@@ -12,7 +12,7 @@ days:
       "**Homework 1**{: .label .label-hw} Released":
   - date: 2026-08-28
     events:
-      "**Lecture 2**{: .label .label-lec} [Working with data in R and RStudio (dplyr package)](https://ph142-ucb.github.io/fa26/src/lec/l02.pdf) [(Student code PDF)](https://ph142-ucb.github.io/fa26/src/lec/L02_student_code.pdf) [(Student code Rmd)](https://ph142-ucb.github.io/fa26/src/lec/L02_student_code.Rmd) [(mercury-lake.csv)](https://ph142-ucb.github.io/fa26/src/lec/mercury-lake.csv)":
+      "**Lecture 2**{: .label .label-lec} [Working with data in R and RStudio (dplyr package)](https://ph142-ucb.github.io/fa26/src/lec/l02.pdf) [(Recording)](https://bcourses.berkeley.edu/courses/1557633/files/folder/lecture%20recordings) [(Student code PDF)](https://ph142-ucb.github.io/fa26/src/lec/L02_student_code.pdf) [(Student code Rmd)](https://ph142-ucb.github.io/fa26/src/lec/L02_student_code.Rmd) [(mercury-lake.csv)](https://ph142-ucb.github.io/fa26/src/lec/mercury-lake.csv)":
   - date: 2026-08-29
     events:
       "**Lab 1**{: .label .label-lab} Due at 11:59 AM":
