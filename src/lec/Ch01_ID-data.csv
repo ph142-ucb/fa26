@@ -1,0 +1,8 @@
+disease,type,number_cases,percent_cases
+Chlamydia,STI,174557,66.42704924271253
+Gonorrhea,STI,44974,17.114696704467615
+Pertussis,Pertussis,11219,4.269350787731182
+Campylobacteriosis,Foodborne,7919,3.0135474541441507
+Early syphilis,STI,7191,2.736509627825557
+Salmonellosis,Foodborne,5361,2.04010959738184
+Other,Other,11559,4.398736585737119

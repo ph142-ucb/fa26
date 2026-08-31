@@ -1,0 +1,315 @@
+---
+title: 'Lecture 03:  Visualizing data'
+output: pdf_document
+---
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(readr)
+library(dplyr)
+library(tidyr)
+library(forcats)
+library(readxl)
+library(fGarch) # don't need to know what this library does (used to make the skewed distributions)
+```
+
+### Today's objectives
+
+Data visualization with `ggplot`
+
+1. bar chart for categorical variable
+
+2. histogram for continuous variable
+    - describe visualized distributions based on shape, center, spread
+    
+### Choosing a visualization
+
+- Let's say we are interested in describing the race-ethnic distribution for the population of California
+
+- What type of a variable is this?
+
+- How might we go about visualizing this information?
+
+## Visualizing one categorical variable
+
+### Visualization of categorical data
+
+Generally speaking, **it is not a good idea to use pie charts** 
+
+```{r, out.width="70%", fig.align='center', echo=FALSE}
+knitr::include_graphics("ca-census-pie.png")
+```
+
+Can you tell the area of the slices?
+
+### Visualization of categorical data
+
+```{r, out.width="70%", fig.align='center', echo=FALSE}
+knitr::include_graphics("ca-census-bar.png")
+```
+
+### Visualization of categorical data
+
+- We prefer **bar graphs** (also called **bar charts**) for the display of categorical data. 
+- Bar charts display the number or percent of data for each level of the categorical variable being plotted
+
+### Example: infectious disease data
+
+- Task: Make a bar chart of the percent of cases on infectious disease for each 
+category of disease.
+- First, read and view the infectious disease data from Baldi and Moore:
+
+```{r make-bar-chart}
+id_data <- read_csv("Ch01_ID-data.csv")
+```
+
+### Example: infectious disease data
+```{r show-id}
+id_data
+```
+
+### Example: infectious disease data
+- Note the variables `number_cases` and `percent_cases`
+- What do you want the bar chart to display? 
+- What are the x and y variables for a bar chart?
+
+## Introducing ggplot
+
+### First step to building a `ggplot()`: set up the canvas
+
+- The first line of code below pulls in the ggplot package
+- The second line of code below specifies the `data` set and what goes on the `x` and `y` axes
+
+```{r, results='hide', fig.show='hide'}
+library(ggplot2)
+ggplot(id_data, aes(x = disease, y = percent_cases)) 
+```
+
+### First step to building a `ggplot()`: set up the canvas
+
+```{r, fig.height = 4, fig.width = 9.5, echo=FALSE}
+library(ggplot2)
+ggplot(id_data, aes(x = disease, y = percent_cases)) 
+```
+
+### Next choose a function
+
+- We will use a `geom_` function to create our chart
+
+
+`ggplot()`'s `geom_bar()` makes a bar chart
+
+
+### Syntax for bar charts 
+
+ggplot(id_data, aes(x = disease, y = percent_cases)) + 
+
+  geom_bar(stat = "identity") 
+  
+ stat = "identity" tells geom_bar that we supplied a y variable that is exactly what we want to plot. 
+ 
+ We do not need geom_bar() to calculate the number or percent for us.
+ 
+### `ggplot()`'s `geom_bar()` makes a bar chart
+
+```{r, fig.height = 4, fig.width = 9.5, echo=FALSE}
+ggplot(id_data, aes(x = disease, y = percent_cases)) + 
+  geom_bar(stat = "identity")
+```
+
+### some additions to ggplot for style
+
+
+```{r, fig.height = 4, fig.width = 9.5, echo=FALSE}
+ggplot(id_data, aes(x = disease, y = percent_cases)) + 
+  geom_bar(stat = "identity") +
+   labs(y = "Percent", x = "") +
+  theme_minimal(base_size = 15) 
+```
+
+ base_size controls the font size on these plots
+ 
+ theme_minimal affects the "look" of the plot it removes the grey background and adds grey gridlines
+
+
+
+### `fct_reorder` reorders `disease` according to value of `percent_cases`
+
+```{r bar-ordered, fig.height = 4, fig.width = 9.5}
+library(forcats)  ##notice that we have to pull in the package forcats here!
+id_data <- id_data %>% 
+  mutate(disease_ordered = fct_reorder(disease, percent_cases, .desc = T))
+```
+
+### Re-ordered plot
+```{r ordered, fig.height = 4, fig.width = 9.5, echo=FALSE}
+ggplot(id_data, aes(x = disease_ordered, y = percent_cases)) + 
+  geom_bar(stat = "identity") + 
+  labs(y = "Percent", x = "") +
+  theme_minimal(base_size = 15)
+```
+
+### Use `aes(fill = type)` to link the bar's fill to the disease type
+
+  geom_bar(stat = "identity", aes(fill = type)) +
+
+   theme(legend.position = "top")
+
+### Use `aes(fill = type)` to link the bar's fill to the disease type
+```{r bar-coloured, echo=FALSE, fig.height = 5, fig.width = 9.5}
+ggplot(id_data, aes(x = disease_ordered, y = percent_cases)) + 
+  geom_bar(stat = "identity", aes(fill = type)) +
+  labs(y = "Percent", x = "") +
+  theme_minimal(base_size = 15) +
+  theme(legend.position = "top")
+```
+
+## Visualizing one quantitative variable
+
+### Visualize quantitative variables using histograms 
+
+- Histograms look a lot like bar charts, except that the bars touch because the 
+underlying scale is continuous and the order of the bars matters
+- In order to make a histogram, the underlying data needs to be **binned** into 
+categories and the number or percent of data in each category becomes the height 
+of each bar. 
+- the **bins** divide the entire range of data into a series of intervals and counts
+the number of observations in each interval
+- the intervals must be consecutive and non-overlapping and are almost always chosen to be of equal size
+
+### Example:  opioid state prescription rates
+
+- The textbook gives an example using data from 2012.
+- In the data folder, there is updated data from 2018. It came from the paper:
+“Opioid Prescribing Rates by Congressional Districts, United States, 2016”, by 
+Rolheiser et al. [link](https://ajph.aphapublications.org/doi/10.2105/AJPH.2018.304532)
+
+### Example:  opioid state prescription rates
+Problem:  To determine the extent to which opioid prescribing rates vary across US congressional districts.
+
+Plan: In an observational cross-sectional framework using secondary data, they constructed 2016 congressional district–level opioid prescribing rate estimates using a population-weighted methodology.
+
+Data:  In the data structure we have State as the unit of analysis, and measured perscription rates as the variable of interest
+
+
+### Example:  opioid state prescription rates
+
+```{r read-opi-data}
+opi_data <- read.csv("Ch01_opioid-data.csv")
+head(opi_data)
+```
+
+- `Mean` provides the mean prescribing rate per 100 individuals. Thus, a mean
+of 121.31 implies that in Alabama, there were 121.31 opioid prescriptions per 100 
+persons, an average across the 7 congressional districts.
+
+### Histogram of opioid prescription rates
+
+- Task: Make a histogram of the average prescribing rates across US states
+- What is the x variable? What is the y variable? 
+- What `geom` should be used?
+
+### Histogram of opioid prescription rates - default is 30 bins
+ggplot(data = opi_data, aes(x = Mean)) + 
+
+  geom_histogram(col = "white") +
+
+  labs(x = "Mean opioid prescription rate (per 100 individuals)", 
+
+       y = "Number of states") +
+
+  theme_minimal(base_size = 15)
+  
+### Histogram of opioid prescription rates
+```{r hist-binwidth-no-width-specified, fig.height = 4, fig.width = 8, echo=FALSE}
+ggplot(data = opi_data, aes(x = Mean)) + 
+  geom_histogram(col = "white") +
+  labs(x = "Mean opioid prescription rate (per 100 individuals)", 
+       y = "Number of states") +
+  theme_minimal(base_size = 15)
+```
+
+### same graph, change the bins `geom_histogram(binwidth = 5)`
+ggplot(data = opi_data, aes(x = Mean)) + 
+
+  geom_histogram(col = "white", binwidth = 5) +
+  
+  labs(x = "Mean opioid prescription rate (per 100 individuals)", 
+  
+       y = "Number of states") +
+  
+  theme_minimal(base_size = 15)
+
+### same graph, change the bins `geom_histogram(binwidth = 5)`
+```{r hist-binwidth-5, fig.height = 4, fig.width = 8, echo=FALSE}
+ggplot(data = opi_data, aes(x = Mean)) + 
+  geom_histogram(col = "white", binwidth = 5) +
+  labs(x = "Mean opioid prescription rate (per 100 individuals)", 
+       y = "Number of states") +
+  theme_minimal(base_size = 15)
+```
+
+### change the bins again `geom_histogram(binwidth = 10)`
+ggplot(data = opi_data, aes(x = Mean)) + 
+  
+  geom_histogram(col = "white", binwidth = 10) +
+  
+  labs(x = "Mean opioid prescription rate (per 100 individuals)", 
+  
+       y = "Number of states") +
+  
+  theme_minimal(base_size = 15)
+
+### change the bins again `geom_histogram(binwidth = 10)`
+```{r hist-binwidth-10, fig.height = 4, fig.width = 8, echo=FALSE}
+ggplot(data = opi_data, aes(x = Mean)) + 
+  geom_histogram(col = "white", binwidth = 10) +
+  labs(x = "Mean opioid prescription rate (per 100 individuals)", 
+       y = "Number of states") +
+  theme_minimal(base_size = 15)
+```
+
+## Describing your distribution: shape, center, spread?
+
+### Shape, Center, Spread
+- When we examine histograms, we can make comments on a distribution's:
+    - **Shape**: Is the distribution **symmetric** or **skewed** to the left or right?
+    - **Center**: Does the histogram have one peak (unimodal), or two (bimodal) or more?
+    - **Spread**: How spread out are the values? What is the range of the data?
+    - **Outliers**: Do any of the measurements fall outside of the range of most of the data points?
+   
+### Is this skewed left or skewed right? 
+```{r twitter-not-normal, echo=F, out.width = "50%"}
+knitr::include_graphics("Ch01_Not-normal.png")
+```
+
+### Center - one hump or two?
+
+```{r modal, echo=F, out.width = "60%"}
+knitr::include_graphics("unibi.png")
+```
+
+### Outlier
+
+```{r outs, echo=F, out.width = "50%"}
+knitr::include_graphics("outlier.png")
+```
+
+### R Recap: Code we used today for visualization
+1. 'ggplot' to set up a canvas for graphics
+2. `geom_bar(stat = "identity")` to make a bar chart when you specify the y variable
+3. `geom_histogram()` to make a histogram for which ggplot needs to calculate the count
+4. `fct_reorder(var1, var2)` to reorder a categorical variable (`var1`) by a numeric variable (`var2`)
+    - from the `forcats` package
+    
+### We only skimmed the surface!
+
+- Here is some extra material for those of you who love data visualization. This material won't be tested.
+    - [RStudio ggplot2 cheatsheet](https://www.rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf)
+    - [Kieran Healy's data visualization book](https://www.amazon.com/gp/product/0691181624/ref=as_li_tl?ie=UTF8&tag=kieranhealysw-20&camp=1789&creative=9325&linkCode=as2&creativeASIN=0691181624&linkId=16d53b3cc1ec3bc3aac60b27c29b92e8)
+
+### Parting Humor
+```{r, out.width="70%", fig.align='center', echo=FALSE}
+knitr::include_graphics("up-all-night.png")
+```
+
+- from *[Eric Tanoye Song Lyrics in Chart Form](https://www.amazon.com/dp/0997067802/?ref=idea_lv_dp_vv_d&pldnSite=1)*
