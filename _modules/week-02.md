@@ -8,7 +8,7 @@ days:
       "**Homework 2**{: .label .label-hw} [Released - on Datahub](https://publichealth.datahub.berkeley.edu/hub/user-redirect/git-pull?repo=https%3A%2F%2Fgithub.com%2Fph142-ucb%2Fph142-fa26&urlpath=rstudio%2F&branch=main)":
   - date: 2026-09-02
     events:
-      "**Lecture 4**{: .label .label-lec} Visualizing distributions for one variable, numerically summarizing spread and central tendency":
+      "**Lecture 4**{: .label .label-lec} [Visualizing distributions for one variable, numerically summarizing spread and central tendency](https://ph142-ucb.github.io/fa26/src/lec/L04.pdf) [(Student code Rmd)](https://ph142-ucb.github.io/fa26/src/lec/L04_student_code.Rmd) [(Kozhimannil_Ex_Cesarean.xlsx)](https://ph142-ucb.github.io/fa26/src/lec/Kozhimannil_Ex_Cesarean.xlsx)":
         "Ch. 1 & 2"
   - date: 2026-09-04
     events:
