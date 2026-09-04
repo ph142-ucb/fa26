@@ -38,6 +38,8 @@ questions from Part I.
 
 ## Instructions:
 
+[Download the Data Project Part I assignment (PDF)](https://ph142-ucb.github.io/fa26/src/dp/ph142_fa26_project_part1.pdf){: .btn .btn-blue }
+
 Your task for this project is to find data that is related to health, public health, biology, sociology, demography, justice, or another topic affiliated with public health or biology. The data should have human beings as the unit of analysis, or be based on aggregates of human data (for example rates of mortality) for multiple units of analysis (multiple hospitals/clinics etc).  
 
 These data could be a preexisting data set that has been made publicly available on the Internet, data you have access to (and permission to use) from your lab or internship, or, less frequently, something you create (with appropriate permission) from a hard copy. You will then import your data into R and use it to demonstrate concepts covered in class.
