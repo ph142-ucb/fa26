@@ -15,5 +15,5 @@ days:
     events:
       "**Lecture 13**{: .label .label-lec} General rules of probability continued":
         "Ch. 10"
-      "**Data Project**{: .label .label-proj} Part I Due":
+      "**Data Project**{: .label .label-proj} Part I Due [(Rmd template)](https://ph142-ucb.github.io/fa26/src/dp/ph142_fa26_project_part1.Rmd)":
 ---
