@@ -12,7 +12,7 @@ days:
         "Ch. 1 & 2"
   - date: 2026-09-04
     events:
-      "**Lecture 5**{: .label .label-lec} Exploring relationships between two variables":
+      "**Lecture 5**{: .label .label-lec} [Exploring relationships between two variables](https://ph142-ucb.github.io/fa26/src/lec/l05-relationships-between-two-variables.pdf) [(Student code Rmd)](https://ph142-ucb.github.io/fa26/src/lec/l05-student-code.Rmd) [(Ch03_Enzyme-data.csv)](https://ph142-ucb.github.io/fa26/src/lec/Ch03_Enzyme-data.csv) [(Ch03_Manatee-deaths.csv)](https://ph142-ucb.github.io/fa26/src/lec/Ch03_Manatee-deaths.csv) [(Life-expectancy-by-state-long.csv)](https://ph142-ucb.github.io/fa26/src/lec/Life-expectancy-by-state-long.csv) [(nhanes.csv)](https://ph142-ucb.github.io/fa26/src/lec/nhanes.csv)":
         "Ch. 3"
       "**Quiz 1**{: .label .label-quiz} Due at 11:59 PM":
   - date: 2026-09-05

@@ -1,0 +1,430 @@
+---
+title: "Lecture 05:  Relationships between two variables"
+---
+
+<!-- libraries -->
+```{r,include=FALSE,purl=FALSE}
+library(knitr) # for include_graphics() 
+library(readr)
+library(ggplot2)
+library(dplyr)
+```
+
+### Life expectancy for White men in California
+
+Make a scatter plot of the life expectancy for White men in California
+over time.
+
+Since the dataset contains 39 states across two genders and two races, first use
+a function to subset the data to contain only White men in California.
+
+### `dplyr`'s `filter()` to select a subset of rows
+
+```{r wh-cali-dataset, echo=FALSE, warning=FALSE, message=FALSE}
+library(dplyr)
+le_data <- read_csv("Life-expectancy-by-state-long.csv")
+```
+
+```{r}
+wm_cali <- le_data %>% filter(state == "California", 
+                              sex == "Male", 
+                              race == "white")
+
+#this is equivalent:
+wm_cali <- le_data %>% filter(state == "California" & sex == "Male" & race == "white")
+```
+
+
+### Here we use `geom_point` to make a graph with dots
+```{r ggplot-change-titles, out.width = "60%", fig.align='center', echo=FALSE}
+ggplot(data = wm_cali, aes(x = year, y = LE)) + geom_point() +
+  labs(title = "Life expectancy in white men in California, 1969-2013",
+       y = "Life expectancy", 
+       x = "Year", 
+       caption = "Data from Riddell et al. (2018)")
+```
+
+### `geom_line()` to make a line plot
+```{r ggplot-geom_line, out.width = "60%", fig.align='center', echo=FALSE}
+ggplot(data = wm_cali, aes(x = year, y = LE)) + geom_line(col = "blue") +
+  labs(title = "Life expectancy in white males in California, 1969-2013",
+       y = "Life expectancy", 
+       x = "Year", 
+       caption = "Data from Riddell et al. (2018)")
+```
+
+   
+## Relationships between two quantitative variables
+
+### Scatterplot Syntax in R
+  
+ **name of plot** <- ggplot(data = **dataset**, aes(x = **xvariable**, y = **yvariable**)) + 
+ 
+  geom_point(na.rm=TRUE) + theme_minimal(base_size = 15)+
+ 
+  labs(x = "**xlabel**", 
+       y = "**ylabel**",
+       title = "**Title**")
+       
+### Bi-directional relationships ex: systolic and diastolic BP
+
+Read in NHANES dataset
+```{r importnhanes, echo=T, message=F}
+nhanes_dataNA <- read_csv("nhanes.csv")
+nhanes_data<-nhanes_dataNA[rowSums(is.na(nhanes_dataNA[ , 15:18])) == 0, ]
+names(nhanes_data)
+```
+
+### Bi-directional relationships ex: systolic and diastolic BP
+```{r plotnhanes,  message=F, out.width="80%"}
+nhanes_scatter <- ggplot(data = nhanes_data, aes(x = bpxsy1, y = bpxdi1)) + 
+  geom_point(na.rm=TRUE) + theme_minimal(base_size = 15)+
+  labs(x = "Systolic BP", 
+       y = "Diastolic BP",
+       title = "NHANES Data")
+```
+
+### Bi-directional relationships ex: systolic and diastolic BP
+```{r plotnhanes2, echo=FALSE}
+nhanes_scatter
+
+```
+
+
+### Bi-directional relationships ex: systolic and diastolic BP
+We can add a third variable to our graph by coloring the dots
+
+```{r plotnhanes3,  message=F, out.width="80%"}
+nhanes_scatter <- ggplot(data = nhanes_data, aes(x = bpxsy1, y = bpxdi1)) + 
+  geom_point(aes(col=gender),na.rm=TRUE) + theme_minimal(base_size = 15)+
+  labs(x = "Systolic BP", 
+       y = "Diastolic BP",
+       title = "NHANES Data")
+```
+
+### Bi-directional relationships ex: systolic and diastolic BP
+```{r plotnhanes4, echo=FALSE}
+nhanes_scatter
+
+```
+
+### Association with a plausible direction
+Manatee data set from your textbook:
+```{r import.mana.data, message=FALSE}
+mana_data <- read_csv("Ch03_Manatee-deaths.csv")
+head(mana_data)
+```
+
+### Power boats and Manatees
+```{r scatter-plot-mana}
+mana_scatter <- ggplot(data = mana_data, aes(x = powerboats, y = deaths)) + 
+  geom_point() + theme_minimal(base_size = 15)
+```
+
+### Power boats and Manatees
+```{r mana2, out.width="80%", echo=FALSE}
+mana_scatter
+```
+
+
+### Power boats and Manatees
+What if we layer in a continuous third variable?
+
+```{r scatter-plot-mana3}
+mana_scatter <- ggplot(data = mana_data, aes(x = powerboats, y = deaths)) + 
+  geom_point(aes(col=year)) + theme_minimal(base_size = 15)
+```
+
+### Power boats and Manatees
+```{r scatter-plot-mana4, out.width="80%", echo=FALSE}
+mana_scatter
+```
+
+
+
+### Lean body mass and metabolic rate: DATA
+
+```{r energy2}
+# Note: you won't be tested on writing code using tibble::tribble()
+# Do be able to look at the code and recognize that it is creating a data set
+
+weight_data <- tibble::tribble(
+  ~subject, ~gender, ~mass, ~rate,
+  1, "M", 62.0, 1792,
+  2, "M", 62.9, 1666,
+  3, "F", 36.1, 995, 
+  4, "F", 54.6, 1425, 
+  5, "F", 48.5, 1396, 
+  6, "F", 42.0, 1418, 
+  7, "M", 47.4, 1362, 
+  8, "F", 50.6, 1502,
+  9, "F", 42.0, 1256, 
+  10, "M", 48.7, 1614,
+  11, "F", 40.3, 1189,
+  12, "F", 33.1, 913,
+  13, "M", 51.9, 1460,
+  14, "F", 42.4, 1124,
+  15, "F", 34.5, 1052,
+  16, "F", 51.1, 1347,
+  17, "F", 41.2, 1204,
+  18, "M", 51.9, 1867,
+  19, "M", 46.9, 1439
+)
+```
+
+### Lean body mass and metabolic rate:  Analysis
+
+Exploratory data analysis using scatter plots
+```{r scatter-energy-data, out.width="80%"}
+weight_scatter <- ggplot(weight_data, aes(x = mass, y = rate)) +
+  geom_point() + 
+  theme_minimal(base_size = 15)
+```
+
+### Lean body mass and metabolic rate:  Analysis
+```{r energy3, out.width="80%", echo=FALSE}
+weight_scatter
+```
+
+### Analysis: Colour the points by gender
+```{r scatter-energy-data-col, out.width="80%"}
+weight_scatter <- ggplot(weight_data, aes(x = mass, y = rate)) +
+  geom_point(aes(col=gender)) + 
+  theme_minimal(base_size = 15)
+```
+
+### Analysis: Colour the points by gender
+```{r energy5, out.width="80%", echo=FALSE}
+weight_scatter
+```
+
+### Analysis: Create separate plots for men and women
+```{r facetted-scatter-energy-data}
+weight_scatter <- ggplot(weight_data, aes(x = mass, y = rate)) +
+  geom_point(aes(col=gender)) + 
+  theme_minimal(base_size = 15)+
+  facet_wrap(~ gender)
+```
+
+### Analysis: Create separate plots for men and women
+```{r facetted-scatter-energy-data2, out.width="80%"}
+weight_scatter
+```
+
+
+
+### Pearson's correlation
+
+```{r, echo=F, out.width="50%", fig.height=5, fig.align='center'}
+# Note: you do not need to understand any of the code in this chunk 
+# just focus on the description of what I am trying to show you in lecture.
+
+x <- 1:20
+y <- 2 * x + 3 + rnorm(20, 0, 9)
+corr_data <- data.frame(x, y)
+
+corr.plot <- ggplot(corr_data, aes(x,y)) + 
+  geom_text(aes(x = 5, y = 35), label = 1, size = 60, col = "cadetblue1") +
+  geom_text(aes(x = 15, y = 35), label = 2, size = 60, col = "cadetblue1") +
+  geom_text(aes(x = 5, y = 10), label = 3, size = 60, col = "cadetblue1") +
+  geom_text(aes(x = 15, y = 10), label = 4, size = 60, col = "cadetblue1") +
+  geom_point() + 
+  geom_hline(yintercept = mean(y), lty = 2) +
+  geom_vline(xintercept = mean(x), lty = 2) + 
+  theme_minimal(base_size = 15) 
+
+corr.plot
+```
+
+### Corellation and direction
+
+```{r corr.plots, out.width="95%", echo=F, comment=NA, message=FALSE}
+# Note: you do not need to understand any of the code in this chunk 
+library(MASS)
+library(patchwork) 
+set.seed(123)
+
+cor_100 <- as.data.frame(mvrnorm(100, mu = c(0,0), 
+                     Sigma = matrix(c(1 ,1, 1, 1), ncol = 2), 
+                     empirical = TRUE))
+
+cor_70 <- as.data.frame(mvrnorm(100, mu = c(0,0), 
+                     Sigma = matrix(c(1,0.7,0.7,1), ncol = 2), 
+                     empirical = TRUE))
+
+cor_30 <- as.data.frame(mvrnorm(100, mu = c(0,0), 
+                     Sigma = matrix(c(1,0.3,0.3,1), ncol = 2), 
+                     empirical = TRUE))
+
+cor_n10 <- as.data.frame(mvrnorm(100, mu = c(0,0), 
+                     Sigma = matrix(c(1,-0.1,-0.1,1), ncol = 2), 
+                     empirical = TRUE))
+
+cor_n40 <- as.data.frame(mvrnorm(100, mu = c(0,0), 
+                     Sigma = matrix(c(1,-0.4,-0.4,1), ncol = 2), 
+                     empirical = TRUE))
+
+cor_n100 <- as.data.frame(mvrnorm(100, mu = c(0,0), 
+                     Sigma = matrix(c(1,-1,-1,1), ncol = 2), 
+                     empirical = TRUE))
+
+cor_100_plot <- ggplot(cor_100, aes(V1, V2)) + geom_point() + 
+  labs(title = "Correlation = 1", y = "y", x = "x") + 
+  geom_hline(yintercept = mean(cor_100$V2), lty = 2) + 
+  geom_vline(xintercept = mean(cor_100$V1), lty = 2) + 
+  theme_minimal(base_size = 15) 
+
+cor_70_plot <- ggplot(cor_70, aes(V1, V2)) + geom_point() + 
+  labs(title = "Correlation = 0.7", y = "y", x = "x") + 
+  geom_hline(yintercept = mean(cor_70$V2), lty = 2) + 
+  geom_vline(xintercept = mean(cor_70$V1), lty = 2) + 
+  theme_minimal(base_size = 15)
+
+cor_30_plot <- ggplot(cor_30, aes(V1, V2)) + geom_point() + 
+  labs(title = "Correlation = 0.3", y = "y", x = "x") + 
+  geom_hline(yintercept = mean(cor_30$V2), lty = 2) + 
+  geom_vline(xintercept = mean(cor_30$V1), lty = 2) + 
+  theme_minimal(base_size = 15)
+
+cor_n10_plot <- ggplot(cor_n10, aes(V1, V2)) + geom_point() + 
+  labs(title = "Correlation = -0.1", y = "y", x = "x") +
+  geom_hline(yintercept = mean(cor_n10$V2), lty = 2) + 
+  geom_vline(xintercept = mean(cor_n10$V1), lty = 2) + 
+  theme_minimal(base_size = 15)
+
+cor_n40_plot <- ggplot(cor_n40, aes(V1, V2)) + geom_point() + 
+  labs(title = "Correlation = -0.4", y = "y", x = "x") +
+  geom_hline(yintercept = mean(cor_n40$V2), lty = 2) + 
+  geom_vline(xintercept = mean(cor_n40$V1), lty = 2) + 
+  theme_minimal(base_size = 15)
+
+cor_n100_plot <- ggplot(cor_n100, aes(V1, V2)) + geom_point() + 
+  labs(title = "Correlation = -1", y = "y", x = "x") +
+  geom_hline(yintercept = mean(cor_n100$V2), lty = 2) + 
+  geom_vline(xintercept = mean(cor_n100$V1), lty = 2) + 
+  theme_minimal(base_size = 15)
+
+cor_100_plot + cor_70_plot + cor_30_plot + 
+cor_n10_plot + cor_n40_plot + cor_n100_plot 
+```
+
+
+### Syntax: Pearson's correlation using `cor()`
+
+**correlation coefficient** <- **dataset** %>% 
+
+  summarize(*newvar* = cor(**xvar**, **yvar**))
+
+### Syntax: Pearson's correlation using `cor()`
+Remember the manatee plot and the weight plot:
+
+```{r show-scatters, fig.width = 9, fig.height=4, fig.align="centre", echo=F, message=F}
+mana_scatter + weight_scatter + plot_layout() # you don't need to know the plot_layout() function
+```
+
+### Syntax: Pearson's correlation using `cor()`
+Now, calculate the correlations between X and Y for manatees:
+```{r calc-corr}
+mana_cor <- mana_data %>% 
+  summarize(corr_mana = cor(powerboats, deaths))
+mana_cor
+```
+
+### Syntax: Pearson's correlation using `cor()`
+And for the weight data:
+```{r calc-corr2}
+weight_cor <- weight_data %>% 
+  summarize(corr_weight = cor(mass, rate))
+weight_cor
+```
+
+### Syntax: Pearson's correlation using `cor()`
+What about our blood pressure data from NHANES?
+
+```{r bp, echo=FALSE}
+nhanes_scatter 
+```
+
+### Syntax: Pearson's correlation using `cor()`
+```{r bp2}
+bp_cor <- nhanes_data %>% 
+  summarize(corrbp = cor(bpxsy1, bpxdi1))
+bp_cor
+```
+
+### Properties of the correlation coefficient
+The correlation coefficient is not resistant to outliers, notice what happens when we add two outliers (in red) to the weight_data and recalculate correlation
+
+```{r add-outliers-to-dataset, echo = F, message=F}
+#students, you don't need to know the code in this chunk
+weight_data_outliers <- tibble::tribble(
+  ~subject, ~gender, ~mass, ~rate,
+  20, "M", 62.0, 1213,
+  21, "M", 55.9, 1150
+  )
+
+weight_data_and_out <- dplyr::full_join(weight_data, weight_data_outliers)
+```
+
+```{r plot-with-outliers-and-calc-correlation, out.width="95%", echo = F, message=F, warning=FALSE}
+library(glue) #students, don't need to understand the use of glue here or below to make the label.
+
+weight_cor_out <- weight_data_and_out %>% summarize(corr_out = cor(mass, rate))
+
+weight_scatter_out <- ggplot(weight_data_and_out, aes(x = mass, y = rate)) + 
+  geom_point(aes(col = subject >= 20)) +
+  scale_color_manual(values = c("black", "red"), guide = FALSE) +
+  theme_minimal(base_size = 15) +
+  geom_text(x = 37, y = 1750, 
+            label = glue("r = {round(weight_cor_out$corr_out, 2)}"), 
+            check_overlap = T)
+
+weight_scatter <- weight_scatter + 
+  geom_text(x = 37, y = 1750, 
+            label = glue("r = {round(weight_cor$corr_weight, 2)}"), 
+            check_overlap = T)
+
+weight_scatter + weight_scatter_out + plot_layout()
+```
+
+
+### Properties of the correlation coefficient
+
+- Correlations for average measures is typically stronger than correlations for 
+individual data
+
+```{r build-breakup-dataset, echo=F, out.width="95%", fig.align=T, fig.height=5}
+# Example data from 3.8 in Baldi and Moore (page 81 of 4th ed)
+# students don't need to know this code, just pay attention to what I say about the plot
+# and the correlation of mean scores vs. individual scores
+
+distress_score <- c(rnorm(26, mean = 3.3, sd = 0.25), 
+                    rnorm(26, mean = 3.1, sd = 0.25),
+                    rnorm(26, mean = 2.9, sd = 0.25),
+                    rnorm(26, mean = 2.6, sd = 0.25))
+
+ID <- rep(1:26, 4)
+
+time_since_breakup <- c(rep(0, 26), rep(2, 26), rep(6, 26), rep(10, 26))
+
+breakup_data <- data.frame(ID, time_since_breakup, distress_score)
+
+corr_raw <- breakup_data %>% summarize(corr = cor(time_since_breakup, distress_score))
+
+mean_scores <- breakup_data %>% 
+  group_by(time_since_breakup) %>%
+  summarize(mean_distress_per_week = mean(distress_score))
+
+corr_means <- mean_scores %>% 
+  summarize(corr_with_means = cor(time_since_breakup, mean_distress_per_week))
+
+ggplot(breakup_data, aes(x = time_since_breakup, y = distress_score)) + 
+  geom_point(pch = 4, aes(col = "individuals")) +
+  geom_point(data = mean_scores, aes(y = mean_distress_per_week, col = "mean"), size = 3) +
+  theme_minimal(base_size = 15) +
+  theme(legend.title = element_blank()) +
+  geom_text(x = 8, y = 3.5, label = glue("Corr. of raw data = {round(corr_raw$corr, 2)}"), check_overlap = T) +
+  geom_text(x = 8, y = 3.25, label = glue("Corr. of means = {round(corr_means$corr_with_means, 2)}"), check_overlap = T) +
+  labs(x = "Time since breakup", y = "Distress score")
+```
+
