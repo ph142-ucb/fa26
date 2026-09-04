@@ -39,6 +39,7 @@ questions from Part I.
 ## Instructions:
 
 [Download the Data Project Part I assignment (PDF)](https://ph142-ucb.github.io/fa26/src/dp/ph142_fa26_project_part1.pdf){: .btn .btn-blue }
+[Download the Data Project Part I template (Rmd)](https://ph142-ucb.github.io/fa26/src/dp/ph142_fa26_project_part1.Rmd){: .btn .btn-blue }
 
 Your task for this project is to find data that is related to health, public health, biology, sociology, demography, justice, or another topic affiliated with public health or biology. The data should have human beings as the unit of analysis, or be based on aggregates of human data (for example rates of mortality) for multiple units of analysis (multiple hospitals/clinics etc).  
 
