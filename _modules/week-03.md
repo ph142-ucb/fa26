@@ -4,8 +4,8 @@ days:
   - date: 2026-09-07
     events:
       "**No Lecture**{: .label .label-purple} **Holiday**":
-      "**Lab 3**{: .label .label-lab} Relationship between global cesarean rates and GDP — Released":
-      "**Homework 3**{: .label .label-hw} Released":
+      "**Lab 3**{: .label .label-lab} [Relationship between global cesarean rates and GDP — Released on Datahub](https://publichealth.datahub.berkeley.edu/hub/user-redirect/git-pull?repo=https%3A%2F%2Fgithub.com%2Fph142-ucb%2Fph142-fa26&urlpath=rstudio%2F&branch=main)":
+      "**Homework 3**{: .label .label-hw} [Released - on Datahub](https://publichealth.datahub.berkeley.edu/hub/user-redirect/git-pull?repo=https%3A%2F%2Fgithub.com%2Fph142-ucb%2Fph142-fa26&urlpath=rstudio%2F&branch=main)":
   - date: 2026-09-09
     events:
       "**Lecture 6**{: .label .label-lec} Introduction to Regression":
