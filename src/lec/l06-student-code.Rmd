@@ -1,0 +1,473 @@
+---
+title: 'L06: Intro to Linear Regression:  code from lecture '
+output: pdf_document
+---
+
+<!-- libraries -->
+```{r,include=FALSE,purl=FALSE}
+library(knitr) # for include_graphics() 
+library(dplyr)
+```
+
+## Fitting a linear model in R
+
+Code template:
+
+```{r lm-template, eval=F}
+lm(formula = y ~ x, data = your_dataset)
+```
+
+- `lm()` is the function for a linear model.
+- The first argument that `lm()` wants is a formula `y ~ x`.
+    - `y` is the response variable from your dataset
+    - `x` is the explanatory variable
+    - be careful with the order of x and y! It is opposite from the default order in ggplot 
+    
+    ggplot(data,aes(x=your_x, y=your_y))
+    
+- The second argument sent to `lm()` is the data set.
+    - the default order of declaring the data as the second argument in lm() is different from the ggplot2 and dplyr functions
+
+
+
+### Why the package broom?
+
+We will pull in a new package here:
+library(broom) 
+and apply the tidy() function as follows:
+tidy(your_lm) 
+
+* `broom` has functions that make the output from the linear model look clean 
+* `tidy` is a function from the `broom` package that tidies up the output
+
+
+### Example: Manatee deaths and powerboat purchases 
+
+Let's apply the `lm()` function. Recall the manatee example from our last lecture that 
+examined the relationship between the number of registered `powerboats` and the 
+number of manatee `deaths` in Florida between 1977 and 2016.
+
+```{r load-mana-data, echo=F, message=FALSE, warning=FALSE}
+library(readr)
+mana_data <- read_csv("Ch03_Manatee-deaths.csv")
+```
+
+Recall that the relationship appeared linear when we examined the scatter plot:
+
+```{r scatter-plot-mana, out.width="80%", message=FALSE}
+library(ggplot2)
+mana_death1<-ggplot(mana_data, aes(x = powerboats, y = deaths)) +
+  geom_point() +
+  theme_minimal(base_size = 15)
+```
+
+### Manatee deaths and powerboat purchases 
+```{r mana_plot1, out.width="80%"}
+mana_death1
+```
+
+### lm() of manatee deaths and powerboat purchases
+Calculate the line of best fit: 
+```{r run-linear-model-mana, out.width="80%"}
+mana_lm <- lm(deaths ~ powerboats, mana_data)
+library(broom) 
+tidy(mana_lm) 
+```
+
+Only pay attention to the term and estimate columns for now.
+
+### lm() of manatee deaths and powerboat purchases
+
+**Interpret the model output**
+```{r manout, out.width="80%", echo=F}
+tidy(mana_lm)
+```
+- Intercept: The predicted number of deaths if there were no powerboats. But the
+prediction is negative. Why?
+
+- Powerboats: This is the slope. What does the estimated slope for powerboats mean?
+
+### Add the regression line to the scatter plot using `geom_abline()`
+We add a statement to our ggplot
+  geom_abline(intercept = your_intercept, slope = your_slope)
+  
+  so for our manatee data
+  geom_abline(intercept = -46.7520, slope = 0.1358)
+
+Note:  by default, ggplot only shows the ploting region that corresponds to the range of data
+
+### Add the regression line to the scatter plot using `geom_abline()`
+
+```{r scatter-with-line-of-best-fit, echo=FALSE}
+  #students, know how to use geom_abline() to add a line to scatterplot
+  #students do not need to know the coord_fixed command.
+default_zoom_plot <- ggplot(mana_data, aes(x = powerboats, y = deaths)) +
+  geom_point() + 
+  labs(x = "Powerboats registered (X 1000)",
+       y = "Manatee deaths") +
+  geom_abline(intercept = -46.7520, slope = 0.1358) + 
+  coord_fixed(ratio = 5) +
+  theme_minimal(base_size = 15)
+```
+
+```{r zoom-out-plot, out.width="90%", echo = F}
+zoom_out_plot <- ggplot(mana_data, aes(x = powerboats, y = deaths)) +
+  geom_hline(yintercept = 0, col = "forest green") + 
+  geom_vline(xintercept = 0, col = "forest green") +
+  geom_point() + 
+  labs(x = "Powerboats registered (X 1000)",
+       y = "Manatee deaths") +
+  geom_abline(intercept = -46.7520, slope = 0.1358) + 
+  scale_x_continuous(limits = c(0, 1050)) + 
+  scale_y_continuous(limits = c(-50, 110)) + 
+  coord_fixed(ratio = 6) +
+  theme_minimal(base_size = 15)
+  #students, know how to use geom_abline() to add a line to scatterplot
+  #students do not need to know the coord_fixed command.
+
+library(patchwork) #don't need to know this package
+both_plots <- default_zoom_plot + zoom_out_plot + plot_layout() #don't need to know this code
+both_plots
+```
+
+
+### Interpreting the slope
+
+```{r, out.width="90%", echo=F}
+tidy(mana_lm)
+```
+
+- Powerboats: This is the slope. What does the estimated slope for powerboats mean?
+
+- A one unit change in the number of powerboats registered (X 1,000) is 
+associated with an increase of manatee deaths of 0.1358. That is, an increase in 
+the number of powerboats registered by 1,000 is association with 0.1358 more 
+manatee deaths.
+- If powerboat registered increased by 100,000 how many more manatee deaths are
+expected?
+
+### Change units
+```{r, out.width="80%", message=F}
+mana_data_units<-mana_data%>%mutate(actual_powerboats = powerboats * 1000)
+mana_lm_units <- lm(deaths ~ actual_powerboats, mana_data_units)
+tidy(mana_lm_units)
+```
+
+What happened to the slope?  To the intercept?
+
+### Getting the R-squared from your model
+
+When we run a linear model, the r-squared is also calculated. Here is how to see the r-squared for the manatee data:
+
+```{r, glance-at-model}
+library(broom)
+glance(mana_lm)
+```
+
+Focus on:
+
+- Column called `r.squared` values only.
+- Interpretation of r-squared: The fraction of the variation in the values of y
+that is explained by the line of best fit.
+
+
+### Correlation vs R Squared
+```{r calc-corr, warning=FALSE, message=FALSE}
+library(dplyr)
+mana_cor <- mana_data %>% 
+  summarize(corr_mana = cor(powerboats, deaths))
+mana_cor
+```
+
+### Correlation vs R Squared
+```{r calc-corr2, warning=FALSE, message=FALSE}
+glance(mana_lm)%>% pull(r.squared)
+#square the correlation coefficient
+.9448054^2
+```
+
+
+
+
+## Transforming data
+
+### Transforming data
+- Sometimes, the data is transformed to another scale so that the relationship
+between the transformed $x$ and $y$ is linear
+- Table 3.4 in B&M provides data on the mean number of seeds produced in a year 
+by several common tree species and the mean weight (in milligrams) of the seeds 
+produced. 
+
+```{r make-seed-dataset, echo=FALSE, warning=FALSE}
+library(tibble)
+seed_data <- tribble(~ species, ~ seed_count, ~ seed_weight,
+                       "Paper birch", 27239, 0.6,
+                       "Yellow birch", 12158, 1.6,
+                       "White spruce", 7202, 2.0,
+                       "Engelman spruce", 3671, 3.3, 
+                       "Red spruce", 5051, 3.4, 
+                       "Tulip tree", 13509, 9.1, 
+                       "Ponderosa pine", 2667, 37.7, 
+                       "White fir", 5196, 40.0, 
+                       "Sugar maple", 1751, 48.0, 
+                       "Sugar pine", 1159, 216.0, 
+                       "American beech", 463, 247, 
+                       "American beech", 1892, 247,
+                       "Black oak", 93, 1851, 
+                       "Scarlet oak", 525, 1930, 
+                       "Red oak", 411, 2475, 
+                       "Red oak", 253, 2475,
+                       "Pignut hickory", 40, 3423, 
+                       "White oak", 184, 3669, 
+                       "Chestnut oak", 107, 4535)
+
+```
+
+### Scatter plot of `seed_weight` vs. `seed_count`
+```{r, out.width="70%", echo=FALSE}
+ggplot(seed_data, aes(seed_count, seed_weight)) + 
+  geom_point() +
+  theme_minimal(base_size = 15)
+```
+
+- `seed_count` and `seed_weight` both vary widely
+- Their relationship is not linear
+
+### Investigate the relationship between their logged variables
+
+- Add transformed variables to the dataset using `mutate()`. 
+- We add both log base $e$ and log base 10 variables for illustration
+
+```{r calc-logged-vars, message=F, warning=F, out.width="80%"}
+library(dplyr)
+seed_data <- seed_data %>% mutate(log_seed_count = log(seed_count), 
+                                  log_seed_weight = log(seed_weight),
+                                  log_b10_count = log(seed_count, 10),
+                                  log_b10_weight = log(seed_weight, 10)) 
+```
+
+### Plot transformed data (log base e)
+
+```{r scatter-logged, out.width="50%", echo=FALSE}
+ggplot(seed_data, aes(log_seed_count, log_seed_weight)) + 
+  geom_point() +
+  labs(x = "Log of seed count", y = "Log of seed weight", 
+       title = "Using the natural log (base e)") +
+  theme_minimal(base_size = 15)
+```
+
+### Plot transformed data (log base 10)
+
+```{r scatter-log-base10, out.width="50%", echo=FALSE}
+ggplot(seed_data, aes(log_b10_count, log_b10_weight)) + 
+  geom_point() +
+  labs(x = "Log of seed count", y = "Log of seed weight", 
+       title = "Using log base 10") +
+  theme_minimal(base_size = 15)
+```
+
+- You can use either base 10 or base $e$ for class.
+- The calculations using base $e$ are easier
+- If you are calculating in a different program or on a calculator make sure you know what base is being used!
+
+### `lm()` on the log (base e) variables
+
+```{r run-linear-model-seed}
+seed_mod <- lm(log_seed_weight ~ log_seed_count, data = seed_data)
+tidy(seed_mod)
+glance(seed_mod) %>% pull(r.squared)
+```
+
+- Interpret the intercept:
+- Interpret the slope: 
+
+### `lm()` on the log (base 10) variables
+
+```{r run-linear-model-seed-b10}
+seed_mod_b10 <- lm(log_b10_weight ~ log_b10_count, data = seed_data)
+tidy(seed_mod_b10)
+glance(seed_mod_b10) %>% pull(r.squared)
+```
+
+- What is different from the log base $e$ output?
+
+
+## How do outliers affect the line of best fit?
+
+### How do outliers affect the line of best fit?
+
+To study this, we use data from the Organization for Economic Co-operation and 
+Development (OECD). This dataset was downloaded from http://dx.doi.org/10.1787/888932526084 
+and contains information on the health expenditure per capita and the GDP per
+capita for 40 countries. 
+
+```{r read-spending-data, warning=FALSE}
+library(readxl)
+
+spending_dat <- read_xlsx("Ch04_Country-healthcare-spending.xlsx", 
+                          sheet = 2,
+                          range = "A7:D47")
+```
+
+### Have a look
+
+Next, we want to examine the imported data to see if it is how we expect:
+```{r examine-spending-data, out.width="80%"}
+head(spending_dat)
+```
+
+### Rename() some variables to use a consistent naming style
+
+If the variable name has spaces, we must use back ticks when referring to it:
+
+```{r rename-variables-with-spaces}
+library(dplyr)
+spending_dat <- spending_dat %>% 
+  rename(country_code = Country.code,
+         health_expenditure = `Health expenditure per capita`, # back ticks
+         GDP = `GDP per capita`) # back ticks
+```
+
+### Examine the relationship
+
+Make a scatter plot of `health_expenditure` (our response variable) vs. each country's level of `GDP`:
+
+```{r plot-spending-data, message=FALSE, echo=FALSE, warning=FALSE, out.width="80%"}
+library(ggrepel) 
+#this library is used for adding labels to a scatter plot that don't overlap the data points
+ggplot(spending_dat, aes(x = GDP, y = health_expenditure)) + 
+  geom_point() +
+  geom_text_repel(aes(label = country_code)) +
+  theme_minimal(base_size = 15)
+```
+
+### Examine the relationship
+
+Is the relationship linear? Which countries are outliers? 
+
+Fit a linear model to these data 
+
+```{r fit-lm-and-plot}
+lm(health_expenditure ~ GDP, data = spending_dat)
+```
+
+### Examine the relationship
+Add the regression line to the graph:
+```{r plotgdp, out.width="80%"}
+GDP_withline<-ggplot(spending_dat, aes(x = GDP, y = health_expenditure)) + 
+  geom_point() +
+  geom_text_repel(aes(label = country_code)) + # this adds the country code as a label 
+  geom_abline(intercept = 44.65623, slope = 0.09399, lty = 2) +
+  theme_minimal(base_size = 15)
+```
+
+### Examine the relationship
+```{r showplotgdp, out.width="80%", echo=F}
+GDP_withline
+```
+
+### Examine the relationship without Luxembourg in the data
+
+Let's see whether removing Luxembourg changes the fit of the line. We can remove 
+Luxembourg using the `filter()` command from `dplyr`:
+
+```{r remove-lux-and-save-new-dataset}
+spending_dat_no_LUX <- spending_dat %>% filter(country_code != "LUX")
+
+lm(health_expenditure ~ GDP, data = spending_dat_no_LUX)
+```
+
+
+### Examine the relationship without Luxembourg in the data
+```{r noluxplot,out.width="80%"}
+GDP_nolux<-ggplot(spending_dat, aes(x = GDP, y = health_expenditure)) + geom_point() +
+  geom_text_repel(aes(label = country_code)) + 
+  geom_abline(intercept = 44.65623, slope = 0.09399, lty = 2) + 
+  geom_abline(intercept = -785.1044, slope = 0.1264, col = "red") +
+  theme_minimal(base_size = 15)
+```
+
+### Examine the relationship without Luxembourg in the data
+```{r showgdpnolux, echo=F, out.width="80%"}
+GDP_nolux
+```
+
+### Examine the relationship without USA in the data
+
+```{r remove-usa-and-save-new-dataset}
+spending_dat_no_USA <- spending_dat %>% filter(country_code != "USA")
+
+lm(health_expenditure ~ GDP, data = spending_dat_no_USA)
+```
+
+
+### Examine the relationship without USA in the data
+```{r nousnoluxplot, out.width="80%"}
+GDP_nousa<-ggplot(spending_dat, aes(x = GDP, y = health_expenditure)) + geom_point() +
+  geom_text_repel(aes(label = country_code)) + 
+  geom_abline(intercept = 44.65623, slope = 0.09399, lty = 2) + 
+  geom_abline(intercept = 152.26274, slope = 0.08714, col = "blue") +
+  theme_minimal(base_size = 15)
+```
+
+### Examine the relationship without USA in the data
+```{r shownousplot, out.width="80%", echo=F}
+GDP_nousa
+```
+
+### Examine the relationship without LUX or USA in the data
+
+Let's write the code together to remove both the USA and LUX and see how it 
+affects the fit:
+
+```{r remove-usa-lux}
+spending_dat_no_USA_LUX <- spending_dat %>% 
+  
+  filter(country_code != "USA" & country_code != "LUX")
+
+#alternatively, you could have written:
+spending_dat_no_USA_LUX <- spending_dat %>%
+  
+  filter(! country_code %in% c("USA", "LUX"))
+
+#pick the filter command that makes the most sense to you.
+```
+
+### Examine the relationship without LUX or USA in the data
+
+```{r modelnoluxnouse}
+lm(health_expenditure ~ GDP, data = spending_dat_no_USA_LUX)
+GDP_noluxnousa<-ggplot(spending_dat_no_USA_LUX, aes(x = GDP, y = health_expenditure)) + geom_point() +
+  geom_text_repel(aes(label = country_code)) + 
+  geom_abline(intercept = 44.65623, slope = 0.09399, lty = 2) + 
+  geom_abline(intercept = -592.6973, slope = 0.1166 , col = "green") +
+  theme_minimal(base_size = 15)
+```
+
+
+### Examine the relationship without LUX or USA in the data
+```{r shownoluxnouse, out.width="80%", echo=F}
+GDP_noluxnousa
+```
+
+
+
+## Counfounding 
+
+### Discussion of some examples from Baldi & Moore
+We can encode these differences in a causal diagram. Here is a simple one to demonstrate the concept:
+```{r dag, echo=F, fig.height=1.5, fig.width=3, warning=FALSE}
+#students, you don't need to know the dagitty package or understand this code
+library(dagitty)
+
+g <- dagitty('dag {
+    Music.Lessons [pos="0,1"]
+    High.grades [pos="2,1"]
+    Family.income [pos="1,0.5"]
+    
+    Music.Lessons -> High.grades 
+    Family.income -> Music.Lessons
+    Family.income -> High.grades
+}')
+plot(g)
+```
