@@ -1,0 +1,242 @@
+---
+title: 'L07:  Relationships between two categorical variables'
+output: pdf_document
+---
+
+```{r load-libraries, echo = F, message=F,warning=FALSE}
+library(tibble)
+library(ggplot2)
+library(dplyr)
+library(forcats)
+```
+
+## Visualizing categorical variables in R  
+   
+### Visualization in R
+
+First, we encode the data to read into R:
+
+```{r encode-table-into-dataframe, message=F}
+library(dplyr)
+# students, you don't need to know how to do this
+two_way_data <- tribble(~ smoking, ~ lung_cancer, ~ percent, ~number,
+                     "smoker", "lung cancer", 4.8, 12,
+                     "smoker", "no lung cancer", 95.2,238, 
+                     "non-smoker", "lung cancer", 0.9, 7,
+                     "non-smoker", "no lung cancer", 99.1, 743)
+```
+
+
+### Bar chart for the visualization of marginal distributions
+
+```{r visualize-bar, out.width="80%", echo=FALSE}
+ggplot(two_way_data, aes(x = smoking, y=number)) + 
+  geom_bar( stat = "identity")  +
+  labs(title = "Marginal Distribution of Smoking") + theme_minimal(base_size = 15)
+```
+
+
+
+### Dodged bar chart for the visualization of conditional distributions
+Syntax:
+
+ggplot(two_way_data, aes(x = smoking, y = percent)) + 
+
+  geom_bar(aes(**fill = lung_cance**r), stat = "identity", **position = "dodge"**)  +
+
+  labs(title = "Dodged bar chart") + theme_minimal(base_size = 15)
+
+
+### Dodged bar chart for the visualization of conditional distributions
+
+```{r visualize-conditional-bar-chart-dodged, out.width="80%", echo=F}
+ggplot(two_way_data, aes(x = smoking, y = percent)) + 
+  geom_bar(aes(fill = lung_cancer), stat = "identity", position = "dodge")  +
+  labs(title = "Dodged bar chart") + theme_minimal(base_size = 15)
+```
+
+### Stacked bar chart for the visualization of conditional distributions
+ggplot(two_way_data, aes(x = smoking, y = percent)) + 
+
+  geom_bar(aes(**fill = lung_cancer**), stat = "identity", **position = "stack"**) +
+
+  labs(title = "Stacked bar chart") + theme_minimal(base_size = 15)
+
+### Stacked bar chart for the visualization of conditional distributions
+```{r visualize-conditional-bar-chart-stacked, out.width = "80%", echo=FALSE}
+ggplot(two_way_data, aes(x = smoking, y = percent)) + 
+  geom_bar(aes(fill = lung_cancer), stat = "identity", position = "stack") +
+  labs(title = "Stacked bar chart") + theme_minimal(base_size = 15)
+```
+
+### Visualization of conditional distributions: three levels of response variable
+
+- Plots like the one above make less sense when there are only two levels of 
+both of the variables. This is because once you know the percent of lung cancer
+among smokers, you also know the percent of non-lung cancer among smokers.
+- Here is another example with 3 levels: Shoe support by gender (from ch. 5):
+
+|Group           | Men  | Women | Row total |
+|----------------|--------------|-----------|
+|Good support    | 94   | 137   | 231       |
+|Average support | 1348 | 581   | 1929      |
+|Poor support    | 30   | 1182  | 1212      |
+|Column total    | 1472 | 1900  | 3372      |
+
+- The question: How does the distribution of support of shoes worn vary between
+shoes made for men and women?
+
+
+### Visualization of conditional distributions: three levels of response variable
+
+Example using shoe support data from Baldi & Moore page 124 of Ed.4
+
+```{r encode-shoe-data, echo=FALSE}
+# students, you don't need to know how to do this
+shoe_data <- tribble(~ shoe_support, ~ gender, ~ percent,
+                       "good",    "men",   94/1472, 
+                       "average", "men",   1348/1472,
+                       "poor",    "men",   30/1472,
+                       "good",    "women", 137/1900,
+                       "average", "women", 581/1900,
+                       "poor",    "women", 1182/1900)
+shoe_data
+```
+
+### Visualization of conditional distributions: three levels of response variable
+
+ggplot(shoe_data, aes(x = gender, y = percent)) + 
+
+  geom_bar(stat = "identity", aes(**fill = shoe_support**), **position = "dodge"**) +
+
+  theme_minimal(base_size = 15)
+
+
+### Visualization of conditional distributions: three levels of response variable
+
+```{r shoe-dodged, out.width = "80%", echo=F}
+ggplot(shoe_data, aes(x = gender, y = percent)) + 
+  geom_bar(stat = "identity", aes(fill = shoe_support), position = "dodge") +
+  theme_minimal(base_size = 15)
+```
+
+### Visualization of conditional distributions: three levels of response variable
+
+ggplot(shoe_data, aes(x = gender, y = percent)) + 
+
+  geom_bar(stat = "identity", aes(**fill = shoe_support**), **position = "stack"**) +
+
+  theme_minimal(base_size = 15)
+
+
+### Visualization of conditional distributions: three levels of response variable
+
+```{r shoe-stacked, out.width = "80%", echo=F}
+ggplot(shoe_data, aes(x = gender, y = percent)) + 
+  geom_bar(stat = "identity", aes(fill = shoe_support), position = "stack") +
+  theme_minimal(base_size = 15)
+```
+
+What do we notice here about the ordering of the categories?
+
+### Visualization of conditional distributions: three levels of response variable
+
+Recall from last class we learned how to reorder factor variables that affect
+the look of the plot:
+
+
+shoe_data <- shoe_data %>% 
+  mutate(shoe_support = **fct_relevel**(shoe_support, "good", "average", "poor"))
+
+ggplot(shoe_data, aes(x = gender, y = percent)) + 
+  geom_bar(stat = "identity", aes(fill = shoe_support), position = "dodge") +
+  theme_minimal(base_size = 15)
+
+
+### Visualization of conditional distributions: three levels of response variable
+```{r shoe-dodge-reorder, out.width="80%", echo=FALSE}
+library(forcats)
+shoe_data <- shoe_data %>% 
+  mutate(shoe_support = fct_relevel(shoe_support, "good", "average", "poor"))
+
+ggplot(shoe_data, aes(x = gender, y = percent)) + 
+  geom_bar(stat = "identity", aes(fill = shoe_support), position = "dodge") +
+  theme_minimal(base_size = 15)
+```
+
+### Visualization of conditional distributions: three levels of response variable
+
+Why might we prefer dodged plots to stacked plots?
+
+
+## Simpson's Paradox
+
+### Simpson's Paradox: Example from Baldi and Moore
+
+- Here is the data presented in your book to illustrate Simpson's paradox. 
+- It looks at mortality rates by community and age group for two communities
+```{r copy-data-from-book}
+
+simp_data <- tribble(~ age_grp, ~ community, ~ deaths, ~ pop,
+                     "0-34", "A", 20, 1000, 
+                     "35-64", "A", 120, 3000,
+                     "65+", "A", 360, 6000,
+                     "all", "A", 500, 10000,
+                     "0-34", "B", 180, 6000,
+                     "35-64", "B", 150, 3000,
+                     "65+", "B", 70, 1000,
+                     "all", "B", 400, 10000)
+simp_data <- simp_data %>% 
+  mutate(death_per_1000 = (deaths/pop) * 1000)
+simp_data_no_all <- simp_data %>% filter(age_grp != "all")
+```
+
+### Simpson's Paradox Example: Only Conditional data
+Plot the mortality rates according to age group and community, linking size of dot to population size 
+
+ggplot(simp_data_no_all, aes(x = age_grp, y = death_per_1000)) + 
+
+  geom_point(aes(**col = community, size = pop**)) + 
+
+  labs(title = "Death rate by age group, community, and population size") +
+
+  theme_minimal(base_size = 15)
+
+
+### Simpson's Paradox Example: Only Conditional data
+```{r simpson-para-1, out.width="50%", echo=FALSE, fig.align='center'}
+ggplot(simp_data_no_all, aes(x = age_grp, y = death_per_1000)) + 
+  geom_point(aes(col = community, size = pop)) + 
+  labs(title = "Death rate by age group, community, and population size") +
+  theme_minimal(base_size = 15)
+```
+- What do we notice about mortality by age groups?
+- Which community is larger?
+- If someone ask you which community has higher mortality, what would you say?
+
+### Simpson's Paradox Example: with marginal data
+```{r simpsons-with-marginal, out.width="50%", fig.align='center', echo=FALSE}
+ggplot(simp_data, aes(x = age_grp, y = death_per_1000)) + 
+  geom_point(aes(col = community, size = pop)) + 
+  labs(title = "Death rate by age group, community, and population size") +
+  theme_minimal(base_size = 15)
+```
+
+- Notice that the mortality rates for the communities overall show community A
+having a higher rate than community B. Why is that?
+
+
+### Simpson's Paradox
+
+- Here are the same data shown using a bar chart 
+
+```{r bar-chart-simpsons-paradox, out.width="50%", echo=FALSE}
+#students, don't need to know the scale_fill_manual() function
+ggplot(simp_data, aes(x = community, y = death_per_1000)) + 
+  geom_bar(aes(fill = age_grp), position = "dodge", stat = "identity", col = "white") +
+  theme_minimal(base_size = 15) +
+  scale_fill_manual(values = c("#74a9cf", "#0570b0", "#034e7b", "grey"))
+  # this scale function allows you to manually set your fill colors
+  # colours declared with "#123456" are called hex codes and you can find them online!
+```
+

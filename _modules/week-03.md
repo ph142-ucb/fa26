@@ -12,7 +12,7 @@ days:
         "Ch. 4"
   - date: 2026-09-11
     events:
-      "**Lecture 7**{: .label .label-lec} Two-way tables (relationships between two categorical variables)":
+      "**Lecture 7**{: .label .label-lec} [Two-way tables (relationships between two categorical variables)](https://ph142-ucb.github.io/fa26/src/lec/l07-two-categorical-vars.pdf) [(Student code Rmd)](https://ph142-ucb.github.io/fa26/src/lec/l07-student-code.Rmd)":
         "Ch. 5"
       "**Quiz 2**{: .label .label-quiz} Due at 11:59 PM":
   - date: 2026-09-12
