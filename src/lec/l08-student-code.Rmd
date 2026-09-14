@@ -86,7 +86,7 @@ identical(CS_100_1, CS_100_2)
 ### SRS a fraction in R
 
 ```{r}
-CS_5percent <- CS_data %>% sample_frac(0.05)
+CS_5percent <- CS_data %>% slice_sample(prop = 0.05)
 ```
 
 ### Proportionate Stratified sampling in R
@@ -96,7 +96,7 @@ CS_5percent <- CS_data %>% sample_frac(0.05)
 ```{r}
 CS_10percent_grouped <- CS_data %>% 
   group_by(HOSP_BEDSIZE) %>%
-  sample_frac(0.1)
+  slice_sample(prop = 0.1)
 dim(CS_10percent_grouped)
 ```
 
