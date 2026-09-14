@@ -3,7 +3,7 @@ title: Week 4
 days:
   - date: 2026-09-14
     events:
-      "**Lecture 8**{: .label .label-lec} Samples and observational studies":
+      "**Lecture 8**{: .label .label-lec} [Samples and observational studies](https://ph142-ucb.github.io/fa26/src/lec/l08-samples.pdf) [(Student code Rmd)](https://ph142-ucb.github.io/fa26/src/lec/l08-student-code.Rmd) [(kozhimannil.xlsx)](https://ph142-ucb.github.io/fa26/src/lec/kozhimannil.xlsx)":
         "Ch. 6"
       "**Lab 4**{: .label .label-lab} Problem set on probability calculations — Released":
       "**Homework 4**{: .label .label-hw} Released":

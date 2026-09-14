@@ -1,0 +1,131 @@
+---
+title: 'L08: Samples and Observational studies'
+output: pdf_document
+---
+
+<!-- libraries -->
+```{r,include=FALSE,purl=FALSE}
+library(knitr) # for include_graphics() 
+library(dplyr)
+```
+### Observation vs. Experimentation
+- Suppose we are interested in whether a certain surgical procedure prolongs life in cancer patients:
+&nbsp;
+```{r dag, echo=F, fig.height=1.5, fig.width=3,warning=FALSE}
+#students, you don't need to know the dagitty package or understand this code
+library(dagitty)
+
+g <- dagitty('dag {
+    Surgery [pos="0,1"]
+    Death [pos="2,1"]
+    Disease.severity [pos="1,0.5"]
+    
+    Surgery -> Death 
+    Disease.severity -> Surgery
+    Disease.severity -> Death
+}')
+plot(g)
+```
+
+
+### Example of SRS in R
+
+- First read in the hospital cesarean data
+
+```{r, message=F, echo=FALSE}
+library(readxl)
+library(dplyr)
+CS_data <- read_xlsx("kozhimannil.xlsx", sheet = 1)
+CS_data <- CS_data %>% mutate(ID = row_number())
+head(CS_data)
+```
+
+
+### Example of SRS in R
+
+```{r sample-n-100}
+CS_100_1 <- CS_data %>% sample_n(100)
+CS_100_2 <- CS_data %>% sample_n(100)
+```
+
+Do you expect `head(CS_100_1)` to equal `head(CS_100_2)`?
+
+### Example of SRS in R
+
+```{r are-first-rows-the-same}
+head(CS_100_1 %>% select(Births, HOSP_BEDSIZE, cesarean_rate, ID))
+```
+
+### Example of SRS in R
+```{r are-first-rows-the-same2}
+head(CS_100_2 %>% select(Births, HOSP_BEDSIZE, cesarean_rate, ID))
+```
+
+### Example of SRS in R
+```{r are-first-rows-the-same3}
+identical(CS_100_1, CS_100_2)
+```
+
+
+### Example of SRS in R
+
+What if you want to ensure that you pick the same SRS as a friend?
+
+Then you need to use `set.seed()`:
+
+```{r}
+set.seed(123)
+CS_100_1 <- CS_data %>% sample_n(100)
+
+set.seed(123)
+CS_100_2 <- CS_data %>% sample_n(100)
+
+identical(CS_100_1, CS_100_2)
+```
+
+### SRS a fraction in R
+
+```{r}
+CS_5percent <- CS_data %>% sample_frac(0.05)
+```
+
+### Proportionate Stratified sampling in R
+
+- Group *and then* sample the same fraction from each group
+
+```{r}
+CS_10percent_grouped <- CS_data %>% 
+  group_by(HOSP_BEDSIZE) %>%
+  sample_frac(0.1)
+dim(CS_10percent_grouped)
+```
+
+- Proportionate stratified SRS assembles a sample that maintains the relative 
+proportions of `HOSP_BEDSIZE` in the chosen sample compared to the population
+
+### Proportionate Stratified sampling in R
+
+How to check you really did sample 10% of each `HOSP_BEDSIZE` group?
+
+First see how many hospitals fall into each category in the original data
+```{r ,out.width="80%"}
+CS_data %>%
+  count(HOSP_BEDSIZE)
+
+CS_data %>% group_by(HOSP_BEDSIZE) %>% tally()
+
+CS_data %>% group_by(HOSP_BEDSIZE) %>% summarize(n=n())
+```
+
+### Proportionate Stratified sampling in R
+then in the sample
+```{r ,out.width="80%"}
+CS_10percent_grouped %>%
+  ungroup() %>%
+  count(HOSP_BEDSIZE)
+
+CS_10percent_grouped %>% tally()
+CS_10percent_grouped %>% group_by(HOSP_BEDSIZE) %>% tally()
+CS_10percent_grouped %>% summarize(n=n())
+```
+
