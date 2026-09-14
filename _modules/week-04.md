@@ -3,10 +3,10 @@ title: Week 4
 days:
   - date: 2026-09-14
     events:
-      "**Lecture 8**{: .label .label-lec} [Samples and observational studies](https://ph142-ucb.github.io/fa26/src/lec/l08-samples.pdf) [(Student code Rmd)](https://ph142-ucb.github.io/fa26/src/lec/l08-student-code.Rmd) [(kozhimannil.xlsx)](https://ph142-ucb.github.io/fa26/src/lec/kozhimannil.xlsx)":
+      "**Lecture 8**{: .label .label-lec} [Samples and observational studies](https://ph142-ucb.github.io/fa26/src/lec/l08-samples.pdf) [(Recording)](https://bcourses.berkeley.edu/courses/1557633/files/folder/lecture%20recordings) [(Student code Rmd)](https://ph142-ucb.github.io/fa26/src/lec/l08-student-code.Rmd) [(kozhimannil.xlsx)](https://ph142-ucb.github.io/fa26/src/lec/kozhimannil.xlsx)":
         "Ch. 6"
-      "**Lab 4**{: .label .label-lab} Problem set on probability calculations — Released":
-      "**Homework 4**{: .label .label-hw} Released":
+      "**Lab 4**{: .label .label-lab} [Problem set on probability calculations — Released on Datahub](https://publichealth.datahub.berkeley.edu/hub/user-redirect/git-pull?repo=https%3A%2F%2Fgithub.com%2Fph142-ucb%2Fph142-fa26&urlpath=rstudio%2F&branch=main)":
+      "**Homework 4**{: .label .label-hw} [Released - on Datahub](https://publichealth.datahub.berkeley.edu/hub/user-redirect/git-pull?repo=https%3A%2F%2Fgithub.com%2Fph142-ucb%2Fph142-fa26&urlpath=rstudio%2F&branch=main)":
   - date: 2026-09-16
     events:
       "**Lecture 9**{: .label .label-lec} Live exercise: Sampling births from US territories":
