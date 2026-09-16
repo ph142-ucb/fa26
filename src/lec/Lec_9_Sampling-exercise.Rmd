@@ -286,3 +286,28 @@ ggplot(data = all_estimates,aes(x=estimates, fill=as.factor(sample_size))) +
 
 all_estimates %>% group_by(sample_size) %>% summarize(mean_estimate=mean(estimates), sd_estimate=sd(estimates))
 ```
+
+```{r}
+birth_data_alt <- birth_data %>% mutate(combgest_below_38 = combgest<38)
+birth_data_alt %>% summarize(prop_below_38 = mean(combgest_below_38))
+birth_data_alt %>% group_by(combgest_below_38) %>% summarize(mean_lbw = mean(lbw))
+
+disprop_sample <- birth_data_alt %>% group_by(combgest_below_38) %>% slice_sample(n=500)
+disprop_sample %>% group_by(combgest_below_38) %>% summarize(mean_lbw = mean(lbw))
+disprop_sample %>% ungroup() %>% summarize(mean_lbw = mean(lbw))
+```
+
+```{r}
+estimates = matrix(0,2000,3)
+for (i in 1:2000){
+  set.seed(i)
+  disprop_sample <- birth_data_alt %>% group_by(combgest_below_38) %>% slice_sample(n=500)
+  estimates[i,] = c(mean(disprop_sample$lbw), mean(disprop_sample$lbw[disprop_sample$combgest_below_38]), mean(disprop_sample$lbw[!(disprop_sample$combgest_below_38)]))
+}
+
+hist(estimates[,1],xlim=c(0.08,0.2));abline(v=mean(birth_data$lbw))
+hist(estimates[,2]);abline(v=mean(birth_data_alt$lbw[birth_data_alt$combgest_below_38]))
+hist(estimates[,3]);abline(v=mean(birth_data_alt$lbw[!(birth_data_alt$combgest_below_38)]))
+```
+
+
