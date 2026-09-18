@@ -12,7 +12,7 @@ days:
       "**Lecture 9**{: .label .label-lec} [Live exercise: Sampling births from US territories](https://ph142-ucb.github.io/fa26/src/lec/Lec_9_Sampling-exercise.pdf) [(Exercise Rmd)](https://ph142-ucb.github.io/fa26/src/lec/Lec_9_Sampling-exercise.Rmd) [(L03_US-territories-births.csv)](https://ph142-ucb.github.io/fa26/src/lec/L03_US-territories-births.csv)":
   - date: 2026-09-18
     events:
-      "**Lecture 10**{: .label .label-lec} Designing Experiments":
+      "**Lecture 10**{: .label .label-lec} [Designing Experiments](https://ph142-ucb.github.io/fa26/src/lec/l10-study-designs.pdf)":
         "Ch. 7"
       "**Quiz 3**{: .label .label-quiz} Due at 11:59 PM":
   - date: 2026-09-19
