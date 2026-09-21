@@ -3,7 +3,7 @@ title: Week 5
 days:
   - date: 2026-09-21
     events:
-      "**Lecture 11**{: .label .label-lec} Introduction to probability":
+      "**Lecture 11**{: .label .label-lec} [Introduction to probability](https://ph142-ucb.github.io/fa26/src/lec/l11-intro-to-probability.pdf)":
         "Ch. 9"
       "**Lab**{: .label .label-lab} Midterm I Review Session":
       "**Exam Review**{: .label .label-exam} Midterm I review problems released (optional)":
