@@ -39,7 +39,6 @@ description: Resources for students
 | [Data Manipulation](https://www.youtube.com/watch?v=96A0TuJ43hk)                                                                                                                                                                |
 | [Categorizing Variables](https://youtu.be/wyJu6lX-2Vc)                                                                                                                                                                         |
 
-{% comment %}
 <hr>
 
 ### Exam Resources
@@ -50,7 +49,11 @@ description: Resources for students
 |                | [Fa20 Midterm 1]({{ site.baseurl }}/src/resources/mt1/fa20-mt1.pdf) | [Fa20 Midterm 1 Solutions]({{ site.baseurl }}/src/resources/mt1/fa20-mt1-sol.pdf) | [Fa20 Midterm 1 Errata]({{ site.baseurl }}/errata/#mt1-fall-2020) |
 |                | [Sp21 Midterm 1]({{ site.baseurl }}/src/resources/mt1/sp21-mt1.pdf) | [Sp21 Midterm 1 Solutions]({{ site.baseurl }}/src/resources/mt1/sp21-mt1-sol.pdf) | [Sp21 Midterm 1 Errata]({{ site.baseurl }}/errata/#mt1-spring-2021) |
 |                | [Fa21 Midterm 1]({{ site.baseurl }}/src/resources/mt1/fa21-mt1.pdf) | [Fa21 Midterm 1 Solutions]({{ site.baseurl }}/src/resources/mt1/fa21-mt1-sol.pdf) | [Fa21 Midterm 1 Errata]({{ site.baseurl }}/errata/#mt1-fall-2021) |
-|                | [Fa22 Midterm 1]({{ site.baseurl }}//src/resources/mt1/Midterm1_Fa2022_V2.pdf) | [Fa22 Midterm 1 Solutions]({{ site.baseurl }}/src/resources/mt1/Midterm1_Fa2022_V2-sol.pdf) | [Fa22 Midterm 1 Errata]({{ site.baseurl }}/errata/#mt1-fall-2022) |
+|                | [Fa22 Midterm 1]({{ site.baseurl }}/src/resources/mt1/Midterm1_Fa2022_V2.pdf) | [Fa22 Midterm 1 Solutions]({{ site.baseurl }}/src/resources/mt1/Midterm1_Fa2022_V2-sol.pdf) | [Fa22 Midterm 1 Errata]({{ site.baseurl }}/errata/#mt1-fall-2022) |
+|                | [Fall 2025 Midterm 1]({{ site.baseurl }}/src/resources/mt1/Midterm1_Final.pdf) | — | — |
+|                | [Spring 2026 Midterm 1]({{ site.baseurl }}/src/resources/mt1/mt1_draft_3.pdf) | — | — |
+
+{% comment %}
 | Midterm 2      | [Fa18 Midterm 2]({{ site.baseurl }}/src/resources/mt2/mt2_fa18.pdf) | [Fa18 Midterm 2 Solutions]({{ site.baseurl }}/src/resources/mt2/mt2_fa18_SOLUTIONS.pdf) | [Fa18 Midterm 2 Errata]({{ site.baseurl }}/errata/#mt2-fall-2018) |
 |                | [Fa20 Midterm 2]({{ site.baseurl }}/src/resources/mt2/mt2_fa20.pdf) | [Fa20 Midterm 2 Solutions]({{ site.baseurl }}/src/resources/mt2/mt2_fa20_SOLUTIONS.pdf) | [Fa20 Midterm 2 Errata]({{ site.baseurl }}/errata/#mt2-fall-2020) |
 |                | [Sp21 Midterm 2 Gradescope]({{ site.baseurl }}/src/resources/mt2/mt2_sp21_gradescope.pdf) | [Sp21 Midterm 2 Gradescope Solutions]({{ site.baseurl }}/src/resources/mt2/mt2_sp21_gradescope_SOLUTIONS.pdf) | [Sp21 Midterm 2 Errata]({{ site.baseurl }}/errata/#mt2-spring-2021-gradescope) |
