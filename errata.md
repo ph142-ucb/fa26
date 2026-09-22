@@ -3,7 +3,7 @@ layout: page
 title: Exam Errata
 description: Corrections and additional explanations of exam solutions
 nav_order: 8
-nav_exclude: true
+nav_exclude: false
 ---
 
 # Exam Errata
@@ -52,6 +52,7 @@ Solution: Age is classified as a continuous variable because the range of possib
 Solution typo: D = 85
 
 
+{% comment %}
 ## Midterm 2
 
 ### MT2 Fall 2018
@@ -96,3 +97,4 @@ Solution: The null value mu_0 = 4 is _not_ contained in the 95% confidence inter
 ## Final Exam
 
 All solution PDFs for past final exams have been corrected as of 4/21/26. If you have questions about a solution, please post on Ed. 
+{% endcomment %}
