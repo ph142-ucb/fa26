@@ -5,7 +5,7 @@ days:
     events:
       "**Lecture 11**{: .label .label-lec} [Introduction to probability](https://ph142-ucb.github.io/fa26/src/lec/l11-intro-to-probability.pdf)":
         "Ch. 9"
-      "**Lab**{: .label .label-lab} Midterm I Review Session":
+      "**Lab**{: .label .label-lab} [Midterm I Review Session](https://ph142-ucb.github.io/fa26/src/resources/mt1/MT1%20Review%20-%20PH142%20FA26.pptx.pdf)":
       "**Exam Review**{: .label .label-exam} Midterm I review problems released (optional)":
   - date: 2026-09-23
     events:
