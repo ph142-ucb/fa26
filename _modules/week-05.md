@@ -9,7 +9,7 @@ days:
       "**Exam Review**{: .label .label-exam} [Midterm I review problems released (optional)](https://ph142-ucb.github.io/fa26/resources/#exam-resources)":
   - date: 2026-09-23
     events:
-      "**Lecture 12**{: .label .label-lec} General rules of probability":
+      "**Lecture 12**{: .label .label-lec} [General rules of probability](https://ph142-ucb.github.io/fa26/src/lec/l12-more-probability.pdf)":
         "Ch. 10"
   - date: 2026-09-25
     events:
