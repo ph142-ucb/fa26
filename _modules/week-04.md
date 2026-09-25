@@ -9,10 +9,10 @@ days:
       "**Homework 4**{: .label .label-hw} [Released - on Datahub](https://publichealth.datahub.berkeley.edu/hub/user-redirect/git-pull?repo=https%3A%2F%2Fgithub.com%2Fph142-ucb%2Fph142-fa26&urlpath=rstudio%2F&branch=main)":
   - date: 2026-09-16
     events:
-      "**Lecture 9**{: .label .label-lec} [Live exercise: Sampling births from US territories](https://ph142-ucb.github.io/fa26/src/lec/Lec_9_Sampling-exercise.pdf) [(Exercise Rmd)](https://ph142-ucb.github.io/fa26/src/lec/Lec_9_Sampling-exercise.Rmd) [(L03_US-territories-births.csv)](https://ph142-ucb.github.io/fa26/src/lec/L03_US-territories-births.csv)":
+      "**Lecture 9**{: .label .label-lec} [Live exercise: Sampling births from US territories](https://ph142-ucb.github.io/fa26/src/lec/Lec_9_Sampling-exercise.pdf) [(Exercise Rmd)](https://ph142-ucb.github.io/fa26/src/lec/Lec_9_Sampling-exercise.Rmd) [(L03_US-territories-births.csv)](https://ph142-ucb.github.io/fa26/src/lec/L03_US-territories-births.csv) [(Recording)](https://bcourses.berkeley.edu/courses/1557633/files/folder/lecture%20recordings)":
   - date: 2026-09-18
     events:
-      "**Lecture 10**{: .label .label-lec} [Designing Experiments](https://ph142-ucb.github.io/fa26/src/lec/l10-study-designs.pdf)":
+      "**Lecture 10**{: .label .label-lec} [Designing Experiments](https://ph142-ucb.github.io/fa26/src/lec/l10-study-designs.pdf) [(Recording)](https://bcourses.berkeley.edu/courses/1557633/files/folder/lecture%20recordings)":
         "Ch. 7"
       "**Quiz 3**{: .label .label-quiz} Due at 11:59 PM":
   - date: 2026-09-19
