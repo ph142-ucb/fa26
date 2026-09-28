@@ -3,7 +3,7 @@ title: Week 6
 days:
   - date: 2026-09-28
     events:
-      "**Lecture 14**{: .label .label-lec} The Normal distribution part I":
+      "**Lecture 14**{: .label .label-lec} [The Normal distribution part I](https://ph142-ucb.github.io/fa26/src/lec/l14-normal-distribution.pdf) [(Recording)](https://bcourses.berkeley.edu/courses/1557633/files/folder/lecture%20recordings) [(Student code Rmd)](https://ph142-ucb.github.io/fa26/src/lec/l14-student-code.Rmd)":
         "Ch. 11"
       "**Lab 5**{: .label .label-lab} Sensitivity, specificity, and the Normal distribution — Released":
       "**Homework 5**{: .label .label-hw} Released":

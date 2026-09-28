@@ -1,0 +1,425 @@
+---
+title: "L11:  The normal distribution"
+---
+
+<!-- libraries -->
+```{r,include=FALSE,purl=FALSE}
+library(knitr) # for include_graphics() 
+library(dplyr)
+library(ggplot2)
+```
+
+```{r load-libraries, message=F, warning=FALSE, echo=F}
+#don't need to worry about knowing these libraries
+library(jpeg)
+library(grid)
+library(patchwork)
+library(latex2exp)
+```
+
+
+### The Normal Distribution N(0,1)
+
+- Here is a Normal distribution with mean ($\mu$) = 0, standard deviation ($\sigma$) = 1 .
+
+```{r load-libraries2, echo=F, out.width = "70%", warning=F, message=F}
+
+#students, you don't need to know how to use stat_function()
+p1 <- ggplot(data = data.frame(x = c(-3, 3)), aes(x)) +
+  stat_function(fun = dnorm, n = 101, args = list(mean = 0, sd = 1), col = "orange") +
+  labs(y = "density") + 
+  geom_text(aes(x = 0, y = 0.45), label = "mean = 0 \nsd = 1", check_overlap = T, col = "orange") +
+  scale_x_continuous(limits = c(-5, 5)) + theme_minimal(base_size = 15)
+
+p1
+```
+
+### The Normal Distribution N(0,1) and N(2,1)
+- Let's add another Normal distribution, this one centered at 2, with the same
+standard deviation
+
+```{r, echo=F, out.width="80%"}
+p1 <- p1 + stat_function(fun = dnorm, n = 101, args = list(mean = 2, sd = 1), col = "blue") +
+  geom_text(aes(x = 2, y = 0.45), label = "mean = 2 \nsd = 1", check_overlap = T, col = "blue") 
+p1
+```
+
+### The Normal Distribution N(O,1) and N(2,1) and N(-2,0.5)
+
+- Let's add a third Normal distribution, this one centered at -2, with a standard
+deviation of 0.5
+
+```{r, echo=F, out.width="80%"}
+p1 <- p1 + stat_function(fun = dnorm, n = 101, args = list(mean = -2, sd = 0.5), col = "forest green")  +
+  geom_text(aes(x = -2, y = 0.85), label = "mean = -2 \nsd = 0.5", check_overlap = T, col = "forest green") 
+p1
+```
+
+### The Normal Distribution
+
+```{r, echo=F, out.width="80%"}
+p1 <- p1 + stat_function(fun = dnorm, n = 101, args = list(mean = 1, sd = 1.5))  +
+  geom_text(aes(x = 1, y = 0.3), label = "mean = 1 \nsd = 2.5", check_overlap = T) 
+p1
+```
+
+
+```{r, echo=F, out.width="70%"}
+#students, you don't need to know this code
+
+p1 <- ggplot(data = data.frame(x = c(56, 73)), aes(x)) +
+  stat_function(fun = dnorm, args = list(mean = 64.5, sd = 2.5)) +
+  geom_area(stat = "function", fun = dnorm, args = list(mean = 64.5, sd = 2.5), fill = "#ec7014", xlim = c(57, 72)) +
+  geom_area(stat = "function", fun = dnorm, args = list(mean = 64.5, sd = 2.5), fill = "#fe9929", xlim = c(59.5, 69.5), alpha = 0.8) +
+  geom_area(stat = "function", fun = dnorm, args = list(mean = 64.5, sd = 2.5), fill = "#fee391", xlim = c(62, 67), alpha = 0.8) +
+  labs(y = "density", x = "") + 
+  geom_text(aes(x = 64.5, y = 0.18), label = "mean = 64.5 \nsd = 2.5", check_overlap = T) +
+  theme_minimal(base_size = 15) +
+  geom_segment(aes(x = 64.5+2.5 , y = 0, xend = 64.5+2.5, yend = 0.1), lty = 1) +
+  geom_segment(aes(x = 64.5-2.5 , y = 0, xend = 64.5-2.5, yend = 0.1), lty = 1) +
+  geom_segment(aes(x = 64.5+2*2.5 , y = 0, xend = 64.5+2*2.5, yend = 0.1), lty = 2) +
+  geom_segment(aes(x = 64.5-2*2.5 , y = 0, xend = 64.5-2*2.5, yend = 0.1), lty = 2) +
+  geom_segment(aes(x = 64.5+3*2.5 , y = 0, xend = 64.5+3*2.5, yend = 0.1), lty = 3) +
+  geom_segment(aes(x = 64.5-3*2.5 , y = 0, xend = 64.5-3*2.5, yend = 0.1), lty = 3) +
+  scale_x_continuous(breaks = c(64.5-2*2.5, 64.5-2.5, 64.5, 64.5+2.5, 64.5+2*2.5), 
+                     labels = c("59.5\n-2 SD", "62\n-1 SD", "64.5\nmean", "67\n+1 SD", "69.5\n+2 SD"),
+                     limits = c(56, 73)) +
+  geom_segment(aes(x = 64.5-2.5, xend = 64.5 + 2.5, y = 0.075, yend = 0.075)) +
+  geom_label(aes(x = 64.5, y = 0.075), label = "68%", fill = "#fee391") +
+  geom_segment(aes(x = 64.5-2*2.5, xend = 64.5 + 2*2.5, y = 0.05, yend = 0.05), lty = 2) +
+  geom_label(aes(x = 64.5, y = 0.05), label = "95%", fill = "#fe9929") +
+  geom_segment(aes(x = 64.5-3*2.5, xend = 64.5 + 3*2.5, y = 0.025, yend = 0.025), lty = 3) +
+  geom_label(aes(x = 64.5, y = 0.025), label = "99.7%", fill = "#ec7014") 
+  
+
+p1
+```
+
+### Finding Normal probabilities
+
+- A cumulative probability for a value x in a distribution is the proportion of 
+observations in the distribution that lie at or below x.
+- Here is the cumulative probability for x=1.2
+
+```{r, out.width="70%", echo=F}
+ggplot(data = data.frame(x = c(-4, 4)), aes(x)) +
+  geom_area(stat = "function", fun = dnorm, args = list(mean = 0, sd = 1), fill = "#ec7014", xlim = c(-4, 1.2)) +
+  theme_minimal(base_size = 15) +
+  stat_function(fun = dnorm, args = list(mean = 0, sd = 1)) +
+  geom_segment(x = 1.2, xend = 1.2, y = 0 , yend = 0.195) + 
+  scale_x_continuous(breaks = -4:4) + 
+  labs(y = "density")
+```
+
+### Finding Normal probabilities
+
+- Recall that 100% of the sample space for the random variable x lies under the 
+probability density function.
+- What is the amount of the area that is below x = 1.2?
+- To answer this question we use the `pnorm()` function:
+
+```{r cumulative-prob-below}
+pnorm(q = 1.2, mean = 0, sd = 1)
+```
+
+### Finding Normal probabilities
+
+What if we wanted the reverse: P(x>1.2)?
+
+```{r, out.width="70%", echo=F}
+ggplot(data = data.frame(x = c(-4, 4)), aes(x)) +
+  geom_area(stat = "function", fun = dnorm, args = list(mean = 0, sd = 1), fill = "#ec7014", xlim = c(1.2, 4)) +
+  theme_minimal(base_size = 15) +
+  stat_function(fun = dnorm, args = list(mean = 0, sd = 1)) +
+  geom_segment(x = 1.2, xend = 1.2, y = 0 , yend = 0.195) + 
+  scale_x_continuous(breaks = -4:4) + labs(y = "density")
+```
+
+```{r probability-above}
+1 - pnorm(q = 1.2, mean = 0, sd = 1)
+```
+
+Alternatively: 
+
+```{r alternative-prob-above}
+ pnorm(q = 1.2, mean = 0, sd = 1, lower.tail = F)
+```
+
+So, 11.51% of the data is above x=1.2.
+
+### Finding Normal probabilities
+
+What if we wanted two "tail" probabilities?: $P(x< -1.2 \text{ or } x>1.2)$?
+
+```{r, echo=F, out.width="70%"}
+ggplot(data = data.frame(x = c(-4, 4)), aes(x)) +
+  geom_area(stat = "function", fun = dnorm, args = list(mean = 0, sd = 1), fill = "#ec7014", xlim = c(1.2, 4)) +
+  geom_area(stat = "function", fun = dnorm, args = list(mean = 0, sd = 1), fill = "#ec7014", xlim = c(-4, -1.2)) +
+  theme_minimal(base_size = 15) +
+  stat_function(fun = dnorm, args = list(mean = 0, sd = 1)) +
+  geom_segment(x = 1.2, xend = 1.2, y = 0 , yend = 0.195) + 
+  geom_segment(x = -1.2, xend = -1.2, y = 0 , yend = 0.195) + 
+  scale_x_continuous(breaks = -4:4) + labs(y = "density")
+```
+
+### Finding Normal probabilities
+
+The trick: find one of the tails and then double the area because the distribution
+is symmetric:
+
+```{r}
+pnorm(q = -1.2, mean = 0, sd = 1)*2
+```
+
+### Finding Normal probabilities
+
+What if we wanted a range in the middle?: $P(-0.8 < x < 1.5)$?
+
+```{r, echo=F, out.width="80%"}
+ggplot(data = data.frame(x = c(-4, 4)), aes(x)) +
+  geom_area(stat = "function", fun = dnorm, args = list(mean = 0, sd = 1), fill = "#ec7014", xlim = c(-0.8, 1.5)) +
+  theme_minimal(base_size = 15) +
+  stat_function(fun = dnorm, args = list(mean = 0, sd = 1)) +
+  geom_segment(x = 1.5, xend = 1.5, y = 0 , yend = 0.13) + 
+  geom_segment(x = -0.8, xend = -0.8, y = 0 , yend = 0.29) + 
+  scale_x_continuous(breaks = -4:4) + labs(y = "density")
+```
+
+### Finding Normal probabilities
+
+```{r steps}
+# step 1: calculate the probability *below* the upper bound (x=1.5)
+pnorm(q = 1.5, mean = 0, sd = 1)
+# step 2: calculate the probability *below* the lower bound (x = -0.8)
+pnorm(q = -0.8, mean = 0, sd = 1)
+# step 3: take the difference between these probabilities 
+pnorm(q = 1.5, mean = 0, sd = 1) - pnorm(q = -0.8, mean = 0, sd = 1)
+```
+
+Thus, 72.13% of the data is in the range -0.8 < x < 1.5.
+
+### Your turn 
+
+To diagnose osteoporosis, bone mineral density is measured. The WHO criterion for 
+osteoporosis is a BMD score below -2.5. Women in their 70s have a much lower BMD
+than younger women. Their BMD ~ N(-2, 1). What proportion of these women have a
+BMD below the WHO cutoff?
+
+```{r osteoporosis, echo=FALSE, include=FALSE}
+#to fill in during class
+
+pnorm(q=-2.5, mean=-2, sd= 1 )
+```
+
+
+### Finding Normal percentiles
+
+Example: The hatching weights of commercial chickens can be modeled accurately
+using a Normal distribution with mean $\mu=45$ grams and standard deviation 
+$\sigma=4$ grams. What is the third quartile of the distribution of hatching 
+weights?
+
+```{r, echo=F, out.width="70%"}
+ggplot(data = data.frame(x = c(29, 61)), aes(x)) +
+  geom_area(stat = "function", fun = dnorm, args = list(mean = 45, sd = 4), fill = "#ec7014", xlim = c(29, 47.7)) +
+  theme_minimal(base_size = 15) +
+  stat_function(fun = dnorm, args = list(mean = 45, sd = 4)) +
+  geom_segment(x = 47.69796, xend = 47.69796, y = 0 , yend = 0.08) + 
+  labs(y = "density") +
+  geom_text(aes(x = 44, y = 0.05), check_overlap = T, label = "75%", col = "white", size = 8) 
+```
+
+### Finding Normal percentiles using the `qnorm()` function
+
+Example: The hatching weights of commercial chickens can be modeled accurately
+using a Normal distribution with mean $\mu=45$ grams and standard deviation 
+$\sigma=4$ grams. What is the third quartile of the distribution of hatching 
+weights?
+
+```{r}
+qnorm(p = 0.75, mean = 45, sd = 4)
+```
+
+Thus, 75% of the data is below 47.7 for this distribution.
+
+
+## The standard normal and Z scores
+
+### The standard Normal distribution
+- The standard Normal distribution N(0,1) has $\mu = 0$ and $\sigma=1$.
+- $X \sim N(0,1)$, implies that the random variable X is Normally distributed.
+
+```{r, echo=F, out.width="75%"}
+p1 <- ggplot(data = data.frame(x = c(-3, 3)), aes(x)) +
+  stat_function(fun = dnorm, n = 101, args = list(mean = 0, sd = 1), col = "orange") +
+  labs(y = "density", x = "") + 
+  geom_text(aes(x = 0, y = 0.45), label = "mean = 0 \nsd = 1", check_overlap = T, col = "orange") +
+  theme_minimal(base_size = 15) +
+  geom_segment(aes(x = 0 , y = 0, xend = 0, yend = 0.4)) +
+  geom_segment(aes(x = 1 , y = 0, xend = 1, yend = 0.25), lty = 2) +
+  geom_segment(aes(x = -1 , y = 0, xend = -1, yend = 0.25), lty = 2) +
+  geom_segment(aes(x = 2 , y = 0, xend = 2, yend = 0.05), lty = 3) +
+  geom_segment(aes(x = -2 , y = 0, xend = -2, yend = 0.05), lty = 3) +
+  scale_x_continuous(breaks = -3:3, 
+                     labels = c(-3, "-2\n-2 SD", "-1\n-1 SD", "0\nmean", "1\n+1 SD", "2\n+2 SD", 3))
+p1
+```
+
+## Simulating Normally distributed data in R
+
+### Simulating Normally distributed data in R
+
+Suppose that we measured 1000 heights for young women:
+
+```{r simulate-height-data}
+#students, rnorm() is important to know!
+heights.women <- rnorm(n = 1000, mean = 64.5, sd = 2.5)
+heights.women <- data.frame(heights.women)
+```
+
+### Simulating Normally distributed data in R
+We can plot the histogram of the heights, and see that they roughly follow from
+a Normal distribution:
+
+```{r plot heights, out.width="80%", echo=F, warning=F, message=F}
+hist <- ggplot(heights.women, aes(x = heights.women)) + geom_histogram(col = "white") + theme_minimal(base_size = 15) 
+
+dens <- ggplot(heights.women, aes(x = heights.women)) + geom_density() + stat_function(fun = dnorm, args = c(mean = 64.5, sd = 2.5), col = "forest green") + theme_minimal(base_size = 15)
+
+hist + dens + plot_layout()
+```
+
+### Standardizing Normally distributed data in R
+
+To standard these data, we can apply the formula to compute the z-value:
+
+```{r compute-z-value}
+heights.women <- heights.women %>% mutate(mean = mean(heights.women), 
+                                          sd = sd(heights.women), 
+                                          z = (heights.women - mean)/sd)
+
+head(heights.women)
+```
+
+What would the distribution of the standardized heights look like?
+
+### Standardizing Normally distributed data in R
+
+```{r plot-z-scores, warning=F, message=F, out.width="80%", echo=F, }
+hist_z <- ggplot(heights.women, aes(x = z)) + geom_histogram(col = "white") + 
+  theme_minimal(base_size = 15) 
+
+dens_z <- ggplot(heights.women, aes(x = z)) + geom_density() + 
+  stat_function(fun = dnorm, args = c(mean = 0, sd = 1), col = "forest green") + 
+  theme_minimal(base_size = 15)
+
+hist_z + dens_z + plot_layout()
+```
+
+### Are these data Normally distributed?
+
+- The data is unimodal and symmetric, but is its distribution Normal?
+
+```{r, echo=F, message=FALSE, out.width="75%"}
+library(ggplot2)
+example_data <- data.frame(y = rt(200, df = 5))
+
+ggplot(example_data, aes(y)) + geom_histogram(col = "white") +
+  theme_minimal(base_size = 15)
+```
+
+### Making a QQ plot step by step
+
+1. First, arrange the variable in ascending order. Calculate the percentile for each measurement.
+For example if you had ten measurements in ascending order, the first measurement is at the 
+10th percentile because 10% of the data is at or below its value. The second measurement
+is at the 20% because 20% of the data is at or below its value, and so forth.
+2. Then, for each of the percentiles you calculated, use that percentile to calculate
+the corresponding x-value of the Normal distribution that occurs at that percentile.
+For example, at x = -1 at the 16th percentile of the N(0, 1) distribution.
+3. Make a scatter plot of the calculated x-values on the x-axis and the original
+variable values on the y-axis.
+4. The closer the data is to a straight line, the more closely it approximates
+a Normal distribution.
+
+### Making a QQ plot step by step
+
+```{r qqplot-calcs, message=FALSE}
+#1. calculate the percentile :
+example_data <- example_data %>%  arrange(y) %>% 
+  mutate(quantile = row_number()/n())
+# 2. then calculate the x-value at each percentile from the previous step
+# 3. this x-value can be called a z-score because it is from the standard Normal distribution
+example_data <- example_data %>% 
+  mutate(z_score = qnorm(quantile, mean = 0, sd = 1))
+head(example_data)
+```
+
+### Look at the QQ plot for these data
+
+- Notice that the data overlays the 45 degree line in the middle but not in the 
+tails of the distribution. This sort of pattern shows that these data are "wider"
+(have larger standard deviation) that a Normally distributed variable.
+
+```{r qqplots, out.width="75%", fig.align=T, echo=FALSE}
+ggplot(example_data, aes(x = z_score, y = y)) + 
+  geom_point() + 
+  geom_abline(intercept = 0, slope = 1) + 
+  theme_minimal(base_size = 15)
+```
+
+### Easy way to make a qqplot() where R does all the calculating for you
+
+```{r, out.width="75%", fig.align=T}
+ggplot(example_data, aes(sample = y)) + stat_qq() + stat_qq_line() + 
+  theme_minimal(base_size = 15)
+```
+
+### Another example:  Seed Data
+```{r, echo=FALSE}
+library(readr)
+seed_data <- read_csv("Ch04_seed-data")
+
+head(seed_data)
+```
+
+### Another example
+Check out its distribution. It definitely does not look normal:
+
+```{r, out.width="70%", fig.align='center', echo=FALSE, message=FALSE}
+ggplot(seed_data, aes(x = seed_count)) + 
+  geom_histogram(col = "white") + 
+  theme_minimal(base_size = 15)
+```
+
+### Another example
+
+And look at its QQ plot. Does the data appear to follow a Normal distribution? 
+
+```{r, echo=FALSE}
+ggplot(seed_data, aes(sample = seed_count)) + 
+  stat_qq() + stat_qq_line() + 
+  theme_minimal(base_size = 15)
+```
+
+### Another example (logged)
+
+You might remember that we took the log of seed_count before we used it in regression. The log values look like this:
+
+```{r, out.width="70%", echo=FALSE}
+ggplot(seed_data, aes(x = log(seed_count))) + 
+  geom_histogram(col = "white", binwidth = 2) + 
+  theme_minimal(base_size = 15)
+```
+
+### Another example (logged)
+
+How does the QQ plot look for the logged variable?
+
+```{r, echo=FALSE}
+ggplot(seed_data, aes(sample = log(seed_count))) + 
+  stat_qq() + stat_qq_line() + 
+  theme_minimal(base_size = 15) + scale_y_continuous(limits = c(0, 15)) 
+```
+
+
