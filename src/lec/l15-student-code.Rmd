@@ -1,0 +1,427 @@
+---
+title: "L12:  The Binomial distribution student code"
+---
+
+<!-- libraries -->
+```{r,include=FALSE,purl=FALSE}
+library(knitr) # for include_graphics() 
+library(dplyr)
+library(tidyverse)
+
+#don't need to worry about knowing these libraries
+library(jpeg)
+library(grid)
+```
+
+### Binomail Probability Distributions
+
+We can use the formulas as shown to calculate the probability of a given number of successes from a binomial by hand
+
+Or we could use R with 'dbinom(#successes,size,probability of success)'
+
+This function calculates the probability of observing `x` successes when $X \sim Binom(n,p)$
+
+```{r user, echo=TRUE}
+dbinom(1,size=2,prob=0.29)
+```
+
+
+## Example trial of size 10
+
+### Sampling distribution of a count in R
+
+First, set up a large population of size 10,000 where 10% of the containers are 
+contaminated by benzene. We call `benzene` a "success" since it is coded as 1.
+We can see that 10% of the containers are contaminated and 1000 bottles are 
+"successes"
+
+We simulate these data:
+```{r simulate-binomial-population}
+container.id <- 1:10000
+benzene <- c(rep(0, 9000), rep(1, 1000))
+pop_data <- data.frame(container.id, benzene)
+```
+
+### Sampling distribution of a count in R
+
+```{r}
+# Calculate the population number of bottles contaminated by benzene and the 
+# population mean proportion
+pop_stats <- pop_data %>% summarize(pop_num_successes = sum(benzene),
+                                    pop_mean = mean(benzene))
+
+pop_stats
+```
+
+### Sampling distribution of a count in R
+
+Take a sample of size 10 from the population. Note that 10 is much smaller than
+10,000. 
+
+- How many contaminated bottles are we expecting in the sample?
+- Given that we sample 10, what is the full range of possible values we could 
+see for X, the number of successes and $p$ the proportion of successes? 
+- Which values are most likely?
+
+```{r}
+# first sample
+set.seed(1)
+sample_data <- pop_data %>% sample_n(10)
+sample_data %>% summarize(sample_num_successes = sum(benzene),
+                          sample_mean = mean(benzene))
+```
+
+### Sampling distribution of a count in R
+
+We only took one sample, and got 2 successes for a sample mean of 20%. Is that 
+usual or unusual? 
+
+To see what is most likely, we need to imagine repeatedly taking samples of 
+size 10 from the population and calculating the sample number of successes and 
+proportion of successes for each sample.
+
+
+For the next few slides, we focus on the sampling distribution for X.
+
+### Sampling distribution of a count in R
+
+The embedded code takes 1000 samples each of size 10. 
+
+It then calculates the mean sample proportion and number of successes for each sample and stores all the results in a data frame. 
+
+You don't need to know how the code works.
+
+```{r take-many-samples, echo=FALSE}
+# students, you don't need to understand the new parts of this code (i.e., how
+# to write a function, or use `replicate`, `lapply`, or `bind_rows`)
+
+calc_sample_stats <- function(df) {
+  df %>% 
+    summarize(sample_proportion = mean(benzene),
+              sample_num_successes = sum(benzene))
+}
+
+many.sample.stats <- replicate(1000, sample_n(pop_data, 10), simplify = F) %>%
+  lapply(., calc_sample_stats) %>%
+  bind_rows() %>%
+  mutate(sample.id = 1:n())
+```
+
+### Sampling distribution of a count in R
+
+Here are the first rows of the data frame we made on the previous slide.
+Each row represents an independent sample from the population. 
+
+```{r show-many-samples}
+head(many.sample.stats)
+```
+
+### Sampling distribution of a count in R
+
+We want to know: Of the 1000 samples, what percent observed 0 contaminated 
+bottles? What percent observed 1 contaminated bottle? And so on. We can used 
+`dplyr` functions to calculate this and plot the results in a histogram.
+
+```{r histogram-sampling-distribution, warning=F}
+aggregated.stats <- many.sample.stats %>% 
+  group_by(sample_num_successes) %>% 
+  summarize(percent = n()/1000)
+```
+
+### Sampling distribution of a count in R
+```{r hist-sample, warning=F}
+aggregated.stats
+```
+
+### Sampling distribution of a count in R
+
+```{r, fig.align='center', out.width="80%", warning=F, echo = F}
+# note: We want a histogram, but R is interpreting these data as a bar chart
+# this is, we don't want space between the bars because the x variable is quantitative. 
+
+ggplot(aggregated.stats, aes(x = as.numeric(sample_num_successes), y = percent)) + 
+  geom_histogram(col = "grey", stat = "identity") +
+  theme_minimal(base_size = 15) + 
+  labs(title = "Histogram of the number of \nsuccesses observed across 1000 samples",
+       x = "Number of contaminated bottles", y = "percent in each bin") +
+  scale_x_continuous(labels = 0:5, breaks = 0:5)
+```
+
+
+### Worked probabilities, x = 1
+
+We can check our calculations using the `dbinom()` function in R. 
+
+```{r}
+dbinom(x = 1, size = 10, prob = 0.1)
+```
+
+
+### Worked probabilities, x = 2
+Note: we can get our calculators or R to perform this calculation for us. On our calculator, 
+we need the button ${n \choose k}$, pronounced "n choose k", and asks how many ways
+are there to have $k$ successes when there are $n$ individuals? In R we need the 
+function `choose(n, k)`
+
+```{r 10-choose-2}
+choose(10, 2)
+```
+
+There are 45 ways to observe exactly two contaminated bottles when you 
+have ten bottles observed.
+
+**Make sure you can also perform this calculation on your calculator!**
+
+
+
+### All of the combinations with 10 bottles 
+Each of these is written as ${10 \choose k}$, where k is 0, 1, 2, ..., 10. This is
+known as the **binomial coefficient**.
+
+Let's compute `choose(n, k)`, for n=10, and k=0, 1, 2, ..., 10:
+```{r 10-choose-k, echo=F}
+choices<- cbind(choose(10, 0),
+choose(10, 1),
+choose(10, 2),
+choose(10, 3),
+choose(10, 4),
+choose(10, 5),
+choose(10, 6),
+choose(10, 7),
+choose(10, 8),
+choose(10, 9),
+choose(10, 10))
+choices
+```
+
+## Binomial probability in R
+
+### Binomial probability in R using `dbinom()` 
+
+- Recall for Normal distributions we used `pnorm()` to calculate the probability
+**below** a given number.
+- For discrete distributions we can calculate the probability of observing a 
+specific value. For example, we can ask: What is the probability that exactly
+3 of the ten bottles were contaminated when the risk of contamination was 10%?
+
+- `dbinom()` is used to compute *exactly* 3
+
+```{r}
+dbinom(x = 3, size = 10, prob = 0.1)
+```
+
+### Binomial probability in R using  `pbinom()`
+
+- Recall for Normal distributions we used `pnorm()` to calculate the probability
+**below** a given number.
+
+- For our Binomial, we can also ask, what is the probability that 3 or less of the ten bottles were
+contaminated when the risk of contamination was 10%?
+-  `pbinom()` is used to compute 3 *or less*
+
+```{r}
+dbinom(x = 3, size = 10, prob = 0.1)
+pbinom(q = 3, size = 10, prob = 0.1)
+```
+
+
+### Histogram of binomial probabilities
+
+This histogram shows the probability of observing each value of $X$. That is, it
+shows the $P(X =x)$, for $x$ in 0,1,2, ... 10, when $X \sim Binom(n=10, p = 0.1)$
+
+```{r, out.width="80%", fig.align='center', echo=F, warning=F}
+#students, don't worry about this code
+point.probs <- rep(NA, 11)
+
+for(i in 1:11) {
+  point.probs[i] <- dbinom(x = i-1, size = 10, prob = 0.1)
+}
+
+ggplot(data.frame(point.probs), aes(x = 0:10, y = point.probs)) +
+  geom_histogram(stat = "identity", binwidth = 1) +
+  labs(y = "Probability",
+       x = "Number of successes") +
+  theme_minimal(base_size = 15) +
+  scale_x_continuous(breaks = c(0, 2, 4, 6, 8, 10))
+
+```
+
+### Exact discrete probability, graphed
+
+```{r, fig.align='center', out.width="80%", echo=F, warning=F}
+ggplot(data.frame(point.probs), aes(x = 0:10, y = point.probs)) +
+  geom_histogram(stat = "identity", binwidth = 1, aes(fill = as.factor(round(point.probs, 2) == 0.06 ))) +
+  labs(y = "Probability",
+       x = "Number of successes") +
+  theme_minimal(base_size = 15) +
+  scale_x_continuous(breaks = c(0, 2, 4, 6, 8, 10)) + 
+  scale_fill_discrete(labels = c("other", "P(X=3)"), breaks = c(FALSE, TRUE), name = "")
+```
+
+```{r exact-prob}
+dbinom(x = 3, size = 10, prob = 0.1)
+```
+
+
+### Cumulative discrete probability, graphed
+
+```{r, fig.align='center', out.width="80%", warning=F, echo=F}
+ggplot(data.frame(point.probs), aes(x = 0:10, y = point.probs)) +
+  geom_histogram(stat = "identity", binwidth = 1, aes(fill = as.factor(round(point.probs, 2) >= 0.06 ))) +
+  labs(y = "Probability",
+       x = "Number of successes") +
+  theme_minimal(base_size = 15) +
+  scale_x_continuous(breaks = c(0, 2, 4, 6, 8, 10)) + 
+  scale_fill_discrete(labels = c("other", "P(X<=3)"), breaks = c(FALSE, TRUE), name = "")
+```
+
+```{r}
+pbinom(q = 3, size = 10, prob = 0.1)
+```
+
+
+
+## Normal approximation of a binomial
+
+### Histogram of binomial probabilities with different values for p
+
+Here we have n = 10, and p = 0.10 (green), 0.5 (pink), and 0.8 (blue)
+
+```{r, out.width="80%", fig.align='center', echo=F, warning=F}
+#students, don't worry about this code
+point.probs <- rep(NA, 11)
+point.probs2 <- rep(NA, 11)
+point.probs3 <- rep(NA, 11)
+
+for(i in 1:11) {
+  point.probs[i] <- dbinom(x = i-1, size = 10, prob = 0.5)
+  point.probs2[i] <- dbinom(x = i-1, size = 10, prob = 0.10)
+  point.probs3[i] <- dbinom(x = i-1, size = 10, prob = 0.80)
+}
+
+probs <- data.frame(point.probs, point.probs2, point.probs3)
+
+plot1 <- ggplot(probs, aes(x = 0:10, y = point.probs)) +
+  geom_histogram(stat = "identity", binwidth = 1, fill = "pink", alpha = 0.5, col = "black") +
+  labs(y = "Probability",
+       x = "Number of successes") +
+  theme_minimal(base_size = 15) +
+  scale_y_continuous(limits = c(0, 0.4)) +
+  scale_x_continuous(breaks = c(0, 2, 4, 6, 8, 10))
+
+plot2 <- ggplot(probs, aes(x = 0:10, y = point.probs2)) +
+  geom_histogram(stat = "identity", binwidth = 1, fill = "green", alpha = 0.5, col = "black") +
+  labs(y = "Probability",
+       x = "Number of successes") +
+  theme_minimal(base_size = 15) +
+  scale_y_continuous(limits = c(0, 0.4)) +
+  scale_x_continuous(breaks = c(0, 2, 4, 6, 8, 10))
+
+plot3 <- ggplot(probs, aes(x = 0:10, y = point.probs3)) +
+  geom_histogram(stat = "identity", binwidth = 1, fill = "blue", alpha = 0.5, col = "black") +
+  labs(y = "Probability",
+       x = "Number of successes") +
+  theme_minimal(base_size = 15) +
+  scale_y_continuous(limits = c(0, 0.4)) + 
+  scale_x_continuous(breaks = c(0, 2, 4, 6, 8, 10))
+
+
+library(patchwork)
+
+plot2 + plot1 + plot3 + plot_layout(ncol = 3)
+```
+
+
+### An approximation to the binomial distribution when n is large
+
+Consider the probability distribution for $P(X=k)={2000\choose k}0.62^k(1-0.62)^{2000-k}$
+
+What shape does this remind you of?
+
+```{r calculate-prob-distn-binom, echo = F, fig.align='center', out.width="80%", warning=F}
+#students, don't worry about this code
+point.probs.2k <- rep(NA, 2001)
+
+for(i in 1:2001) {
+  point.probs.2k[i] <- dbinom(x = i-1, size = 2000, prob = 0.62)
+}
+
+zoomed.out <- ggplot(data.frame(point.probs.2k), aes(x = 0:2000, y = point.probs.2k)) +
+  geom_histogram(stat = "identity", binwidth = 1) +
+  labs(y = "Probability",
+       x = "Number of successes") +
+  theme_minimal(base_size = 15) 
+
+zoomed.in <- ggplot(data.frame(point.probs.2k), aes(x = 0:2000, y = point.probs.2k)) +
+  geom_histogram(stat = "identity", binwidth = 1, col = "white") +
+  labs(y = "Probability",
+       x = "Number of successes") +
+  theme_minimal(base_size = 15) +
+  scale_x_continuous(limits = c(1150, 1350))
+
+#zoomed.out + zoomed.in + plot_layout(ncol = 2)
+
+zoomed.in
+```
+
+
+### How much data is within 1 SD of the mean?
+
+1240 +/- 1 SD gives the range {1218.293, 1261.707}
+
+Thus, we can use R to add up all the probabilities between X = 1218 and X = 1262
+to give an approximate guess to the area 1 SD from the mean:
+
+This code cycles through the probabilities to add them up
+
+```{r}
+#students, no need to know how to write this code.
+cumulative.prob <- 0
+ 
+for(i in 1218:1262){
+  cumulative.prob <- cumulative.prob + point.probs.2k[i]
+}
+
+cumulative.prob
+```
+
+### How much data is within 2 SD of the mean?
+
+1240 +/- 2 SD gives the range {1196.586, 1283.414}
+
+Thus, we can use R to add up all the probabilities between X = 1197 and X = 1283
+to give an approximate guess to the area 1 SD from the mean:
+
+This code cycles through the probabilities to add them up
+
+```{r}
+#students, no need to know how to write this code.
+cumulative.prob.2 <- 0
+ 
+for(i in 1197:1283){
+  cumulative.prob.2 <- cumulative.prob.2 + point.probs.2k[i]
+}
+
+cumulative.prob.2
+```
+- You could also perform the check for 3 SD
+
+
+### Example calculation of the Normal approximation to the Binomial 
+
+Suppose we want to calculate $P(X \geq 1250)$ using the Normal approximation.
+
+```{r}
+# write the Normal code
+1- pnorm(q = 1250, mean = 1240 , sd = 21.70714)
+```
+
+Check how well the approximation worked: 
+
+```{r}
+# write the binomial code and see how well the approximation is
+1 - pbinom(q = 1249, size = 2000, prob = 0.62)
+```
+
+

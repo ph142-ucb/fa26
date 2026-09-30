@@ -9,7 +9,7 @@ days:
       "**Homework 5**{: .label .label-hw} Released":
   - date: 2026-09-30
     events:
-      "**Lecture 15**{: .label .label-lec} The Normal distribution part II":
+      "**Lecture 15**{: .label .label-lec} [The Normal distribution part II](https://ph142-ucb.github.io/fa26/src/lec/l15-binomial.pdf) [(Recording)](https://bcourses.berkeley.edu/courses/1557633/files/folder/lecture%20recordings) [(Student code Rmd)](https://ph142-ucb.github.io/fa26/src/lec/l15-student-code.Rmd)":
         "Ch. 11"
   - date: 2026-10-02
     events:
