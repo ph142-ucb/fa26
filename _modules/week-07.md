@@ -3,7 +3,7 @@ title: Week 7
 days:
   - date: 2026-10-05
     events:
-      "**Lecture 16**{: .label .label-lec} The Binomial distribution":
+      "**Lecture 16**{: .label .label-lec} [The Binomial distribution](https://ph142-ucb.github.io/fa26/src/lec/l16-binomial.pdf)":
         "Ch. 12"
       "**Lab 6**{: .label .label-lab} Problem set on Normal, binomial and Poisson distributions — Released":
       "**Homework 6**{: .label .label-hw} Released":
