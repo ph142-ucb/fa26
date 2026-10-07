@@ -1,0 +1,229 @@
+---
+title: 'Lecture 13: The Poisson distribution'
+---
+
+
+```{r load-libraries, include=FALSE, message=F, warning=FALSE}
+library(grid)
+library(ggplot2)
+```
+
+
+## Recap: distributions so far
+
+### Recap question 1: Normal
+
+The heights of young women are approximately $N(\mu = 64.5, \sigma = 2.5)$ inches.
+Using the 68-95-99.7 rule, about what proportion of young women are between
+62 and 67 inches tall?
+
+```{r recap-q1}
+# 62 and 67 are exactly 1 SD below and above the mean, so about 68%
+pnorm(67, mean = 64.5, sd = 2.5) - pnorm(62, mean = 64.5, sd = 2.5)
+```
+
+### Recap question 2: Binomial
+
+A bottling line contaminates each bottle independently with probability
+$p = 0.1$. In a box of $n = 10$ bottles, $X \sim \text{Bin}(10, 0.1)$.
+What are the mean and standard deviation of $X$?
+
+```{r recap-q2}
+n <- 10; p <- 0.1
+mu <- n * p                  # mean = np
+sigma <- sqrt(n * p * (1-p)) # sd = sqrt(np(1-p))
+c(mean = mu, sd = sigma)
+```
+
+## Poisson probabilities
+
+### Probability distribution of a Poisson random variable
+
+```{r, out.width="90%", echo=F, warning=F, message=FALSE}
+#students you do NOT need to know this code
+library(ggplot2)
+point.probs <- rep(NA, 21)
+point.probs2 <- rep(NA, 21)
+point.probs3 <- rep(NA, 21)
+point.probs4 <- rep(NA, 21)
+point.probs5 <- rep(NA, 21)
+
+for(i in 1:20) {
+  point.probs5[i] <- dpois(x = i-1, lambda = 0.1)
+  point.probs4[i] <- dpois(x = i-1, lambda = 0.3)
+  point.probs[i] <- dpois(x = i-1, lambda = 1)
+  point.probs2[i] <- dpois(x = i-1, lambda = 4)
+  point.probs3[i] <- dpois(x = i-1, lambda = 10)
+}
+
+probs <- data.frame(point.probs, point.probs2, point.probs3, point.probs4)
+
+plot1 <- ggplot(probs, aes(x = 0:20, y = point.probs)) +
+  geom_col(fill = "pink", alpha = 0.5, col = "black") +
+  labs(y = "Probability",
+       x = "Number of events") +
+  theme_minimal(base_size = 11) +
+  scale_y_continuous(limits = c(0, 0.91)) +
+  scale_x_continuous(breaks = c(0, 5, 10, 15, 20)) +
+  ggtitle("lambda = 1")
+
+plot2 <- ggplot(probs, aes(x = 0:20, y = point.probs2)) +
+  geom_col(fill = "green", alpha = 0.5, col = "black") +
+  labs(y = "Probability",
+       x = "Number of events") +
+  theme_minimal(base_size = 11) +
+  scale_y_continuous(limits = c(0, 0.91)) +
+  scale_x_continuous(breaks = c(0, 5, 10, 15, 20)) +
+  ggtitle("lambda = 4")
+
+plot3 <- ggplot(probs, aes(x = 0:20, y = point.probs3)) +
+  geom_col(fill = "blue", alpha = 0.5, col = "black") +
+  labs(y = "Probability",
+       x = "Number of events") +
+  theme_minimal(base_size = 11) +
+  scale_y_continuous(limits = c(0, 0.91)) +
+  scale_x_continuous(breaks = c(0, 5, 10, 15, 20)) +
+  ggtitle("lambda = 10")
+
+plot4 <- ggplot(probs, aes(x = 0:20, y = point.probs4)) +
+  geom_col(fill = "yellow", alpha = 0.5, col = "black") +
+  labs(y = "Probability",
+       x = "Number of events") +
+  theme_minimal(base_size = 11) +
+  scale_y_continuous(limits = c(0, 0.91)) +
+  scale_x_continuous(breaks = c(0, 5, 10, 15, 20)) +
+  ggtitle("lambda = 0.3")
+
+plot5 <- ggplot(probs, aes(x = 0:20, y = point.probs5)) +
+  geom_col(fill = "forest green", alpha = 0.5, col = "black") +
+  labs(y = "Probability",
+       x = "Number of events") +
+  theme_minimal(base_size = 11) +
+  scale_y_continuous(limits = c(0, 0.91)) +
+  scale_x_continuous(breaks = c(0, 5, 10, 15, 20)) +
+  ggtitle("lambda = 0.1")
+
+
+library(patchwork)
+
+plot5 + plot4 + plot1 + plot2 + plot3 + plot_layout(ncol = 3)
+
+```
+
+## R functions for the Poisson
+
+### Poisson distribution in R
+In R the Poisson distribution is represented by `pois`
+
+When working with the binomial distribution, we used `dbinom` and `pbinom`
+to calculate probabilities.
+
+With the Poisson distribution we will use `dpois` and `ppois`
+
+
+In R, the function to calculate $P(X=x)$ for a Poisson is `dpois(x=?, lambda=?)`,
+where `lambda` ($\lambda$) is equal to the average $\mu$ (which is the book's notation).
+
+
+More detail on syntax is [*here*](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/Poisson.html)
+
+### Example: Mumps
+
+In Iowa, the average number of reported cases of mumps per month is 0.1.
+If we assume that cases of mumps are random and independent, the number $X$ of
+monthly mumps cases in Iowa has approximately a Poisson distribution with
+$\mu=0.1$. The probability that in a given month there is no more than 1 mumps
+case is:
+
+$P(X \leq 1) = P(X=0) + P(X=1)$
+
+
+$$P(X=k)={\frac{e^{-\mu} \mu^k}{k!} }$$
+
+
+### Example: Mumps
+
+
+$P(X \leq 1) = P(X=0) + P(X=1)$
+
+
+$$P(X=k)={\frac{e^{-\mu} \mu^k}{k!} }$$
+
+= ${\frac{e^{-0.1} 0.1^0}{0!} } + {\frac{e^{-0.1} 0.1^1}{1!} }$ (note that 0! = 1, by definition, and $x^0$=1, for any value of x.)
+
+= 0.9048 + 0.0905 = 0.9953
+
+Thus, we expect to only see 0 cases 90.5% of the months, and 1 case 9.05% of the
+time.
+
+### Example: Mumps calculated using R using `ppois()` and `dpois()`
+
+```{r}
+dpois(x = 0, lambda = 0.1) + dpois(x = 1, lambda = 0.1)
+
+# or,
+
+ppois(q = 1, lambda = 0.1) # notice that lambda is the parameter
+```
+
+### Example: Mumps, continued
+
+Suppose you saw 4 cases of Mumps in a given month. What are the chances of seeing
+4 or more cases in any given month?
+
+```{r}
+# careful, we used q = 3 here. Why 3 and not 4?
+1 - ppois(q = 3, lambda = 0.1)
+```
+
+Could you have performed this calculation using `dpois()`?
+
+If you saw 4 or more cases in any given month, this is very unlikely under this
+model. This suggests a substantial departure from the model, suggesting a
+contagious outbreak (no longer independent)
+
+### Example: Polydactyly
+
+In the US, 1 in every 500 babies is born with an extra finger or toe. These
+events are random and independent. Suppose that the local hospital delivers an
+average of 268 babies per month. This means that for each month we expect to see
+0.536 babies born with an extra finger or toe at that hospital (how do you calculate
+0.536 here?). Let $X$ be the count of babies born with an extra finger or toe in a
+month at that hospital.
+
+a) What values can $X$ take?
+b) What distribution might $X$ follow?
+c) Give the mean and standard deviation of $X$.
+
+### Example: Polydactyly, continued
+
+To get a sense of what the data might look like, use R to simulate data across
+five years (60 months) for this hospital.
+
+```{r}
+set.seed(200)
+polydactyly <- rpois(n = 12*5, lambda = 0.536)
+polydactyly
+```
+
+### Example: Polydactyly, continued
+```{r, out.width="55%", fig.align='center'}
+hist(polydactyly)
+```
+
+### Example: Polydactyly, continued
+```{r}
+mean(polydactyly)
+sd(polydactyly)
+```
+
+### More random number generation
+
+Examining a stream of Poisson-distributed random numbers helps us get a sense
+of what these data look like. Can you think of a variable that might be Poisson-
+distributed according to one of these distributions?
+
+```{r}
+rpois(100, lambda = 0.1)
+rpois(100, lambda = 1)
+```

@@ -9,7 +9,7 @@ days:
       "**Homework 6**{: .label .label-hw} Released":
   - date: 2026-10-07
     events:
-      "**Lecture 17**{: .label .label-lec} The Poisson distribution":
+      "**Lecture 17**{: .label .label-lec} [The Poisson distribution](https://ph142-ucb.github.io/fa26/src/lec/l17-poisson.pdf) [(Student code Rmd)](https://ph142-ucb.github.io/fa26/src/lec/l17-student-code.Rmd)":
         "Ch. 12"
   - date: 2026-10-09
     events:
