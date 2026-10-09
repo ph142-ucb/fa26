@@ -13,7 +13,7 @@ days:
         "Ch. 12"
   - date: 2026-10-09
     events:
-      "**Lecture 18**{: .label .label-lec} Sampling distributions for a mean and proportion and The Central Limit Theorem":
+      "**Lecture 18**{: .label .label-lec} [Sampling distributions for a mean and proportion and The Central Limit Theorem](https://ph142-ucb.github.io/fa26/src/lec/l18-central-limit.pdf) [(Student code Rmd)](https://ph142-ucb.github.io/fa26/src/lec/l18-student-code.Rmd)":
         "Ch. 13"
       "**Quiz 5**{: .label .label-quiz} Due at 11:59 PM":
   - date: 2026-10-10

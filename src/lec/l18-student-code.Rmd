@@ -1,0 +1,181 @@
+---
+title: "L18: Sampling Distributions and the Central Limit Theorem"
+---
+
+```{r load-libraries, include=FALSE, message=F, warning=FALSE}
+library(ggplot2)
+library(dplyr)
+```
+
+## Sampling distribution of the mean
+
+### A known Normal population
+
+Suppose $X \sim N(100, 15)$. This is the population we will sample from. The solid
+line marks the population mean, and the dashed lines sit three standard deviations
+out on each side.
+
+```{r pop-normal, out.width="60%", fig.align='center', message=F, warning=F}
+ggplot(data = data.frame(x = c(50, 150)), aes(x)) +
+  stat_function(fun = dnorm, n = 101, args = list(mean = 100, sd = 15), col = "orange") +
+  labs(y = "density") +
+  theme_minimal(base_size = 15) +
+  geom_vline(xintercept = 145, lty = 2) +
+  geom_vline(xintercept = 55, lty = 2) +
+  geom_vline(xintercept = 100) +
+  ggtitle("Distribution of X in the population.\nN(100, 15), dashed lines at +/- 3SDs")
+```
+
+### The two formulas to remember
+
+For a simple random sample of size $n$, the sampling distribution of the mean
+$\bar{x}$ is centered at $\mu$ and has standard deviation (the **standard error**)
+$\frac{\sigma}{\sqrt{n}}$.
+
+```{r se-mean}
+# Example: IQ scores are N(100, 15). Take samples of size n = 25.
+mu    <- 100
+sigma <- 15
+n     <- 25
+
+se_mean <- sigma / sqrt(n)   # standard error of the sample mean
+c(mean = mu, standard_error = se_mean)
+```
+
+So $\bar{x} \sim N(100, 3)$. The sample means are much less variable than the
+individual observations (3 versus 15).
+
+### What happens to the standard error as n grows?
+
+```{r se-vs-n}
+# Increasing n by a factor of 100 divides the standard error by sqrt(100) = 10.
+sigma / sqrt(25)      # n = 25
+sigma / sqrt(2500)    # n = 2500, one hundred times larger
+```
+
+## Sampling distribution of a proportion
+
+The mean of the sampling distribution of $\hat{p}$ is $p$, and its standard
+deviation is $\sqrt{\frac{p(1-p)}{n}}$. The Normal approximation is trustworthy
+when both $np$ and $n(1-p)$ are larger than 10.
+
+```{r se-prop}
+p <- 0.30
+n <- 50
+
+se_prop <- sqrt(p * (1 - p) / n)   # standard error of the sample proportion
+success_failure <- c(np = n * p, n_1_minus_p = n * (1 - p))
+
+c(mean = p, standard_error = se_prop)
+success_failure   # both should be > 10 to use the Normal approximation
+```
+
+## The Central Limit Theorem in action
+
+We now sample from a strongly skewed population and watch the sampling
+distribution of the mean become Normal as $n$ grows.
+
+### A strongly skewed population
+
+```{r clt-population, out.width = "60%", fig.align='center'}
+ggplot(data = data.frame(x = c(0, 5)), aes(x)) +
+  stat_function(fun = dexp, n = 101, args = list(rate = 1), col = "orange") +
+  theme_minimal(base_size = 15) +
+  labs(title = "Distribution of a random variable") +
+  geom_vline(aes(xintercept = 1), lty = 2) +
+  geom_text(x = 1.5, y = 0.75, label = "population mean", check_overlap = T)
+```
+
+### Build the population and a helper function
+
+```{r clt-setup}
+set.seed(142)
+pop_data <- rexp(n = 100000, rate = 1)
+pop_data <- as.data.frame(pop_data)
+names(pop_data)[1] <- "var_1"
+
+calc_sample_mean <- function(df) {
+  df %>%
+    summarize(sample_mean = mean(var_1))
+}
+```
+
+### Sampling distribution of the mean, n = 2
+
+1) Take a sample of size 2. This is very small.
+2) Calculate its mean.
+3) Repeat 1,000 times.
+4) Plot the 1,000 means as a histogram.
+
+The black dashed line is the population mean, the red dotted line is the mean of
+the sampled means.
+
+```{r clt-n2, fig.align='center', out.width="60%", warning=F}
+many.sample.stats.n2 <- replicate(1000, sample_n(pop_data, 2), simplify = F) %>%
+  lapply(., calc_sample_mean) %>%
+  bind_rows() %>%
+  mutate(sample.id = 1:n())
+
+ggplot(many.sample.stats.n2, aes(x = sample_mean)) +
+  geom_histogram(binwidth = 0.25, col = "white") +
+  ggtitle("Histogram of sample means where n=2") +
+  geom_vline(aes(xintercept = 1), lty = 2) +
+  geom_vline(aes(xintercept = many.sample.stats.n2 %>% summarise(mean(sample_mean)) %>% pull), lty = 3, col = "red") +
+  theme_minimal(base_size = 15) +
+  scale_x_continuous(limits = c(0, 6))
+```
+
+### Sampling distribution of the mean, n = 10
+
+```{r clt-n10, fig.align='center', out.width="60%", warning=F}
+set.seed(143)
+many.sample.stats.n10 <- replicate(1000, sample_n(pop_data, 10), simplify = F) %>%
+  lapply(., calc_sample_mean) %>%
+  bind_rows() %>%
+  mutate(sample.id = 1:n())
+
+ggplot(many.sample.stats.n10, aes(x = sample_mean)) +
+  geom_histogram(binwidth = 0.1, col = "white") +
+  ggtitle("Histogram of sample means where n=10") +
+  geom_vline(aes(xintercept = 1), lty = 2) +
+  geom_vline(aes(xintercept = many.sample.stats.n10 %>% summarise(mean(sample_mean)) %>% pull), lty = 3, col = "red") +
+  theme_minimal(base_size = 15) +
+  scale_x_continuous(limits = c(0, 6))
+```
+
+### Sampling distribution of the mean, n = 30
+
+```{r clt-n30, fig.align='center', out.width="60%", warning=F}
+set.seed(144)
+many.sample.stats.n30 <- replicate(1000, sample_n(pop_data, 30), simplify = F) %>%
+  lapply(., calc_sample_mean) %>%
+  bind_rows() %>%
+  mutate(sample.id = 1:n())
+
+ggplot(many.sample.stats.n30, aes(x = sample_mean)) +
+  geom_histogram(binwidth = 0.1, col = "white") +
+  ggtitle("Histogram of sample means where n=30") +
+  geom_vline(aes(xintercept = 1), lty = 2) +
+  geom_vline(aes(xintercept = many.sample.stats.n30 %>% summarise(mean(sample_mean)) %>% pull), lty = 3, col = "red") +
+  theme_minimal(base_size = 15) +
+  scale_x_continuous(limits = c(0, 6))
+```
+
+The population is strongly skewed, yet by n = 30 the distribution of the sample
+means looks Normal, centered on the true mean of 1. That is the Central Limit
+Theorem.
+
+## Check your understanding
+
+A population has $\mu = 40$ and $\sigma = 12$. You take a simple random sample of
+size $n = 36$.
+
+- What is the standard error of the sample mean?
+- What distribution does $\bar{x}$ approximately follow?
+
+```{r check-understanding}
+mu <- 40; sigma <- 12; n <- 36
+se <- sigma / sqrt(n)     # 12 / 6 = 2
+se
+# By the CLT, xbar is approximately N(40, 2).
+```
