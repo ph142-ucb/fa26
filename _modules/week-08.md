@@ -3,7 +3,7 @@ title: Week 8
 days:
   - date: 2026-10-12
     events:
-      "**Lecture 19**{: .label .label-lec} Confidence intervals for a mean with known standard deviation":
+      "**Lecture 19**{: .label .label-lec} [Confidence intervals for a mean with known standard deviation](https://ph142-ucb.github.io/fa26/src/lec/l19-confidenceInterval.pdf) [(Student code Rmd)](https://ph142-ucb.github.io/fa26/src/lec/l19l20-student-code.Rmd)":
         "Ch. 14"
       "**Lab 7**{: .label .label-lab} Classroom simulation on the Central Limit Theorem and confidence intervals — Released":
   - date: 2026-10-14

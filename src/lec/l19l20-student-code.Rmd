@@ -1,0 +1,344 @@
+---
+title: "L19 and L20: Statistical Inference"
+---
+
+```{r load-libraries, include=FALSE, message=F, warning=FALSE}
+library(ggplot2)
+library(dplyr)
+```
+
+## The standard Normal distribution
+
+- The standard Normal distribution $N(0,1)$ has $\mu = 0$ and $\sigma = 1$.
+- $X \sim N(0,1)$ means the random variable $X$ is Normally distributed with that
+  mean and standard deviation.
+
+```{r std-normal, echo=T, warning=F, message=F, out.width="70%", fig.align='center'}
+# You do NOT need to know this plotting code.
+ggplot(data = data.frame(x = c(-3, 3)), aes(x)) +
+  stat_function(fun = dnorm, n = 101, args = list(mean = 0, sd = 1), col = "orange") +
+  labs(y = "density", x = "") +
+  annotate("text", x = 0, y = 0.46, label = "mean = 0 \nsd = 1", col = "orange") +
+  scale_y_continuous(limits = c(0, 0.5)) +
+  theme_minimal(base_size = 15) +
+  annotate("segment", x = 0, y = 0, xend = 0, yend = 0.4) +
+  annotate("segment", x = 1, y = 0, xend = 1, yend = 0.25, lty = 2) +
+  annotate("segment", x = -1, y = 0, xend = -1, yend = 0.25, lty = 2) +
+  scale_x_continuous(breaks = -3:3,
+                     labels = c(-3, "-2\n-2 SD", "-1\n-1 SD", "0\nmean",
+                                "1\n+1 SD", "2\n+2 SD", 3))
+```
+
+Any Normal variable can be standardized with $z = \frac{x - \mu}{\sigma}$. The
+z-score is the number of standard deviations that $x$ sits above or below the mean.
+
+## Confidence intervals for the mean $\mu$
+
+The generic form of a confidence interval is
+
+$$\bar{x} \pm z^* \frac{\sigma}{\sqrt{n}}$$
+
+$$\text{unbiased estimate} \pm \text{(critical value)} \times \text{(standard error)}$$
+
+The critical value depends only on the confidence level you choose.
+
+```{r critical-values}
+# z* for the three common confidence levels.
+# qnorm() gives the value with the stated area to its LEFT.
+c(level_90 = qnorm(0.95),    # 5% in each tail
+  level_95 = qnorm(0.975),   # 2.5% in each tail
+  level_99 = qnorm(0.995))   # 0.5% in each tail
+```
+
+Note that higher confidence means a larger critical value, and therefore a wider
+interval. You trade precision for confidence.
+
+### Example on IQ scores (pg. 354)
+
+We want the mean IQ score of seventh-grade girls in a Midwest school district.
+Here are scores for 31 randomly selected girls. The standard deviation of IQ
+scores is known to be 15 points.
+
+```{r the-sample-data}
+scores <- c(114, 100, 104, 89, 102, 91, 114, 114, 103, 105,
+            108, 130, 120, 132, 111, 128, 118, 119, 86, 72,
+            111, 103, 74, 112, 107, 103, 98, 96, 112, 112, 93)
+
+iq_data <- data.frame(scores)
+
+known_sigma <- 15
+```
+
+Three assumptions to check:
+
+1. **Normality**. We can evaluate this with a histogram of the sample.
+2. **SRS**. Only the description of the study can tell us this, not the data.
+3. **Known $\sigma$**. Again, only the problem statement can tell us this.
+
+```{r iq-histogram, warning=F, message=F, out.width="60%", fig.align='center'}
+ggplot(iq_data, aes(x = scores)) +
+  geom_histogram(binwidth = 5, col = "white") +
+  labs(x = "IQ score", y = "count") +
+  theme_minimal(base_size = 15)
+```
+
+The sample looks slightly left-skewed, but with only 31 observations a histogram
+is lumpy even when the population really is Normal, so we proceed.
+
+```{r calc-confidence-interval}
+sample_mean    <- mean(scores)
+standard_error <- known_sigma / sqrt(length(scores))
+critical_value <- 1.96
+
+lower_bound <- sample_mean - critical_value * standard_error
+upper_bound <- sample_mean + critical_value * standard_error
+```
+
+```{r con_int2}
+sample_mean
+standard_error
+lower_bound
+upper_bound
+```
+
+Our best estimate of $\mu$ is 105.84, with a 95% confidence interval from 100.56
+to 111.12.
+
+**Interpretation.** If our model assumptions are correct and only random error is
+affecting the estimate, this *method* for calculating confidence intervals will
+contain the true value $\mu$ 95% of the time (19 times out of 20). Do not say
+"we are 95% confident that $\mu$ is in this interval" — the 95% is a property of
+the procedure, not of this one interval.
+
+```{r ci-at-other-levels}
+# The only thing that changes between confidence levels is the critical value.
+sample_mean + c(-1, 1) * qnorm(0.95)  * standard_error   # 90% CI
+sample_mean + c(-1, 1) * qnorm(0.975) * standard_error   # 95% CI
+sample_mean + c(-1, 1) * qnorm(0.995) * standard_error   # 99% CI
+```
+
+## Hypothesis testing, a one-sided example
+
+Inorganic phosphorus in the blood varies among adults Normally with $\mu = 1.2$
+mmol/l and $\sigma = 0.1$. A study measured 12 adults aged 75 to 79 to see
+whether the level *decreases* with age.
+
+```{r the-known-info-and-data}
+phos <- c(1.26, 1.39, 1, 1, 1, 1,
+          0.87, 1.23, 1.19, 1.29, 1.03, 1.18)
+
+known_sigma <- 0.1   # sigma is given to us by the problem
+```
+
+$H_0: \mu = 1.2$ and $H_a: \mu < 1.2$. This is a **one-sided** hypothesis,
+because the study asks only about a decrease.
+
+```{r phos-mean}
+mean(phos)
+phos_data <- data.frame(phos)
+```
+
+```{r phos-histogram, out.width="60%", fig.align='center'}
+ggplot(phos_data, aes(x = phos)) +
+  geom_histogram(binwidth = 0.05, fill = "forest green", col = "white") +
+  theme_minimal(base_size = 15) +
+  geom_vline(xintercept = mean(phos), col = "forest green") +
+  annotate("text", x = mean(phos) - 0.04, y = 5.2, label = "Sample\nmean",
+           col = "forest green") +
+  geom_vline(xintercept = 1.2, col = "blue") +
+  annotate("text", x = 1.28, y = 5.2, label = "Null hypothesis\nmean", col = "blue") +
+  scale_y_continuous(limits = c(0, 6)) +
+  labs(title = "Is the true underlying mean equal to 1.2?",
+       x = "Phosphorus", y = "Count")
+```
+
+Assume $H_0$ is true. Then the sampling distribution of $\bar{x}$ for $n = 12$ is
+Normal with mean 1.2 and standard error $\sigma/\sqrt{n}$.
+
+```{r phos-se}
+n_phos <- length(phos)
+se_phos <- known_sigma / sqrt(n_phos)
+se_phos
+```
+
+```{r phos-null-dist, out.width="65%", fig.align='center'}
+ggplot(data = data.frame(x = c(1.0, 1.4)), aes(x)) +
+  geom_area(stat = "function", fun = dnorm, args = list(mean = 1.2, sd = 0.0289),
+            fill = "#ec7014", xlim = c(1.0, 1.12)) +
+  stat_function(fun = dnorm, n = 101, args = list(mean = 1.2, sd = 0.0289)) +
+  labs(y = "density", x = "sample mean",
+       title = "Sampling distribution under the null") +
+  theme_minimal(base_size = 15) +
+  geom_vline(xintercept = 1.2, lty = 1) +
+  geom_vline(xintercept = 1.12, lty = 2) +
+  annotate("text", x = 1.06, y = 11, label = "observed\nsample\nmean")
+```
+
+The p-value is the shaded area, i.e. the probability of a sample mean this small
+or smaller *if the null were true*.
+
+```{r phos-pvalue}
+pnorm(q = 1.12, mean = 1.2, sd = 0.0289)
+```
+
+About 0.28%, roughly 3 chances in 1000. That is strong evidence against $H_0$.
+
+### The same test with a less extreme sample mean
+
+Now suppose the sample had given $\bar{x} = 1.17$ instead. The hypotheses do not
+change, because they come from the research question and not from the data.
+
+```{r phos-pvalue-117}
+pnorm(q = 1.17, mean = 1.2, sd = 0.0289)
+```
+
+About 15%, or roughly 1 sample in 7. These data give us no reason to doubt $H_0$.
+Note carefully: this does **not** mean $H_0$ is true. We simply failed to find
+evidence against it.
+
+## Hypothesis testing, a two-sided example
+
+Aspirin tablets are Normally distributed with a known standard deviation of 5 mg.
+For an SRS of $n = 10$ pills we want to detect a mean that is different from
+325 mg in *either* direction.
+
+$$H_0: \mu = 325 \text{ mg} \qquad H_a: \mu \neq 325 \text{ mg}$$
+
+```{r aspirin-setup}
+mu_0        <- 325
+sigma_pills <- 5
+n_pills     <- 10
+xbar_pills  <- 326.9
+
+se_pills <- sigma_pills / sqrt(n_pills)
+se_pills
+```
+
+```{r aspirin-two-sided, out.width="65%", fig.align='center'}
+ggplot(data = data.frame(x = c(320, 330)), aes(x)) +
+  stat_function(fun = dnorm, n = 101, args = list(mean = 325, sd = 1.581139)) +
+  labs(y = "density", x = "sample mean",
+       title = "A two-sided test has two shaded regions") +
+  theme_minimal(base_size = 15) +
+  geom_vline(xintercept = 325, lty = 1) +
+  geom_vline(xintercept = 326.9, lty = 2) +
+  geom_vline(xintercept = 325 - (326.9 - 325), lty = 2) +
+  geom_area(stat = "function", fun = dnorm, args = list(mean = 325, sd = 1.581139),
+            fill = "#ec7014", xlim = c(320, 325 - (326.9 - 325))) +
+  geom_area(stat = "function", fun = dnorm, args = list(mean = 325, sd = 1.581139),
+            fill = "#ec7014", xlim = c(326.9, 330)) +
+  annotate("text", x = 328.4, y = 0.13, label = "sample\nmean") +
+  annotate("text", x = 323.8, y = 0.30, label = "null\nhypothesis") +
+  scale_y_continuous(limits = c(0, 0.33))
+```
+
+```{r aspirin-pvalue}
+# One tail. lower.tail = F because our sample mean is ABOVE the null value.
+pnorm(q = 326.9, mean = 325, sd = 1.581139, lower.tail = F)
+
+# Two-sided p-value: double it, because the Normal curve is symmetric.
+pnorm(q = 326.9, mean = 325, sd = 1.581139, lower.tail = F) * 2
+```
+
+A p-value of about 0.23. If the true mean really were 325 mg, we would see a
+sample this far off in one direction or the other about 23% of the time. That is
+no evidence against $H_0$.
+
+## The same calculation as a z test
+
+Rather than working in the original units, we can standardize:
+
+$$z = \frac{\bar{x} - \mu_0}{\sigma/\sqrt{n}}$$
+
+```{r phos-z}
+z_phos <- (mean(phos) - 1.2) / se_phos
+z_phos
+```
+
+The sample mean sits about 2.77 standard errors below the null value.
+
+```{r phos-z-pvalue}
+pnorm(q = z_phos, mean = 0, sd = 1)
+```
+
+This is the same p-value we computed on the raw scale. (It differs in the fourth
+decimal place only because the slides round the standard error to 0.0289, while
+`se_phos` here keeps full precision.) Standardizing changed the labels on the
+ruler, not the statistics.
+
+```{r phos-z-dist, out.width="65%", fig.align='center'}
+ggplot(data = data.frame(x = c(-3.5, 3.5)), aes(x)) +
+  geom_area(stat = "function", fun = dnorm, args = list(mean = 0, sd = 1),
+            fill = "#ec7014", xlim = c(-3.5, -2.768166)) +
+  stat_function(fun = dnorm, n = 101, args = list(mean = 0, sd = 1)) +
+  labs(y = "density", x = "z", title = "Same picture, now in standardized units") +
+  theme_minimal(base_size = 15) +
+  geom_vline(xintercept = 0, lty = 1) +
+  geom_vline(xintercept = -2.768166, lty = 2) +
+  annotate("text", x = -1.95, y = 0.33, label = "observed\nz-score")
+```
+
+### Choosing the right tail
+
+| Alternative hypothesis | p-value | R code |
+|------------------------|---------|--------|
+| $\mu > \mu_0$          | $P(Z \geq z)$          | `pnorm(z, lower.tail = F)`     |
+| $\mu < \mu_0$          | $P(Z \leq z)$          | `pnorm(z)`                     |
+| $\mu \neq \mu_0$       | $2 \times P(Z \geq \lvert z \rvert)$ | `2 * pnorm(abs(z), lower.tail = F)` |
+
+```{r all-three-tails}
+z <- z_phos
+
+pnorm(z, lower.tail = F)             # one-sided, greater than
+pnorm(z)                             # one-sided, less than
+2 * pnorm(abs(z), lower.tail = F)    # two-sided
+```
+
+Always sketch the curve and shade the region before writing the code. The picture
+tells you which of these three lines you need.
+
+## Confidence intervals and tests are two views of one calculation
+
+A two-sided test at level $\alpha$ can be read straight off a confidence interval
+with confidence level $C = 1 - \alpha$. If the null value falls outside the 95%
+CI, the two-sided p-value is below 0.05.
+
+```{r ci-and-test}
+# The IQ interval from earlier was 100.56 to 111.12.
+c(lower_bound, upper_bound)
+
+# Is a null of mu = 113 inside that interval?
+113 > lower_bound & 113 < upper_bound   # FALSE, so we would reject it
+
+# Confirm with the test itself.
+z_iq <- (sample_mean - 113) / standard_error
+z_iq
+2 * pnorm(abs(z_iq), lower.tail = F)    # two-sided p-value, below 0.05
+```
+
+The confidence interval is the better thing to report, because it also tells you
+*how big* the difference plausibly is. A p-value alone throws that away.
+
+## Check your understanding
+
+A population is Normal with known $\sigma = 8$. You take an SRS of $n = 25$ and
+observe $\bar{x} = 52$. You want to test $H_0: \mu = 50$ against
+$H_a: \mu \neq 50$.
+
+- What is the standard error?
+- What is the z test statistic?
+- What is the two-sided p-value, and what do you conclude at $\alpha = 0.05$?
+- Does the 95% confidence interval contain 50? Does that agree with your test?
+
+```{r check-understanding}
+sigma_cu <- 8; n_cu <- 25; xbar_cu <- 52; mu0_cu <- 50
+
+se_cu <- sigma_cu / sqrt(n_cu)          # 8 / 5 = 1.6
+z_cu  <- (xbar_cu - mu0_cu) / se_cu     # 2 / 1.6 = 1.25
+p_cu  <- 2 * pnorm(abs(z_cu), lower.tail = F)
+
+c(standard_error = se_cu, z = z_cu, p_value = p_cu)
+
+# The 95% CI. It contains 50, which matches p > 0.05: we fail to reject H0.
+xbar_cu + c(-1, 1) * qnorm(0.975) * se_cu
+```
