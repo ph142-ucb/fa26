@@ -14,8 +14,8 @@ days:
     events:
       "**Lecture 34**{: .label .label-lec} Comparison of many means (ANOVA)":
         "Ch. 24"
-      "**Quiz 9**{: .label .label-quiz} Due at 11:59 PM":
   - date: 2026-11-21
     events:
+      "**Quiz 9**{: .label .label-quiz} Due at 11:59 PM":
       "**Lab 11**{: .label .label-lab} Due at 11:59 AM":
 ---
