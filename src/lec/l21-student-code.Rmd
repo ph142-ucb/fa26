@@ -1,0 +1,265 @@
+---
+title: "L21: Power, Inference in Practice"
+output: html_document
+---
+
+```{r load-libraries, include=FALSE, message=FALSE, warning=FALSE}
+library(ggplot2)
+library(dplyr)
+```
+
+## The two kinds of error
+
+|                      | $H_a$ is true           | $H_0$ is true            |
+|----------------------|-------------------------|--------------------------|
+| Reject $H_0$         | Correct decision        | Type I error   |
+| Fail to reject $H_0$ | Type II error | Correct decision         |
+
+- $\alpha$ = Probability of rejecting $H_0$ when $H_0$ is true. We choose this in advance.
+- $\beta$ = Probability of failing to reject $H_0$ when $H_0$ is false.
+- $\text{Power} = 1 - \beta$ = Probability of rejecting $H_0$ when $H_0$ is false.
+
+$\alpha$ is computed in the world where $H_0$ is true, and $\beta$ is computed in the
+world where $H_0$ is false. That is why they do not add to one.
+
+Because "$H_0$ is false" does not name a single value of $\mu$, we must pick one
+specific alternative value $\mu_1$ at which to evaluate $\beta$ and power.
+
+## Calculating power in R
+
+Every power calculation has the same two steps.
+
+1. Under $H_0$, find the cutoff, meaning the value of $\bar{x}$ at which we start
+   rejecting.
+2. Under $H_a$ (at $\mu_1$), find the probability of landing beyond that cutoff.
+
+### Example
+
+Known $\sigma = 1$, with $H_0: \mu = 0$ vs. $H_a: \mu > 0$, and $\alpha = 0.05$.
+Find the power to detect a true mean of $\mu_1 = 0.8$ when $n = 10$.
+
+**Step 1.** The cutoff, on the scale of the sample mean.
+
+```{r step1-cutoff}
+se <- 1 / sqrt(10)     # standard error of the mean
+se
+
+# the value cutting off the upper 5% of the null sampling distribution
+x_star <- qnorm(p = 0.05, mean = 0, sd = se, lower.tail = FALSE)
+x_star
+```
+
+Any sample mean at or above `r round(x_star, 3)` leads us to reject $H_0$. On the z
+scale this same cutoff is $Z_\alpha = 1.645$.
+
+**Step 2.** How often does a world centred at 0.8 exceed that cutoff?
+
+```{r step2-power}
+# power = P(x-bar >= cutoff) when the true mean is 0.8
+pnorm(q = x_star, mean = 0.8, sd = se, lower.tail = FALSE)
+```
+
+Power is about 0.81, so $\beta$ is about 0.19. If the true mean really is 0.8, a study
+with $n = 10$ detects it about 81% of the time and misses it about 19% of the time.
+
+Note that the standard error is the same in both steps. Only the assumed mean changed.
+
+```{r power-picture, echo=TRUE, warning=FALSE, out.width="75%", fig.align='center'}
+# You do NOT need to know this plotting code.
+ggplot(data = data.frame(x = c(-1.3, 2)), aes(x)) +
+  geom_area(stat = "function", fun = dnorm, args = list(mean = 0, sd = se),
+            fill = "red", xlim = c(x_star, 2)) +
+  geom_area(stat = "function", fun = dnorm, args = list(mean = 0.8, sd = se),
+            fill = "blue", alpha = 0.5, xlim = c(x_star, 2)) +
+  stat_function(fun = dnorm, n = 201, args = list(mean = 0, sd = se)) +
+  stat_function(fun = dnorm, n = 201, args = list(mean = 0.8, sd = se)) +
+  geom_vline(xintercept = x_star, linetype = "dashed") +
+  annotate("text", x = 0, y = 1.42, label = "H[0]", parse = TRUE, size = 5) +
+  annotate("text", x = 0.8, y = 1.42, label = "H[a]", parse = TRUE, size = 5) +
+  scale_y_continuous(limits = c(0, 1.5)) +
+  labs(title = "Red = alpha = 0.05, blue = power = 0.81",
+       x = "sample mean", y = "density") +
+  theme_minimal(base_size = 14)
+```
+
+Slide the dashed line right and the red area shrinks but so does the blue. You cannot
+make both errors small by moving the cutoff. You have to separate the curves or make
+them narrower.
+
+## What power depends on
+
+Power goes **up** when:
+
+- the difference $\mu_1 - \mu_0$ we are looking for is **larger**,
+- the population variability $\sigma$ is **smaller**,
+- $\alpha$ is **larger** (a looser bar for rejecting),
+- the sample size $n$ is **larger**.
+
+```{r power-vs-effect}
+# Power at several alternative means, holding alpha, sigma and n fixed.
+mu_1 <- c(0.2, 0.4, 0.6, 0.8, 1.0)
+data.frame(
+  mu_1  = mu_1,
+  power = round(pnorm(x_star, mean = mu_1, sd = se, lower.tail = FALSE), 3)
+)
+```
+
+```{r power-vs-n}
+# Power to detect mu_1 = 0.5 with sigma = 1, at several sample sizes.
+power_at_n <- function(n, mu_1 = 0.5, sigma = 1, alpha = 0.05) {
+  se_n   <- sigma / sqrt(n)
+  cutoff <- qnorm(alpha, mean = 0, sd = se_n, lower.tail = FALSE)
+  pnorm(cutoff, mean = mu_1, sd = se_n, lower.tail = FALSE)
+}
+
+n_try <- c(10, 25, 50, 100, 200)
+data.frame(n = n_try, power = round(power_at_n(n_try), 3))
+```
+
+Note the diminishing returns. Once power is high, extra observations buy very little.
+
+## Worked example from Pagano and Gauvreau, chapter 10
+
+A sample of $n = 25$ males aged 20 to 74. Males aged 20 to 24 have a mean serum
+cholesterol of 180 mg/100ml, and cholesterol rises with age, so
+
+$$H_0: \mu = 180 \qquad \text{vs.} \qquad H_a: \mu > 180$$
+
+with $\sigma = 46$ and $\alpha = 0.05$, one-sided.
+
+```{r pagano-setup}
+mu_0  <- 180
+sigma <- 46
+n     <- 25
+se_25 <- sigma / sqrt(n)
+se_25
+```
+
+**The critical value on the z scale.**
+
+```{r pagano-critical-z}
+qnorm(0.95, mean = 0, sd = 1)
+```
+
+**Convert it to the scale of the data.** Run the z formula backwards.
+
+$$1.645 = \frac{\bar{x} - 180}{46/\sqrt{25}} \quad\Longrightarrow\quad
+  \bar{x} = 1.645 \times \frac{46}{\sqrt{25}} + 180 = 195.1$$
+
+```{r pagano-critical-xbar}
+x_crit <- qnorm(0.95) * se_25 + mu_0
+x_crit
+```
+
+So we reject $H_0$ if the 25 men average 195.1 mg/100ml or more.
+
+**Evaluate $\beta$ at $\mu_1 = 211$.** We fail to reject whenever $\bar{x} < 195.1$, so
+standardize 195.1 with respect to **211**, not 180.
+
+$$Z = \frac{195.1 - 211}{46/\sqrt{25}} = -1.73$$
+
+```{r pagano-beta}
+pnorm(-1.73, mean = 0, sd = 1)
+
+# or in one step, without rounding
+beta <- pnorm(x_crit, mean = 211, sd = se_25)
+beta
+1 - beta      # power
+```
+
+$\beta \approx 0.042$, so power $\approx 0.958$. Given that the true mean really is 211,
+this study detects the difference about 96% of the time.
+
+That 96% belongs to $\mu_1 = 211$ and nothing else. Check what happens if the true mean
+were only 190.
+
+```{r pagano-other-mu}
+1 - pnorm(x_crit, mean = 190, sd = se_25)
+```
+
+Same study, same design, far less power.
+
+## Calculating the sample size for a hypothesis test
+
+Now fix the power you want and solve for $n$. For a one-sided z test,
+
+$$n = \left(\frac{(Z_\alpha + Z_\beta) \times \sigma}{\mu_1 - \mu_0}\right)^2$$
+
+For a two-sided test, replace $Z_\alpha$ with $Z_{\alpha/2}$.
+
+Why it works: the cutoff sits $Z_\alpha$ standard errors **above** $\mu_0$ and
+$Z_\beta$ standard errors **below** $\mu_1$. There is only one cutoff, so
+
+$$\mu_0 + Z_\alpha\frac{\sigma}{\sqrt{n}} = \mu_1 - Z_\beta\frac{\sigma}{\sqrt{n}}$$
+
+### Example
+
+Same cholesterol study, but stricter. $\alpha = 0.01$, $\sigma = 46$, $\mu_1 = 211$, and
+we want power of 0.95, so $\beta = 0.05$.
+
+```{r sample-size}
+z_alpha <- qnorm(0.01, lower.tail = FALSE)   # 2.326
+z_beta  <- qnorm(0.05, lower.tail = FALSE)   # 1.645
+c(z_alpha = z_alpha, z_beta = z_beta)
+
+n_needed <- ((z_alpha + z_beta) * sigma / (211 - 180))^2
+n_needed
+ceiling(n_needed)     # always round UP
+```
+
+We need 35 people. Both of our choices (a stricter $\alpha$ and a demanding power
+target) pushed the required sample size above the 25 we had before.
+
+Because the whole expression is squared, halving the difference you want to detect
+**quadruples** the sample size you need.
+
+```{r sample-size-vs-effect}
+n_for_diff <- function(diff, sigma = 46, alpha = 0.01, beta = 0.05) {
+  z_a <- qnorm(alpha, lower.tail = FALSE)
+  z_b <- qnorm(beta,  lower.tail = FALSE)
+  ceiling(((z_a + z_b) * sigma / diff)^2)
+}
+
+data.frame(difference = c(31, 15.5, 7.75),
+           n_needed   = n_for_diff(c(31, 15.5, 7.75)))
+```
+
+## Sample size for a target margin of error
+
+If you only want an estimate of a stated precision, there is no power promise to keep,
+so $Z_\beta$ drops out of the formula and $m$ takes the place of $\mu_1 - \mu_0$:
+
+$$n = \left(\frac{z^* \sigma}{m}\right)^2$$
+
+### Example
+
+Body temperature has a known $\sigma = 0.6$ degrees F. Estimate the mean body
+temperature of healthy adults to within $\pm 0.05$ F with 95% confidence.
+
+```{r margin-of-error}
+z_star <- qnorm(0.975)
+sigma_temp <- 0.6
+m <- 0.05
+
+n_temp <- (z_star * sigma_temp / m)^2
+n_temp
+ceiling(n_temp)
+```
+
+We must recruit 554 healthy adults. Relaxing the precision to $\pm 0.1$ F costs a
+quarter as many people.
+
+```{r margin-of-error-relaxed}
+ceiling((z_star * sigma_temp / 0.1)^2)
+```
+
+## Things to remember
+
+- Power is **not** a property of a study alone. It is the power to detect a **stated**
+  difference, so always say which $\mu_1$ you used.
+- Failing to reject $H_0$ does not mean $H_0$ is true. An underpowered negative result
+  carries almost no information.
+- Do the sample size calculation **before** collecting data, not after.
+- A confidence interval's margin of error accounts only for **sampling** error. It says
+  nothing about confounding, measurement error, or selection bias, and a larger $n$
+  narrows the interval without making it any more correct.

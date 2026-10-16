@@ -12,7 +12,7 @@ days:
         "Ch. 15"
   - date: 2026-10-16
     events:
-      "**Lecture 21**{: .label .label-lec} Power, type I and type II error, sample size (part I)":
+      "**Lecture 21**{: .label .label-lec} [Power, type I and type II error, sample size (part I)](https://ph142-ucb.github.io/fa26/src/lec/l21-power.pdf) [(Student code Rmd)](https://ph142-ucb.github.io/fa26/src/lec/l21-student-code.Rmd)":
         "Ch. 15"
   - date: 2026-10-17
     events:
