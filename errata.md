@@ -52,8 +52,9 @@ Solution: Age is classified as a continuous variable because the range of possib
 Solution typo: D = 85
 
 
-{% comment %}
 ## Midterm 2
+
+Practice exams: [Fall 2025 Midterm II]({{ site.baseurl }}/src/resources/mt2/Midterm2_V1.pdf) · [Spring 2026 Midterm II]({{ site.baseurl }}/src/resources/mt2/mt2_draft_3.pdf). See [Exam Resources]({{ site.baseurl }}/resources/#exam-resources) for earlier exams, solutions, and errata.
 
 ### MT2 Fall 2018
 
@@ -94,6 +95,7 @@ Note: Students can show independence in multiple ways -- they can compare the pr
 
 Solution: The null value mu_0 = 4 is _not_ contained in the 95% confidence interval (6.5, 7.0), so we have evidence to reject the null hypothesis. The true mean counseling time is likely greater than 4 minutes. 
 
+{% comment %}
 ## Final Exam
 
 All solution PDFs for past final exams have been corrected as of 4/21/26. If you have questions about a solution, please post on Ed. 

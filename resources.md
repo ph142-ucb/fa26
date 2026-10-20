@@ -52,14 +52,16 @@ description: Resources for students
 |                | [Fa22 Midterm 1]({{ site.baseurl }}/src/resources/mt1/Midterm1_Fa2022_V2.pdf) | [Fa22 Midterm 1 Solutions]({{ site.baseurl }}/src/resources/mt1/Midterm1_Fa2022_V2-sol.pdf) | [Fa22 Midterm 1 Errata]({{ site.baseurl }}/errata/#mt1-fall-2022) |
 |                | [Fall 2025 Midterm 1]({{ site.baseurl }}/src/resources/mt1/Midterm1_Final.pdf) | — | — |
 |                | [Spring 2026 Midterm 1]({{ site.baseurl }}/src/resources/mt1/mt1_draft_3.pdf) | — | — |
-
-{% comment %}
 | Midterm 2      | [Fa18 Midterm 2]({{ site.baseurl }}/src/resources/mt2/mt2_fa18.pdf) | [Fa18 Midterm 2 Solutions]({{ site.baseurl }}/src/resources/mt2/mt2_fa18_SOLUTIONS.pdf) | [Fa18 Midterm 2 Errata]({{ site.baseurl }}/errata/#mt2-fall-2018) |
 |                | [Fa20 Midterm 2]({{ site.baseurl }}/src/resources/mt2/mt2_fa20.pdf) | [Fa20 Midterm 2 Solutions]({{ site.baseurl }}/src/resources/mt2/mt2_fa20_SOLUTIONS.pdf) | [Fa20 Midterm 2 Errata]({{ site.baseurl }}/errata/#mt2-fall-2020) |
-|                | [Sp21 Midterm 2 Gradescope]({{ site.baseurl }}/src/resources/mt2/mt2_sp21_gradescope.pdf) | [Sp21 Midterm 2 Gradescope Solutions]({{ site.baseurl }}/src/resources/mt2/mt2_sp21_gradescope_SOLUTIONS.pdf) | [Sp21 Midterm 2 Errata]({{ site.baseurl }}/errata/#mt2-spring-2021-gradescope) |
-|                | [Sp21 Midterm 2 Takehome]({{ site.baseurl }}/src/resources/mt2/mt2_sp21_takehome.pdf) | [Sp21 Midterm 2 Takehome Solutions]({{ site.baseurl }}/src/resources/mt2/mt2_sp21_takehome_SOLUTIONS.pdf) | [Sp21 Midterm 2 Errata]({{ site.baseurl }}/errata/#mt2-spring-2021-takehome) |
+|                | [Sp21 Midterm 2 Gradescope]({{ site.baseurl }}/src/resources/mt2/mt2_sp21_gradescope.pdf) | [Sp21 Midterm 2 Gradescope Solutions]({{ site.baseurl }}/src/resources/mt2/mt2_sp21_gradescope_SOLUTIONS.pdf) | [Sp21 Midterm 2 Errata]({{ site.baseurl }}/errata/#mt2-spring-2021) |
+|                | [Sp21 Midterm 2 Takehome]({{ site.baseurl }}/src/resources/mt2/mt2_sp21_takehome.pdf) | [Sp21 Midterm 2 Takehome Solutions]({{ site.baseurl }}/src/resources/mt2/mt2_sp21_takehome_SOLUTIONS.pdf) | [Sp21 Midterm 2 Errata]({{ site.baseurl }}/errata/#mt2-spring-2021) |
 |                | [Fa21 Midterm 2]({{ site.baseurl }}/src/resources/mt2/mt2_fa21.pdf) | [Fa21 Midterm 2 Solutions]({{ site.baseurl }}/src/resources/mt2/mt2_fa21_SOLUTIONS.pdf) | [Fa21 Midterm 2 Errata]({{ site.baseurl }}/errata/#mt2-fall-2021) |
 |                | [Fa22 Midterm 2]({{ site.baseurl }}/src/resources/mt2/mt2_fa22.pdf) | [Fa22 Midterm 2 Solutions]({{ site.baseurl }}/src/resources/mt2/mt2_fa22_SOLUTIONS.pdf) | [Fa22 Midterm 2 Errata]({{ site.baseurl }}/errata/#mt2-fall-2022) |
+|                | [Fall 2025 Midterm II]({{ site.baseurl }}/src/resources/mt2/Midterm2_V1.pdf) | — | — |
+|                | [Spring 2026 Midterm II]({{ site.baseurl }}/src/resources/mt2/mt2_draft_3.pdf) | — | — |
+
+{% comment %}
 | Final          | [Fa19 Final]({{ site.baseurl }}/src/resources/final/final_fa19.pdf) | [Fa19 Final Solutions]({{ site.baseurl }}/src/resources/final/final_fa19_SOLUTIONS.pdf) | N/A |
 |                | [Fa20 Final]({{ site.baseurl }}/src/resources/final/final_fa20.pdf) | [Fa20 Final Solutions]({{ site.baseurl }}/src/resources/final/final_fa20_SOLUTIONS.pdf) | N/A |
 |                | [Sp21 Final Takehome]({{ site.baseurl }}/src/resources/final/final_sp21_takehome.pdf) | [Sp21 Final Takehome Solutions]({{ site.baseurl }}/src/resources/final/final_sp21_takehome_SOLUTIONS.pdf) | N/A |
