@@ -1,0 +1,229 @@
+---
+title: "L22: From Z to T"
+output: html_document
+---
+
+```{r load-libraries, include=FALSE, message=FALSE, warning=FALSE}
+library(ggplot2)
+library(dplyr)
+knitr::opts_chunk$set(fig.align = "center")
+```
+
+Every calculation from L22 in one runnable place. Try the practice problems at the
+bottom before checking the answers.
+
+## The setting
+
+When $\sigma$ is known we use the z statistic:
+
+$$z = \frac{\bar{x}-\mu_0}{\sigma/\sqrt{n}}$$
+
+When $\sigma$ is unknown we estimate it with the sample standard deviation $s$ and
+use the t statistic, which follows a $t(n-1)$ distribution:
+
+$$t = \frac{\bar{x}-\mu_0}{s/\sqrt{n}}$$
+
+## The t distribution is wider than N(0,1)
+
+```{r t-density, warning=FALSE, message=FALSE}
+ggplot(data = data.frame(x = c(-3, 3)), aes(x)) +
+  stat_function(fun = dnorm, n = 201, args = list(mean = 0, sd = 1),
+                aes(col = "N(0,1)"), linewidth = 1.1) +
+  stat_function(fun = dt, n = 201, args = list(df = 2), aes(col = "t(df=2)")) +
+  stat_function(fun = dt, n = 201, args = list(df = 4), aes(col = "t(df=4)")) +
+  stat_function(fun = dt, n = 201, args = list(df = 9), aes(col = "t(df=9)")) +
+  scale_color_manual(values = c("black", "#1b9e77", "#d95f02", "blue")) +
+  theme_minimal(base_size = 13) +
+  labs(y = "Density", x = "", col = "",
+       title = "Comparing N(0,1) to t-distributions")
+```
+
+## Two R functions to keep straight
+
+`pt()` takes a quantile and returns a probability, which is what a p-value is.
+`qt()` takes a probability and returns a quantile, which is what the critical
+value $t^*$ is.
+
+```{r pt-vs-qt}
+pt(q = 2.5, df = 17, lower.tail = FALSE)  # a p-value
+qt(p = 0.975, df = 17)                    # a critical value
+```
+
+The t critical value shrinks toward $z^* = 1.96$ as $n$ grows:
+
+```{r t-star-vs-z}
+qt(p = 0.975, df = 9)    # n = 10
+qt(p = 0.975, df = 24)   # n = 25
+qt(p = 0.975, df = 99)   # n = 100
+```
+
+## Confidence interval example: testosterone in adolescent males
+
+$$\bar{x} \pm t^*\frac{s}{\sqrt{n}}$$
+
+```{r testosterone-data}
+testosterone <- c(0.30, 0.24, 0.19, 0.17, 0.18, 0.23, 0.24, 0.06, 0.15,
+                  0.17, 0.18, 0.17, 0.15, 0.12, 0.25, 0.25, 0.25, 0.32,
+                  0.35, 0.37, 0.39, 0.46, 0.49, 0.42, 0.36)
+dat_test <- data.frame(testosterone)
+```
+
+Start with the pieces of the interval:
+
+```{r testosterone-summary}
+dat_test %>% summarize(sample_mean = mean(testosterone),
+                       sample_sd = sd(testosterone),
+                       sample_size = length(testosterone),
+                       sample_se = sample_sd/sqrt(sample_size))
+```
+
+Get the critical value with $n-1 = 24$ degrees of freedom:
+
+```{r testosterone-tstar}
+t_star <- qt(p = 0.975, df = 24)
+t_star
+```
+
+Then the margin of error and the interval:
+
+```{r testosterone-ci}
+dat_test %>% summarize(sample_mean = mean(testosterone),
+                       sample_sd = sd(testosterone),
+                       sample_size = length(testosterone),
+                       sample_se = sample_sd/sqrt(sample_size),
+                       margin_of_error = sample_se*t_star,
+                       lower_CI = sample_mean - margin_of_error,
+                       upper_CI = sample_mean + margin_of_error)
+```
+
+## Hypothesis test example: pulse wave velocity in progeria
+
+$H_0: \mu = 6.6$ against $H_a: \mu > 6.6$.
+
+```{r pwv-data}
+pwv <- c(18.8, 17.6, 17.5, 16.0, 14.8, 14.1, 13.7, 13.1, 12.9,
+         12.9, 12.4, 10.1, 9.3,  9.1,  8.3,  8.3,  7.9,  7.2)
+
+pwv_dat <- data.frame(pwv)
+```
+
+Always plot first:
+
+```{r pwv-hist}
+ggplot(pwv_dat, aes(x = pwv)) +
+  theme_minimal(base_size = 13) +
+  geom_histogram(binwidth = 2, fill = "white", col = "black") +
+  geom_vline(xintercept = 6.6, lty = 2, col = "blue") +
+  geom_vline(xintercept = 12.44, lty = 2) +
+  annotate("text", x = 6.4, y = 4.6, label = "null value\n6.6",
+           col = "blue", size = 3.5, hjust = 1) +
+  annotate("text", x = 12.7, y = 4.6, label = "sample mean\n12.44",
+           size = 3.5, hjust = 0) +
+  scale_y_continuous(limits = c(0, 5.2)) +
+  expand_limits(x = 5) +
+  labs(y = "Number of children", x = "Pulse wave velocity")
+```
+
+The test by hand:
+
+```{r pwv-by-hand}
+pwv_dat %>%
+  summarize(sample_mean = mean(pwv),
+            sample_sd = sd(pwv),
+            sample_size = length(pwv),
+            sample_se = sample_sd/sqrt(sample_size),
+            t_test = (sample_mean - 6.6)/sample_se,
+            p_value = 1 - pt(t_test, df = sample_size - 1))
+```
+
+The same test with `t.test()`:
+
+```{r pwv-t-test}
+t.test(x = pwv_dat %>% pull(pwv), alternative = "greater", mu = 6.6)
+```
+
+Note that `alternative` can be `"greater"`, `"less"`, or `"two.sided"`, and that a
+one-sided test reports a one-sided confidence interval.
+
+## Can we use t? Check the conditions by plotting
+
+```{r acorns}
+acorns <- c(0.3, 0.4, 0.5, 1, 2, 2.5, 4, 5, 6, 6.2, 7, 16.5)
+acorn_dat <- data.frame(acorns)
+ggplot(acorn_dat, aes(x = acorns)) +
+  theme_minimal(base_size = 13) +
+  geom_histogram(binwidth = 2, fill = "white", col = "black") +
+  labs(title = "Size of acorns, n = 12", y = "Count", x = "Size in cm^3")
+```
+
+```{r needles}
+needl <- c(7.2, 7.8, 8.6, 8.6, 8.7, 8.8, 8.8, 9, 9.3, 9.5, 10.2, 11, 11.3, 12, 12.8)
+needl_dat <- data.frame(needl)
+ggplot(needl_dat, aes(x = needl)) +
+  theme_minimal(base_size = 13) +
+  geom_histogram(binwidth = 1, fill = "white", col = "black") +
+  labs(title = "Length of needles, n = 15", y = "Count", x = "Length in cm")
+```
+
+```{r snakes}
+set.seed(142)
+snakes <- c(rnorm(n = 490, mean = 125, sd = 50),
+            210, 210, 210, 250, 300, 320, 350, 390, 400, 650)
+snakes_dat <- data.frame(snakes)
+ggplot(snakes_dat, aes(x = snakes)) +
+  theme_minimal(base_size = 13) +
+  geom_histogram(binwidth = 50, fill = "white", col = "black") +
+  labs(title = "Weight of brown treesnakes in Guam, n = 500", y = "Count",
+       x = "Weight in grams")
+```
+
+```{r cocoons}
+set.seed(142)
+cocoon <- c(rnorm(n = 650, mean = 9, sd = 1), rnorm(n = 150, mean = 14, sd = 1))
+coc_dat <- data.frame(cocoon)
+ggplot(coc_dat, aes(x = cocoon)) +
+  theme_minimal(base_size = 13) +
+  geom_histogram(binwidth = 0.5, fill = "white", col = "black") +
+  labs(title = "Width of bee cocoons in Sweden, n = 800", y = "Count",
+       x = "Width in mm")
+```
+
+Guidelines: the SRS condition matters most. With $n<15$ the data need to look close
+to Normal. Above 15 the t procedures survive everything except outliers and strong
+skewness. Above roughly 40 they survive strong skewness too.
+
+## Practice problems
+
+**1.** A sample of 12 blood pressure readings has $\bar{x} = 128$ mmHg and
+$s = 14$ mmHg. Build a 95% confidence interval for the population mean.
+
+```{r practice-1}
+x_bar <- 128
+s <- 14
+n <- 12
+se <- s/sqrt(n)
+t_star_12 <- qt(p = 0.975, df = n - 1)
+c(lower = x_bar - t_star_12*se, upper = x_bar + t_star_12*se)
+```
+
+**2.** Using the same sample, test $H_0: \mu = 120$ against $H_a: \mu \neq 120$.
+
+```{r practice-2}
+t_stat <- (x_bar - 120)/se
+t_stat
+2*pt(q = abs(t_stat), df = n - 1, lower.tail = FALSE)
+```
+
+**3.** You have $n = 8$ observations that are strongly right skewed with one large
+outlier. Should you run a t-test? No. With $n<15$ the data must look close to
+Normal, and neither skewness nor an outlier is acceptable at that sample size.
+
+**4.** Why is $t^*$ always larger than $z^*$ for the same confidence level? Because
+estimating $\sigma$ with $s$ adds uncertainty, so the interval has to be wider to
+keep the same coverage. Check how the gap closes as $n$ grows:
+
+```{r practice-4}
+data.frame(n = c(5, 10, 30, 100, 1000)) %>%
+  mutate(t_star = qt(p = 0.975, df = n - 1),
+         z_star = qnorm(p = 0.975))
+```

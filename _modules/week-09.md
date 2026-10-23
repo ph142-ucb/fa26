@@ -13,7 +13,7 @@ days:
         "Ch. 15"
   - date: 2026-10-23
     events:
-      "**Lecture 22**{: .label .label-lec} Inference for a population mean with unknown standard deviation":
+      "**Lecture 22**{: .label .label-lec} [Inference for a population mean with unknown standard deviation](https://ph142-ucb.github.io/fa26/src/lec/l22-ztot.pdf) [(Student code Rmd)](https://ph142-ucb.github.io/fa26/src/lec/l22-student-code.Rmd)":
         "Ch. 17"
       "**Data Project**{: .label .label-proj} Part II Due":
 ---
