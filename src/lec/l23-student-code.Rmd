@@ -1,0 +1,494 @@
+---
+title: "L23 & 24: two-sample t and paired t"
+output: html_document
+---
+
+```{r load-libraries, include=FALSE, message=FALSE, warning=FALSE}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(RColorBrewer)
+knitr::opts_chunk$set(fig.align = "center")
+```
+
+Every calculation from L23 and L24 in one runnable place. The lectures cover two new
+flavors of t. The **two sample** test, for two independent groups, and the
+**paired** test, for two measurements on the same units. Try the practice
+problems at the bottom before checking the answers.
+
+You need `weights.csv` in the same folder as this file.
+
+## The three flavors of t
+
+| Flavor | When to use it | R call |
+|--------|----------------|--------|
+| One sample | One group, compared to a fixed number | `t.test(x, mu = ...)` |
+| Two sample | Two independent groups | `t.test(x, y)` |
+| Paired | Two measures on the same units | `t.test(x, y, paired = TRUE)` |
+
+The two sample statistic replaces every piece of the one sample statistic:
+
+$$t=\frac{(\bar{x}_1 - \bar{x}_2)-(\mu_1 - \mu_2)_0}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}}$$
+
+The key fact is in the denominator. For **independent** samples the variances
+**add**, they do not subtract. Uncertainty never cancels.
+
+# Part 1. Two independent samples
+
+## Example: heights of US and Dutch born men
+
+```{r heights-data}
+set.seed(123)
+dutch <- rnorm(n = 100, mean = 183, sd = 7.4)
+usa <- rnorm(n = 100, mean = 175.5, sd = 7.4)
+
+height_data <- data.frame(height = c(dutch, usa),
+                          country = c(rep("Dutch", 100), rep("USA", 100)))
+
+height_data %>%
+  group_by(country) %>%
+  summarise(sample_mean = mean(height),
+            sample_sd = sd(height),
+            length = length(height))
+```
+
+Always plot before you test. Faceting gives one panel per group:
+
+```{r heights-facet, warning=FALSE, message=FALSE}
+ggplot(height_data, aes(x = height)) +
+  geom_histogram(aes(fill = country), binwidth = 5, col = "black") +
+  theme_minimal(base_size = 13) +
+  facet_wrap(~country, nrow = 2)
+```
+
+Without the facet the bars **stack**, so the y axis is the combined count of both
+groups rather than the count in either one:
+
+```{r heights-stacked, warning=FALSE, message=FALSE}
+ggplot(height_data, aes(x = height)) +
+  geom_histogram(aes(fill = country), binwidth = 5, col = "black") +
+  theme_minimal(base_size = 13)
+```
+
+Box plots. Put the grouping variable on the x axis, otherwise the boxes land on a
+meaningless numeric axis:
+
+```{r heights-box}
+ggplot(height_data, aes(x = country, y = height)) +
+  geom_boxplot(aes(fill = country), col = "black") +
+  theme_minimal(base_size = 13)
+```
+
+The test:
+
+```{r heights-ttest}
+t.test(usa, dutch, alternative = "two.sided")
+```
+
+The `data:` line of the output tells you which group R treated as x and which as
+y, and therefore which way round the difference was computed. The sign of `t`
+carries direction and nothing else.
+
+## Example: transgenic chickens, worked by hand then checked
+
+```{r chick-data}
+transgenic <- c(38.8, 39.0, 39.7, 40.0, 40.8, 40.9, 41.0, 41.0, 41.0, 42.5,
+                42.6, 43.0, 43.0, 43.4, 43.5, 43.5, 43.8, 44.4, 44.7, 44.7,
+                44.7, 45.3, 45.7, 45.8, 46.4, 46.5, 46.6, 46.7, 46.7, 46.8,
+                46.9, 47.1, 47.1, 47.1, 47.3, 47.6, 47.7, 48.1, 48.3, 49.3,
+                49.3, 49.8, 50.3, 50.9, 52.1)
+
+commercial <- c(36.7, 37.1, 38.9, 39.5, 39.5, 39.8, 40.0, 40.2, 40.3, 40.5,
+                40.5, 40.7, 41.1, 41.2, 41.5, 41.5, 41.6, 41.6, 41.7, 42.4,
+                43.1, 43.3, 43.3, 43.4, 43.7, 44.1, 44.2, 45.2, 45.3, 45.4,
+                46.0, 46.1, 46.4, 46.6, 46.6, 46.9, 47.3, 47.5, 48.1, 48.2,
+                48.4, 48.6, 49.0, 49.1, 49.3, 49.6, 50.1, 50.2, 50.4, 50.6,
+                52.2, 53.0, 55.5, 56.4)
+
+chicken_data <- data.frame(weight = c(transgenic, commercial),
+                           type = c(rep("transgenic", 45),
+                                    rep("commercial", 54)))
+```
+
+```{r chick-plots}
+ggplot(chicken_data, aes(x = type, y = weight)) +
+  geom_boxplot(aes(fill = type)) +
+  theme_minimal(base_size = 13)
+
+ggplot(chicken_data, aes(x = weight)) +
+  geom_histogram(aes(fill = type), binwidth = 3, col = "black") +
+  facet_wrap(~type, nrow = 2) +
+  theme_minimal(base_size = 13)
+```
+
+Step 1, the estimate:
+
+```{r chick-diff}
+means <- chicken_data %>%
+  group_by(type) %>%
+  summarise(mean_weight = mean(weight))
+
+diff_means <- means[1, 2] - means[2, 2]   # commercial minus transgenic
+diff_means
+```
+
+Step 2, the standard error:
+
+```{r chick-se}
+chicken_stats <- chicken_data %>%
+  group_by(type) %>%
+  summarise(mean_weight = mean(weight),
+            sd_weight = sd(weight),
+            n = length(weight))
+chicken_stats
+
+se <- sqrt(4.568872^2/54 + 3.320836^2/45)
+se
+```
+
+Step 3, the t statistic:
+
+```{r chick-t}
+t_stat <- (44.98889 - 45.14222 - 0)/se
+t_stat
+```
+
+Now check against R. The degrees of freedom are not a whole number, because R
+uses the Welch approximation:
+
+```{r chick-ttest}
+commercial_weight <- chicken_data %>% filter(type == "commercial") %>% pull(weight)
+transgenic_weight <- chicken_data %>% filter(type == "transgenic") %>% pull(weight)
+
+t.test(commercial_weight, transgenic_weight, alternative = "two.sided")
+```
+
+The p-value is 0.85, so there is no evidence the two groups differ. Note the
+wording. We do **not** conclude the means are equal. The confidence interval adds
+the useful part, any difference is almost certainly under 1.7 grams either way.
+
+# Part 2. When the samples are NOT independent
+
+```{r read-weights, message=FALSE}
+weights <- read.csv(file = "weights.csv", header = TRUE, sep = ",")
+str(weights)
+```
+
+`weight1` is baseline weight, `weight3` is weight after 6 months in a weight loss
+trial, and `dif2` is `weight3 - weight1`. All weights are in pounds.
+
+## First, a genuinely independent comparison
+
+Men versus women at baseline. These are different people, so a standard two
+sample test is appropriate.
+
+```{r sex-summary}
+weights %>%
+  group_by(sex) %>%
+  summarise(sample_mean = mean(weight1),
+            sample_sd = sd(weight1),
+            length = length(weight1))
+```
+
+Two separate `geom_histogram` layers overlay rather than stack. The cost is that
+you lose the automatic legend, so say which colour is which. Green is males, blue
+is females:
+
+```{r sex-hist}
+ggplot(weights, aes(x = weight1)) +
+  geom_histogram(data = subset(weights, sex == 'M'),
+                 binwidth = 5, fill = "dark green", col = "green") +
+  geom_histogram(data = subset(weights, sex == 'F'),
+                 binwidth = 5, fill = "blue", col = "black") +
+  labs(x = "Weight in pounds") +
+  theme_minimal(base_size = 13)
+```
+
+The formula interface. Read `~` as "explained by", so outcome on the left and the
+grouping variable on the right:
+
+```{r sex-ttest}
+t.test(weight1 ~ sex, data = weights, alternative = "two.sided")
+```
+
+## Now the same people, measured twice
+
+Baseline against 6 months. These are the same 200 people, so the two columns are
+linked row by row:
+
+```{r wt-scatter}
+plot(weights$weight1, weights$weight3,
+     xlab = "Weight at baseline (pounds)",
+     ylab = "Weight at 6 months (pounds)")
+
+cor(weights$weight1, weights$weight3)
+```
+
+A correlation of 0.99 is the opposite of independence.
+
+### The wrong test
+
+Ignore the pairing and run the independent test anyway. The true effect built
+into this simulated data is a 5 pound loss:
+
+```{r wrong-test}
+t.test(weights$weight1, weights$weight3)
+```
+
+The estimate is correct, about 5 pounds, but the p-value is 0.11 and the interval
+contains zero. The 5 pound signal drowned in 30 pounds of between person noise.
+
+### The right test
+
+Look at the three standard deviations. This one table explains the whole lecture:
+
+```{r paired-summary}
+weights %>%
+  summarise(dif_mean = mean(dif2), dif_sd = sd(dif2),
+            wt1_mean = mean(weight1), wt1_sd = sd(weight1),
+            wt3_mean = mean(weight3), wt3_sd = sd(weight3))
+```
+
+The **within** person standard deviation is about 4.85 pounds. The **between**
+person standard deviations are about 30 pounds. The paired test uses the small
+one.
+
+```{r paired-test}
+t.test(weights$weight1, weights$weight3, paired = TRUE)
+```
+
+Same data, same 5 pound estimate, p-value now below 0.0001. The only code change
+was `paired = TRUE`.
+
+Draw the two spreads on one axis to see why. Green is weight at 6 months, blue is
+the within person difference:
+
+```{r diff-hist}
+ggplot() +
+  geom_histogram(data = weights, aes(x = weight3),
+                 binwidth = 5, fill = "green") +
+  geom_histogram(data = weights, aes(x = dif2),
+                 binwidth = 5, fill = "blue") +
+  labs(x = "Weight in pounds") +
+  theme_minimal(base_size = 13)
+```
+
+# Part 3. A small paired study, end to end
+
+Eleven participants, cholesterol measured under each of two diets.
+
+```{r chol-data}
+set.seed(123)
+trt_a <- c(155, 180, 190, 192, 203, 201, 207, 208, 217, 228, 237)
+
+signal <- 7   # the true mean difference
+noise <- 4    # 4/sqrt(11) = 1.21 is the true SE of the mean
+
+trt_b <- trt_a + rnorm(length(trt_a), signal, noise)
+
+chol_dat <- data.frame("A" = trt_a, "B" = trt_b, "id" = 1:length(trt_a))
+
+chol_dat_long <- chol_dat %>%
+  pivot_longer(cols = c(A, B), names_to = "diet", values_to = "cholesterol")
+```
+
+A plot that hides the pairing. The two clouds look the same:
+
+```{r chol-jitter}
+ggplot(chol_dat_long, aes(diet, cholesterol)) +
+  geom_jitter(width = 0.03, pch = 21, size = 4, fill = "#2ca25f", alpha = 0.8) +
+  labs(y = "Cholesterol", x = "Diet") +
+  theme_minimal(base_size = 13)
+```
+
+The independent test finds nothing:
+
+```{r chol-indep}
+t.test(x = chol_dat %>% pull(B),
+       y = chol_dat %>% pull(A), mu = 0,
+       alt = "two.sided", paired = FALSE, conf.level = 0.95)
+```
+
+Now connect each participant to themselves. Every single line goes up:
+
+```{r chol-paired-plot}
+means <- chol_dat_long %>%
+  group_by(diet) %>%
+  summarise(mean = round(mean(cholesterol), 1))
+
+chol_dat_long <- chol_dat_long %>% mutate(diet_n = ifelse(diet == "A", 1, 2))
+means <- means %>% mutate(diet_n = ifelse(diet == "A", 1, 2))
+
+ggplot(chol_dat_long, aes(diet_n, cholesterol)) +
+  geom_line(aes(group = id), lty = 3, lwd = 1) +
+  geom_point(aes(fill = as.factor(id)), pch = 21, size = 4, alpha = 0.8) +
+  scale_fill_brewer(palette = "Spectral") +
+  labs(y = "Cholesterol", x = "Diet") +
+  geom_text(data = means, aes(x = diet_n, y = 258,
+                              label = paste0("Mean: ", mean)), size = 4) +
+  expand_limits(y = 262) +
+  guides(fill = guide_legend("ID")) +
+  scale_x_continuous(breaks = c(1, 2), labels = c("A", "B"),
+                     limits = c(0.5, 2.5)) +
+  theme_minimal(base_size = 13) +
+  theme(panel.grid.minor.x = element_blank())
+```
+
+## The paired test by hand
+
+The paired t test is a **one sample** t test on a single column of differences:
+
+$$t = \frac{\bar{x}_d - 0}{s_d/\sqrt{n}} \quad \text{on } n-1 \text{ degrees of freedom}$$
+
+Step 1, collapse the pairs into differences:
+
+```{r chol-diff}
+chol_dat <- chol_dat %>% mutate(diff = B - A)
+head(chol_dat)
+```
+
+Step 2, the estimate, its standard error, and t:
+
+```{r chol-tstat}
+summary_stats <- chol_dat %>%
+  summarize(mean_diff = mean(diff),
+            std_err_diff = sd(diff)/sqrt(n()),
+            t_stat = mean_diff/std_err_diff)
+summary_stats
+```
+
+Step 3, the p-value. `pt()` takes a value and returns a probability:
+
+```{r chol-pval}
+t_obs <- summary_stats %>% pull(t_stat)
+pt(q = t_obs, lower.tail = FALSE, df = 10) * 2
+```
+
+Where that sits on the t distribution:
+
+```{r chol-tplot}
+ggplot(data.frame(x = c(-9, 9)), aes(x = x)) +
+  stat_function(fun = dt, args = list(df = 10)) +
+  scale_x_continuous(limits = c(-9, 9), breaks = c(-8, -4, 0, 4, 8)) +
+  geom_vline(xintercept = c(-t_obs, t_obs), lty = 3) +
+  geom_area(stat = "function", fun = dt, args = list(df = 10),
+            fill = "blue", xlim = c(-9, -t_obs)) +
+  geom_area(stat = "function", fun = dt, args = list(df = 10),
+            fill = "blue", xlim = c(t_obs, 9)) +
+  labs(x = "t distribution", y = "density") +
+  theme_minimal(base_size = 13)
+```
+
+Step 4, the confidence interval. `qt()` takes a probability and returns a value:
+
+```{r chol-ci}
+q <- qt(p = 0.975, lower.tail = TRUE, df = 10)
+q
+
+mean_d <- summary_stats %>% pull(mean_diff)
+se_d <- summary_stats %>% pull(std_err_diff)
+
+c(mean_d - q * se_d, mean_d + q * se_d)
+```
+
+## The same thing in one line
+
+```{r chol-paired}
+paired_t <- t.test(chol_dat %>% pull(B), chol_dat %>% pull(A),
+                   alternative = "two.sided", mu = 0, paired = TRUE)
+paired_t
+```
+
+Independent versus paired on the identical 22 numbers:
+
+| | Independent | Paired |
+|---|---|---|
+| t statistic | 0.78557 | 6.6033 |
+| df | 19.976 | 10 |
+| p-value | 0.4413 | 6.053e-05 |
+| mean | 209.35 vs 201.64 | 7.72 |
+| 95% CI | -12.78 to 28.21 | 5.11 to 10.32 |
+| SE | 9.823 | 1.169 |
+
+The estimate is identical. The standard error differs by a factor of 8, and that
+one number drives everything else.
+
+## Practice problems
+
+**1.** Two independent groups. Group 1 has $n_1 = 30$, $\bar{x}_1 = 52$,
+$s_1 = 9$. Group 2 has $n_2 = 25$, $\bar{x}_2 = 47$, $s_2 = 11$. Compute the
+standard error of the difference and the t statistic.
+
+```{r practice-1}
+se_diff <- sqrt(9^2/30 + 11^2/25)
+se_diff
+
+t_prac <- (52 - 47 - 0)/se_diff
+t_prac
+```
+
+Note the **plus** sign inside the square root. Variances add.
+
+**2.** Using the conservative degrees of freedom, the smaller of $n_1-1$ and
+$n_2-1$, get a two sided p-value for problem 1.
+
+```{r practice-2}
+2 * pt(q = abs(t_prac), df = min(30 - 1, 25 - 1), lower.tail = FALSE)
+```
+
+**3.** Ten patients have their blood pressure measured before and after a drug.
+Which test do you use, and why?
+
+Paired. The two columns describe the *same ten people*, so the measurements are
+not independent. Compute each patient's change and run a one sample test on that
+single column. Here is a worked version:
+
+```{r practice-3}
+set.seed(19)
+before <- round(rnorm(10, mean = 145, sd = 15))
+after <- before - round(rnorm(10, mean = 8, sd = 4))
+
+bp <- data.frame(id = 1:10, before, after)
+bp <- bp %>% mutate(change = after - before)
+bp
+
+t.test(bp$after, bp$before, paired = TRUE)
+```
+
+**4.** Rerun problem 3 as if the two columns were independent groups. What
+happens to the p-value, and why?
+
+```{r practice-4}
+t.test(bp$after, bp$before, paired = FALSE)
+```
+
+The estimated difference is the same, but the standard error is built from
+between person variation, which is much larger than the within person change. The
+t statistic shrinks and the p-value grows. Compare the two standard deviations
+directly:
+
+```{r practice-4b}
+bp %>% summarise(sd_change = sd(change),
+                 sd_before = sd(before),
+                 sd_after = sd(after))
+```
+
+**5.** You swap the arguments of `t.test` so the second group comes first. Which
+parts of the output change?
+
+The sign of `t`, the sign of the estimated difference, and the sign and order of
+the confidence interval endpoints. The p-value and the degrees of freedom do not
+change. Check it:
+
+```{r practice-5}
+t.test(bp$before, bp$after, paired = TRUE)
+```
+
+**6.** You have two samples of size 4 and 4 from populations with very different
+shapes, one strongly skewed left and one strongly skewed right. Is a two sample
+t test reasonable?
+
+No. The t procedures tolerate $n_1 = n_2 = 5$ only when the two populations have
+*similar* shapes. Opposite skewness is the worst case, because the skewness
+reinforces instead of cancelling, and 4 observations per group is below even that
+threshold.

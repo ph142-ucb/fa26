@@ -3,7 +3,7 @@ title: Week 10
 days:
   - date: 2026-10-26
     events:
-      "**Lecture 24**{: .label .label-lec} Comparing two means":
+      "**Lecture 23**{: .label .label-lec} [Comparing two means](https://ph142-ucb.github.io/fa26/src/lec/l23-twoSample.pdf) [(Student code Rmd)](https://ph142-ucb.github.io/fa26/src/lec/l23-student-code.Rmd)":
         "Ch. 18"
       "**Lab 8**{: .label .label-lab} Paired and two sample t-tests — Released":
       "**Homework 7**{: .label .label-hw} Released":
