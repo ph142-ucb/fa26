@@ -9,7 +9,7 @@ days:
       "**Homework 7**{: .label .label-hw} [Released](https://publichealth.datahub.berkeley.edu/hub/user-redirect/git-pull?repo=https%3A%2F%2Fgithub.com%2Fph142-ucb%2Fph142-fa26&urlpath=rstudio%2F&branch=main)":
   - date: 2026-10-28
     events:
-      "**Lecture 25**{: .label .label-lec} Matched comparisons":
+      "**Lecture 24**{: .label .label-lec} [Matched comparisons](https://ph142-ucb.github.io/fa26/src/lec/l24-pairedt.pdf)":
         "Ch. 17"
   - date: 2026-10-30
     events:
