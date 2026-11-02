@@ -1,0 +1,429 @@
+---
+title: "L25: Inference on population proportions"
+output: html_document
+---
+
+```{r load-libraries, include=FALSE, message=FALSE, warning=FALSE}
+library(dplyr)
+library(tibble)
+library(ggplot2)
+knitr::opts_chunk$set(fig.align = "center", message = FALSE, warning = FALSE)
+options(width = 90)
+```
+
+Every calculation from L25 in one runnable place. Up to now every outcome has been
+continuous, so we summarized it with a mean and used a $t$ distribution. Now the
+outcome is categorical with two levels, so we summarize it with a **proportion**
+and go back to the **Normal** distribution.
+
+There is no external data file. Every number below is typed in from the slides.
+Try the practice problems at the bottom before checking the answers.
+
+## The four confidence interval methods
+
+| Method | Formula / function | Do it by hand? |
+|--------|--------------------|----------------|
+| Large sample | $\hat{p} \pm z^*\sqrt{\hat{p}(1-\hat{p})/n}$ | yes |
+| Plus four | $\tilde{p} \pm z^*\sqrt{\tilde{p}(1-\tilde{p})/(n+4)}$, with $\tilde{p} = \frac{x+2}{n+4}$ | yes |
+| Wilson score (with continuity correction) | `prop.test(x, n)` | no, R does it |
+| Clopper Pearson ("exact") | `binom.test(x, n)` | no, R does it |
+
+Two things to keep straight:
+
+- We use $z^*$, not $t^*$. The standard error of $\hat{p}$ is fully determined by
+  $p$ and $n$, so there is no second parameter to estimate.
+- **Check the condition first.** The Normal approximation needs at least 10
+  expected successes *and* at least 10 expected failures.
+
+## The plus four calculation by hand
+
+A random sample of 75 SARS patients, of which 64 developed recurrent fever.
+
+```{r sars-plus-four}
+x <- 64
+n <- 75
+
+p.hat <- x / n                            # ordinary estimate
+p.tilde <- (x + 2) / (n + 4)              # plus four estimate
+se <- sqrt(p.tilde * (1 - p.tilde) / (n + 4))
+
+c(p.hat, p.tilde, se)
+
+p.tilde + c(-1, 1) * 1.96 * se            # 95% CI
+```
+
+So the plus four 95% CI is 75.4% to 91.7%. The most common mistake on this
+calculation is forgetting the `1.96`, which gives a far too narrow interval.
+
+# Example 1: 100 deaths out of 500 hip fractures
+
+First check the condition. $n\hat{p} = 100$ and $n(1-\hat{p}) = 400$, both well
+above 10, so we expect all four methods to agree.
+
+## Large sample method
+
+```{r ex1-large-sample}
+p.hat <- 100/500                          # estimate proportion
+se <- sqrt(p.hat*(1-p.hat)/500)           # standard error
+c(p.hat - 1.96*se, p.hat + 1.96*se)       # CI
+```
+
+16.5% to 23.5%. Note this is pure arithmetic, no statistical function is called.
+
+## Plus four method
+
+```{r ex1-plus-four}
+p.tilde <- (100 + 2)/(500 + 4)
+se <- sqrt(p.tilde*(1-p.tilde)/504)       # standard error
+c(p.tilde - 1.96*se, p.tilde + 1.96*se)   # CI
+```
+
+16.7% to 23.7%. With $n = 500$, adding four imaginary observations barely moves
+the answer.
+
+## Wilson score method
+
+```{r ex1-wilson}
+prop.test(x = 100, n = 500, conf.level = 0.95)
+```
+
+Read the `95 percent confidence interval` line: 16.6% to 23.8%. Ignore the rest.
+`prop.test` also ran a hypothesis test against a null of $p_0 = 0.5$ that you did
+not ask for. To pull out just the interval:
+
+```{r ex1-wilson-ci}
+prop.test(x = 100, n = 500)$conf.int
+```
+
+## Clopper Pearson exact method
+
+```{r ex1-exact}
+binom.test(x = 100, n = 500, conf.level = 0.95)$conf.int
+```
+
+16.6% to 23.8%. This method makes no Normal approximation at all, and it still
+lands within a tenth of a percentage point of the large sample answer.
+
+## Comparing the four
+
+```{r ex1-plot, out.width="75%", fig.width=7, fig.height=3.4}
+elderly_CIs <- tibble(
+  method   = c("Large sample", "Plus 4", "Wilson", "Exact"),
+  lower    = c(16.5, 16.7, 16.6, 16.6),
+  upper    = c(23.5, 23.7, 23.8, 23.8),
+  estimate = rep(20, 4))
+
+elderly_CIs$method <- factor(elderly_CIs$method,
+  levels = c("Large sample", "Plus 4", "Wilson", "Exact"))
+
+ggplot(data = elderly_CIs, aes(x = method, y = estimate)) +
+  geom_point() +
+  geom_segment(aes(xend = method, y = lower, yend = upper)) +
+  geom_hline(aes(yintercept = 0), lty = 2) +
+  scale_y_continuous(limits = c(0, 26)) +
+  labs(y = "Estimate and 95% CI (%)", x = "") +
+  theme_minimal(base_size = 13)
+```
+
+The picture is boring, and that is the point. When the conditions are comfortably
+satisfied, the choice of method does not matter.
+
+Note that only the large sample interval is **symmetric** about $\hat{p} = 20\%$.
+That is fine. Nothing requires a confidence interval to be symmetric, and near
+the boundaries of 0 and 1 the honest interval leans away from the wall.
+
+# Example 2: 2 deaths out of 100 falls
+
+Check the condition first. $n\hat{p} = 2$, far below 10. The Normal approximation
+is **not** trustworthy here.
+
+## Large sample and plus four
+
+```{r ex2-hand}
+p.hat <- 2/100                            # estimate proportion
+se <- sqrt(p.hat*(1-p.hat)/100)           # standard error
+c(p.hat - 1.96*se, p.hat + 1.96*se)       # CI
+
+p.tilde <- (2 + 2)/(100 + 4)
+se <- sqrt(p.tilde*(1-p.tilde)/104)       # standard error
+c(p.tilde - 1.96*se, p.tilde + 1.96*se)   # CI
+```
+
+Look at the large sample lower bound: **negative**. A proportion cannot be
+negative. The method has broken, and it broke silently.
+
+## Exact and Wilson
+
+```{r ex2-r}
+binom.test(x = 2, n = 100, conf.level = 0.95)$conf.int
+prop.test(x = 2, n = 100, conf.level = 0.95)$conf.int
+```
+
+## All four side by side
+
+| Method | 95% CI | R function |
+|--------|:------:|------------|
+| Large sample | -0.74% to 4.74% | by hand |
+| Plus four | 0.15% to 7.54% | by hand |
+| Wilson score | 0.35% to 7.74% | `prop.test` |
+| Exact | 0.24% to 7.04% | `binom.test` |
+
+```{r ex2-plot, out.width="75%", fig.width=7, fig.height=3.4}
+elderly_CIs <- tibble(
+  method   = c("Large sample", "Plus 4", "Wilson", "Exact"),
+  lower    = c(-0.74, 0.15, 0.35, 0.24),
+  upper    = c(4.74, 7.54, 7.74, 7.04),
+  estimate = rep(2, 4))
+
+elderly_CIs$method <- factor(elderly_CIs$method,
+  levels = c("Large sample", "Plus 4", "Wilson", "Exact"))
+
+ggplot(data = elderly_CIs, aes(x = method, y = estimate)) +
+  geom_point() +
+  geom_segment(aes(xend = method, y = lower, yend = upper)) +
+  geom_hline(aes(yintercept = 0), lty = 2) +
+  labs(y = "Estimate and 95% CI (%)", x = "") +
+  theme_minimal(base_size = 13)
+```
+
+Three findings:
+
+- The intervals genuinely disagree. In Example 1 the choice of method was
+  irrelevant; here it changes your answer.
+- The large sample lower bound is nonsensical.
+- It broke because $n\hat{p} = 2 < 10$. The condition is not a formality.
+
+# Hypothesis test for a proportion
+
+The null supplies a specific value $p_0$ from **outside** the data:
+$H_0: p = p_0$.
+
+$$z = \frac{\hat{p}-p_0}{\sqrt{\frac{p_0(1-p_0)}{n}}}$$
+
+The standard error uses $p_0$, **not** $\hat{p}$. A test asks what the world looks
+like *if the null is true*, and the null tells us the proportion, so there is
+nothing left to estimate. A confidence interval has no null to lean on, so it
+falls back on $\hat{p}$.
+
+Condition: $np_0 \geq 10$ and $n(1-p_0) \geq 10$. Again $p_0$, not $\hat{p}$.
+
+## Worked example
+
+200 patients, 33 with reduced or no side-effects, against a historical rate of
+10%. $H_0: p = 0.10$ vs. $H_a: p > 0.10$.
+
+```{r ht-by-hand}
+p.hat <- 33/200
+p.0 <- 0.10
+n <- 200
+
+n * p.0            # expected successes under H0, need >= 10
+n * (1 - p.0)      # expected failures under H0, need >= 10
+
+se <- sqrt(p.0 * (1 - p.0) / n)            # note p.0, not p.hat
+z <- (p.hat - p.0) / se
+c(p.hat, se, z)
+
+pnorm(q = z, lower.tail = FALSE)           # one-sided p-value
+```
+
+The p-value is about 0.0011. If the true rate really were 10%, a sample proportion
+of 16.5% or higher out of 200 patients would happen about once in a thousand
+times. That is strong evidence against the 10% claim.
+
+## The same test in R
+
+```{r ht-prop-test}
+prop.test(x = 33, n = 200, p = 0.10,
+          alternative = "greater", correct = FALSE)
+```
+
+Same p-value, 0.001092. Two things to notice:
+
+- Setting `p = 0.10` is essential. Leave it out and R silently tests $p_0 = 0.5$.
+- R prints `X-squared` rather than $z$, because a squared standard Normal is a
+  chi-square with 1 degree of freedom. Indeed $3.064^2 = 9.389$.
+
+`correct = FALSE` turns off the continuity correction so the answer matches the
+hand calculation. In real work, leave the correction on.
+
+# Sample size for a proportion
+
+$$n = \left(\frac{z^*}{m}\right)^2 p^*(1-p^*)$$
+
+where $m$ is the desired **margin of error** (the *half* width of the interval)
+and $p^*$ is your best guess at the proportion. With no guess, use $p^* = 0.5$,
+which maximizes $p(1-p)$ and so gives the most conservative (largest) $n$.
+
+**Always round up.**
+
+```{r sample-size}
+n_for_prop <- function(m, p.star, conf = 0.95) {
+  z.star <- qnorm(1 - (1 - conf)/2)
+  ceiling((z.star / m)^2 * p.star * (1 - p.star))
+}
+
+n_for_prop(m = 0.04, p.star = 0.5)     # no prior information
+n_for_prop(m = 0.04, p.star = 0.25)    # prior study suggested 25%
+n_for_prop(m = 0.03, p.star = 0.5)     # CI *width* of 6 points
+```
+
+Halving the margin of error roughly quadruples the sample size, because of the
+square in the formula.
+
+## The Twitter bot question
+
+Twitter sampled 9,000 accounts per quarter out of 229 million users, and reported
+fewer than 5% bots. How large a sample is needed for a margin of error of 0.5%?
+
+```{r twitter}
+n_for_prop(m = 0.005, p.star = 0.04)
+```
+
+5,901. Twitter sampled 9,000, so their sample was comfortably large enough.
+
+Notice that **229 million never appears in the formula**. The precision of an
+estimate depends on how many things you looked at, not on how many you did not.
+
+---
+
+# Practice problems
+
+Try these before looking at the answers.
+
+**Problem 1.** In a random sample of 250 adults, 40 reported a particular
+symptom. (a) Compute the large sample 95% CI by hand. (b) Compute the plus four
+interval. (c) Get the Wilson and exact intervals from R. (d) Should the four
+agree here? Explain using the condition.
+
+**Problem 2.** In a small pilot study, 3 of 40 participants had an adverse event.
+(a) Compute the large sample 95% CI. (b) What is wrong with it? (c) Which
+interval would you report instead, and why?
+
+**Problem 3.** A manufacturer claims that at most 2% of its devices are
+defective. In a random sample of 400 devices, 14 are defective. (a) State the
+hypotheses. (b) Check the condition. (c) Compute $z$ and the p-value by hand.
+(d) Confirm with `prop.test`. (e) State the conclusion in the language of the
+problem.
+
+**Problem 4.** You want to estimate a vaccination rate with a 95% confidence
+interval no wider than 4 percentage points. (a) What is $m$? (b) How many people
+do you need with no prior information? (c) A previous survey suggests the rate is
+about 80%. How many now? (d) How much did the previous survey save you?
+
+---
+
+# Answers
+
+## Problem 1
+
+```{r answer-1}
+x <- 40; n <- 250
+
+# (a) large sample
+p.hat <- x/n
+se <- sqrt(p.hat*(1-p.hat)/n)
+p.hat + c(-1, 1) * 1.96 * se
+
+# (b) plus four
+p.tilde <- (x + 2)/(n + 4)
+se4 <- sqrt(p.tilde*(1-p.tilde)/(n + 4))
+p.tilde + c(-1, 1) * 1.96 * se4
+
+# (c) Wilson and exact
+prop.test(x, n)$conf.int
+binom.test(x, n)$conf.int
+
+# (d) condition
+c(n*p.hat, n*(1-p.hat))
+```
+
+(d) Yes, they should agree. $n\hat{p} = 40$ and $n(1-\hat{p}) = 210$, both well
+above 10, so the Normal approximation is sound. The four intervals all sit in the
+region 11.5% to 21.3%, and no two of them differ by as much as a percentage point
+at either end. Any of the four supports the same conclusion.
+
+## Problem 2
+
+```{r answer-2}
+x <- 3; n <- 40
+
+# (a)
+p.hat <- x/n
+se <- sqrt(p.hat*(1-p.hat)/n)
+p.hat + c(-1, 1) * 1.96 * se
+
+n * p.hat   # expected successes
+
+# (c)
+p.tilde <- (x + 2)/(n + 4)
+se4 <- sqrt(p.tilde*(1-p.tilde)/(n + 4))
+p.tilde + c(-1, 1) * 1.96 * se4
+
+binom.test(x, n)$conf.int
+```
+
+(b) The lower bound is negative, which is impossible for a proportion. The
+approximation failed because $n\hat{p} = 3$, well below the required 10.
+
+(c) Report the plus four interval if working by hand (about 2.0% to 20.7%), or
+the exact interval from `binom.test` (about 1.6% to 20.4%). Both stay positive,
+and both are wider than the large sample interval, which is the honest answer
+given only 40 observations.
+
+## Problem 3
+
+```{r answer-3}
+x <- 14; n <- 400; p.0 <- 0.02
+
+# (b) condition, using p.0 not p.hat
+c(n*p.0, n*(1-p.0))
+
+# (c)
+p.hat <- x/n
+se <- sqrt(p.0*(1-p.0)/n)
+z <- (p.hat - p.0)/se
+c(p.hat, se, z)
+pnorm(z, lower.tail = FALSE)
+
+# (d)
+prop.test(x = x, n = n, p = p.0, alternative = "greater", correct = FALSE)
+```
+
+(a) $H_0: p = 0.02$ vs. $H_a: p > 0.02$. The claim is "at most 2%", so the
+scientifically interesting departure is a *higher* defect rate, which makes this
+one-sided. Choose the direction before seeing the data.
+
+(b) $np_0 = 8$, which is just below 10, while $n(1-p_0) = 392$ is fine. The
+condition is marginally violated, so treat the p-value as approximate. `binom.test`
+would be the safer choice here.
+
+(c) $\hat{p} = 3.5\%$, $SE = 0.007$, $z = 2.14$, one-sided p-value about 0.016.
+
+(e) If the true defect rate were 2%, we would see 14 or more defectives in 400
+devices about 1.6% of the time. That is reasonably strong evidence against the
+manufacturer's claim, and in favour of a defect rate above 2%. Given the marginal
+condition, we would want to confirm with the exact test before acting on it.
+
+## Problem 4
+
+```{r answer-4}
+# (a) width 4 points => m = 0.02
+n_for_prop(m = 0.02, p.star = 0.5)     # (b)
+n_for_prop(m = 0.02, p.star = 0.8)     # (c)
+
+n_for_prop(m = 0.02, p.star = 0.5) - n_for_prop(m = 0.02, p.star = 0.8)
+```
+
+(a) $m = 0.02$. The margin of error is the *half* width, so a width of 4
+percentage points means $m$ is 2 percentage points. This is the single most common
+error on sample size questions.
+
+(b) 2401 people.
+
+(c) 1537 people, because $0.8 \times 0.2 = 0.16$ is well below the worst case
+$0.5 \times 0.5 = 0.25$.
+
+(d) 864 fewer people, about a 36% reduction in the size of the survey, for the
+price of a literature search. This is why pilot studies and prior surveys are
+worth reading before you design a study.

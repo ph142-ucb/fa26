@@ -3,7 +3,7 @@ title: Week 11
 days:
   - date: 2026-11-02
     events:
-      "**Lecture 26**{: .label .label-lec} Inference for a population proportion":
+      "**Lecture 25**{: .label .label-lec} [Inference for a population proportion](https://ph142-ucb.github.io/fa26/src/lec/l25-prop.pdf) [(Student code Rmd)](https://ph142-ucb.github.io/fa26/src/lec/l25-student-code.Rmd)":
         "Ch. 19"
       "**Lab 9**{: .label .label-lab} Inference for Proportions — Released":
       "**Homework 8**{: .label .label-hw} Released":
