@@ -1,0 +1,371 @@
+---
+title: "L26: Comparing two proportions"
+output: html_document
+---
+
+```{r load-libraries, include=FALSE, message=FALSE, warning=FALSE}
+library(tibble)
+library(ggplot2)
+knitr::opts_chunk$set(fig.align = "center", message = FALSE, warning = FALSE)
+options(width = 90)
+```
+
+Every calculation from L26 in one runnable place. Last lecture there was one group
+and we estimated a single proportion. Today there are two independent groups and
+the quantity of interest is the **difference** between their proportions.
+
+There is no external data file. Every number below is typed in from the slides.
+Try the practice problems at the bottom before checking the answers.
+
+## The one thing to keep straight
+
+There are two standard errors in this lecture, and they are not interchangeable.
+
+| Purpose | Standard error | Why |
+|---------|----------------|-----|
+| Confidence interval | $\sqrt{\frac{\hat{p}_1(1-\hat{p}_1)}{n_1} + \frac{\hat{p}_2(1-\hat{p}_2)}{n_2}}$ | no null to lean on, so use the two separate estimates |
+| Hypothesis test | $\sqrt{\hat{p}(1-\hat{p})\left(\frac{1}{n_1}+\frac{1}{n_2}\right)}$ | under $H_0$ there is only **one** proportion, so pool |
+
+The pooled estimate is
+
+$$\hat{p} = \frac{\text{successes in both samples}}{\text{individuals in both samples}}$$
+
+Also: **you** choose which group is population 1. Swapping the labels flips the
+sign of the difference and reflects the interval about zero. It changes nothing
+else. State your choice before you interpret anything.
+
+## Which method when
+
+| Situation | Confidence interval | Test |
+|-----------|---------------------|------|
+| Successes and failures > 10 in **both** samples | large sample formula | pooled $z$ test |
+| Small samples, at least 5 per group | plus four formula | `prop.test()` |
+| In R, any time | `prop.test(x, n)` | `prop.test(x, n)` |
+
+# Example 1: the DVT trial (large samples)
+
+Immobilized patients randomized to Fragamin or placebo, outcome is deep vein
+thrombosis.
+
+| | DVT | no DVT | Total | $\hat{p}$ |
+|---|---|---|---|---|
+| Fragamin | 42 | 1476 | 1518 | 0.0277 |
+| Placebo | 73 | 1400 | 1473 | 0.0496 |
+
+## Check the condition first
+
+```{r dvt-condition}
+c(42, 1476, 73, 1400)      # successes and failures, both arms
+```
+
+All four counts are far above 10, so the large sample method applies.
+
+## Large sample confidence interval by hand
+
+Take **population 1 = placebo** and **population 2 = Fragamin**, so a positive
+difference means more clots on placebo.
+
+```{r dvt-ci}
+p1 <- 73/1473                             # placebo
+p2 <- 42/1518                             # Fragamin
+n1 <- 1473
+n2 <- 1518
+
+se <- sqrt(p1*(1-p1)/n1 + p2*(1-p2)/n2)   # variances add, square root last
+c(p1, p2, p1 - p2, se)
+
+(p1 - p2) + c(-1, 1) * 1.96 * se          # 95% CI
+```
+
+The whole interval sits above 0.
+
+Note the pairing under the square root: `n1` goes with `p1`, `n2` with `p2`.
+Crossing them is the most common arithmetic error on this formula.
+
+## Hypothesis test by hand
+
+$H_0: p_1 = p_2$ against $H_a: p_1 \neq p_2$.
+
+```{r dvt-test}
+p.pool <- (42 + 73) / (1518 + 1473)       # pooled estimate, ALL the data
+p.pool
+
+se.0 <- sqrt(p.pool*(1-p.pool)*(1/n1 + 1/n2))   # note: pooled, not p1 and p2
+se.0
+
+z <- (p1 - p2) / se.0
+z
+
+pnorm(q = z, lower.tail = FALSE) * 2      # two-sided p-value
+```
+
+The p-value is about 0.0019. If Fragamin truly did nothing, a gap this large
+between the two arms would arise about twice in a thousand trials.
+
+Compare `se` (0.00705) with `se.0` (0.00703). They are close here because the two
+proportions are close, but they are computed from genuinely different assumptions.
+
+## The same test in R
+
+```{r dvt-proptest}
+prop.test(x = c(42, 73),      # successes
+          n = c(1518, 1473))  # sample sizes, same order
+```
+
+Read the output bottom up:
+
+- `prop 1` = 0.0277 and `prop 2` = 0.0496 confirm that **Fragamin** went in first
+  this time, the opposite of the hand calculation above.
+- so the reported CI of -0.036 to -0.007 is the mirror image of the hand interval
+  0.007 to 0.036. Same finding, opposite labelling.
+- `X-squared` is not a typo. A squared standard Normal is a chi-square with 1
+  degree of freedom, and $z^2 = 3.11^2 = 9.69$.
+
+## Matching the hand calculation exactly
+
+R applies a continuity correction by default, which is why its p-value (0.002546)
+is slightly larger than ours (0.001853). Turn it off to reproduce the hand answer:
+
+```{r dvt-nocc}
+prop.test(x = c(42, 73), n = c(1518, 1473), correct = FALSE)$p.value
+prop.test(x = c(42, 73), n = c(1518, 1473), correct = FALSE)$statistic  # = z^2
+```
+
+In real work leave the correction on. Turn it off only to check your own
+arithmetic.
+
+## Group order changes the sign and nothing else
+
+```{r dvt-order}
+prop.test(x = c(42, 73), n = c(1518, 1473))$conf.int   # Fragamin first
+prop.test(x = c(73, 42), n = c(1473, 1518))$conf.int   # placebo first
+```
+
+Same width, same p-value, mirrored endpoints. This is why a bare number is not an
+answer.
+
+# Example 2: the flu vaccine trial (small samples)
+
+| | Flu | no Flu | Total | $\hat{p}$ |
+|---|---|---|---|---|
+| Vaccine | 4 | 96 | 100 | 0.04 |
+| Placebo | 11 | 89 | 100 | 0.11 |
+
+## Why the large sample method is unavailable
+
+```{r flu-condition}
+c(4, 96, 11, 89)      # 4 successes is below 10
+```
+
+Two hundred people is a respectable trial, but the event is rare. Information here
+is carried by the number of **events**, not the number of people.
+
+## Plus four interval by hand
+
+Add 1 success and 1 failure to **each** group, so each denominator gains 2.
+
+```{r flu-plus4}
+pt1 <- (4 + 1)/(100 + 2)                  # vaccine
+pt2 <- (11 + 1)/(100 + 2)                 # placebo
+c(pt1, pt2)
+
+se4 <- sqrt(pt1*(1-pt1)/102 + pt2*(1-pt2)/102)
+se4
+
+(pt2 - pt1) + c(-1, 1) * 1.96 * se4       # placebo minus vaccine
+```
+
+That is -0.007 to 0.144, or **-0.7% to 14.4%** in percentage points. Watch the
+scale. Mixing proportions and percentages is how answers end up off by a factor of
+one hundred.
+
+## The same interval from R
+
+```{r flu-proptest}
+prop.test(x = c(11, 4), n = c(100, 100))
+```
+
+R's interval, -1.2% to 15.2%, is a little wider than the plus four interval
+because of the continuity correction. Both contain 0, so both give the same
+conclusion.
+
+R never checks the sample size condition. It did not notice that one arm had only
+4 events, and it never will. That check is your job.
+
+## Comparing the two intervals
+
+```{r flu-plot, out.width="70%", fig.width=6.5, fig.height=2.8}
+flu_CIs <- tibble(
+  method   = c("Plus four", "prop.test"),
+  lower    = c(-0.7, -1.2),
+  upper    = c(14.4, 15.2),
+  estimate = c(6.9, 7.0))
+
+ggplot(flu_CIs, aes(x = method, y = estimate)) +
+  geom_point(size = 2) +
+  geom_segment(aes(xend = method, y = lower, yend = upper)) +
+  geom_hline(aes(yintercept = 0), lty = 2) +
+  scale_y_continuous(limits = c(-4, 18)) +
+  labs(y = "Extra flu cases on placebo\n(percentage points)", x = "") +
+  coord_flip() +
+  theme_minimal(base_size = 12)
+```
+
+Both intervals cross zero, so we cannot rule out that the vaccine does nothing.
+But look how much of each interval sits to the right of zero. The honest
+conclusion is not "the vaccine does not work". It is "this study is too small to
+settle the question".
+
+---
+
+# Practice problems
+
+Try these before looking at the answers.
+
+**Problem 1.** In a cohort study, 150 of 500 exposed people and 120 of 500
+unexposed people developed the outcome. (a) Check the condition. (b) Compute the
+large sample 95% CI by hand for exposed minus unexposed. (c) Confirm with
+`prop.test`. (d) Does the interval contain 0, and what does that imply about a
+two-sided test at the 0.05 level?
+
+**Problem 2.** A pilot study finds an adverse event in 2 of 30 patients on drug A
+and 8 of 32 on drug B. (a) Why can you not use the large sample interval?
+(b) Compute the plus four 95% CI for B minus A. (c) Compare with `prop.test`.
+
+**Problem 3.** 30 of 200 patients on standard care and 45 of 190 on the new
+protocol were readmitted. (a) State the hypotheses. (b) Compute the pooled
+proportion and the standard error. (c) Compute $z$ and the two-sided p-value by
+hand. (d) Confirm with `prop.test(..., correct = FALSE)`. (e) State the
+conclusion in the language of the problem.
+
+**Problem 4.** Using the numbers from Problem 3, (a) compute the confidence
+interval standard error and the test standard error and say why they differ.
+(b) Run `prop.test` with the two groups in each order and describe exactly what
+changes.
+
+---
+
+# Answers
+
+## Problem 1
+
+```{r answer-1}
+x <- c(150, 120); n <- c(500, 500)
+
+# (a) condition: successes and failures in both groups
+c(x, n - x)
+
+# (b) exposed = group 1
+p1 <- 150/500; p2 <- 120/500
+se <- sqrt(p1*(1-p1)/500 + p2*(1-p2)/500)
+c(p1, p2, p1 - p2, se)
+(p1 - p2) + c(-1, 1) * 1.96 * se
+
+# (c)
+prop.test(x, n)$conf.int
+prop.test(x, n)$p.value
+```
+
+(a) The four counts are 150, 120, 350 and 380, all far above 10, so the large
+sample method is fine.
+
+(b) The difference is 0.06 with a standard error of 0.028, giving a 95% CI of
+about 0.5% to 11.5% higher risk in the exposed group.
+
+(d) The interval excludes 0, so a two-sided test at the 0.05 level rejects the
+null. The p-value from `prop.test` is about 0.04, which agrees. For a two-sided
+test these two statements always travel together.
+
+## Problem 2
+
+```{r answer-2}
+# (a) condition
+c(2, 30 - 2, 8, 32 - 8)
+
+# (b) plus four, drug B minus drug A
+pt.A <- (2 + 1)/(30 + 2)
+pt.B <- (8 + 1)/(32 + 2)
+se4 <- sqrt(pt.A*(1-pt.A)/32 + pt.B*(1-pt.B)/34)
+c(pt.A, pt.B, pt.B - pt.A, se4)
+(pt.B - pt.A) + c(-1, 1) * 1.96 * se4
+
+# (c)
+prop.test(x = c(8, 2), n = c(32, 30))$conf.int
+```
+
+(a) Drug A had only 2 events, well below the 10 required, so the Normal
+approximation is not trustworthy. Both groups clear the plus four requirement of
+at least 5 observations.
+
+(b) The plus four estimate of the difference is about 17 percentage points, with a
+95% CI of roughly -1% to 35%.
+
+(c) `prop.test` gives a similar but slightly wider interval, again because of the
+continuity correction. Both contain 0. With 30 patients per arm this study cannot
+distinguish a large effect from no effect, which is the usual fate of a pilot.
+
+R also prints `Chi-squared approximation may be incorrect`. That warning is R
+noticing the same thing you noticed in part (a), that the counts are too small for
+the Normal approximation. It is the one condition check R does volunteer, and it
+only appears for the test, never for the interval.
+
+## Problem 3
+
+```{r answer-3}
+x <- c(30, 45); n <- c(200, 190)
+
+# (b) pooled proportion and test standard error
+p.pool <- sum(x)/sum(n)
+se.0 <- sqrt(p.pool*(1-p.pool)*(1/200 + 1/190))
+c(p.pool, se.0)
+
+# (c)
+p1 <- 30/200; p2 <- 45/190
+z <- (p1 - p2)/se.0
+c(p1, p2, z)
+pnorm(abs(z), lower.tail = FALSE) * 2
+
+# (d)
+prop.test(x, n, correct = FALSE)
+```
+
+(a) $H_0: p_1 = p_2$, the readmission rate is the same under both protocols,
+against $H_a: p_1 \neq p_2$. Two-sided, because a new protocol could plausibly do
+harm as well as good.
+
+(b) The pooled proportion is 75/390 = 0.192 and the test standard error is 0.040.
+
+(c) $\hat{p}_1 = 0.15$, $\hat{p}_2 = 0.237$, $z = -2.18$, two-sided p-value about
+0.030.
+
+(e) Readmission was about 8.7 percentage points more common under the new
+protocol. If the two protocols truly performed the same, a gap this large would
+appear about 3 times in 100 studies. That is reasonably strong evidence that the
+new protocol readmits more patients, and it is the opposite of what was intended.
+
+## Problem 4
+
+```{r answer-4}
+# (a) the two standard errors
+se.ci <- sqrt(p1*(1-p1)/200 + p2*(1-p2)/190)     # separate estimates
+se.0  <- sqrt(p.pool*(1-p.pool)*(1/200 + 1/190)) # pooled
+c(se.ci, se.0)
+
+# (b) order of the groups
+prop.test(c(30, 45), c(200, 190), correct = FALSE)$conf.int
+prop.test(c(45, 30), c(190, 200), correct = FALSE)$conf.int
+prop.test(c(30, 45), c(200, 190), correct = FALSE)$p.value
+prop.test(c(45, 30), c(190, 200), correct = FALSE)$p.value
+```
+
+(a) They differ because they answer different questions. The confidence interval
+has no null hypothesis to lean on, so it estimates each group's variability
+separately. The test is computed inside the assumption that the null is true, and
+under that assumption there is only one proportion, so all 390 observations
+estimate it. Here the two values are 0.03986 and 0.03993, close enough that it
+makes no practical difference, but that is a coincidence of this data set and not
+a rule.
+
+(b) Only the sign of the confidence interval changes. The endpoints are mirrored
+about zero, the width is identical, and the p-value is exactly the same. Which
+group you type first is a labelling decision, not a statistical one.
