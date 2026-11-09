@@ -3,7 +3,7 @@ title: Week 12
 days:
   - date: 2026-11-09
     events:
-      "**Lecture 29**{: .label .label-lec} The Chi-square test for goodness of fit":
+      "**Lecture 27**{: .label .label-lec} [The Chi-square test for goodness of fit](https://ph142-ucb.github.io/fa26/src/lec/l27-goodnessoffit.pdf) [(Rmd)](https://ph142-ucb.github.io/fa26/src/lec/l27-goodnessoffit.Rmd)":
         "Ch. 21"
       "**Lab 10**{: .label .label-lab} Problem set on the Chi-square test — Released":
       "**Homework 9**{: .label .label-hw} Released":

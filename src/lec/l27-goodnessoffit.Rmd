@@ -1,0 +1,451 @@
+---
+title: "L27: The chi-squared goodness of fit"
+output:
+  beamer_presentation:
+    slide_level: 3
+  ioslides_presentation: default
+  slidy_presentation: default
+header-includes:
+- \usetheme{Goettingen}
+- \renewcommand{\textbf}{\structure}
+- \renewcommand{\mathbf}{\structure}
+- \addtobeamertemplate{navigation symbols}{}{ \usebeamerfont{footline} }
+- \addtobeamertemplate{navigation symbols}{}{ \usebeamercolor[fg]{footline} }
+- \addtobeamertemplate{navigation symbols}{}{ \insertframenumber/\inserttotalframenumber
+  }
+- \usepackage[os=win]{menukeys}
+- \usepackage{soul}
+- \usepackage{xcolor}
+- \usepackage{caption}
+- \usepackage[os=win]{menukeys}
+- \usepackage{copyrightbox}
+classoption: aspectratio=169
+---
+
+```{r setup, include=FALSE, purl=FALSE}
+options(width = 65)
+library(knitr) # for include_graphics()
+library(dplyr)
+library(forcats)
+library(readr)
+library(ggplot2)
+library(broom)
+library(tidyr)
+library(tibble)
+```
+
+### Goals for this lecture
+- Goodness of fit:  looking at one variable with multiple categories
+- Introduce the chi-squared 
+
+
+## One variable with multiple categories
+
+### One categorical variable with more than 2 categories
+- With one sample of a categorical variable with two categories (binary, yes/no) we tested that the proportion was equal to a hypothesized null (one sample test of proportions)
+- When we had two samples or two groups we compared the difference in proportions.
+- What do we do with one sample and a categorical variable when there are more than 2 categories?
+
+
+### One categorical variable with more than 2 categories
+The general recipe we will follow for these types of variables is:
+
+- estimate how many observations we would expect in each category under our null hypothesis
+- compare the number of observations in each category to the expected value
+- summarize these differences and compare them to a theoretical distribution 
+
+### Jury Selection example
+
+Suppose that the following number of people were selected for jury duty in the 
+previous year, in a county where jury selection was supposed to be random. 
+
+| Ethnicity      | White | Black | Latinx     | Asian      | Other | Total |
+|-----------------|-------|-------|------------|------------|-------|-------|
+| Number selected | 1920  | 347   | 19         | 84         | 130   | 2500  |
+
+You read online about concerns that jury was not selected randomly. How can
+you test this evidence?
+
+- Example derived from this [video](https://www.youtube.com/watch?v=Uk36WGxujkc).
+
+### Jury Selection example
+
+Consider the distribution of race/ethnicity in the county overall:
+
+| Ethnicity          | White | Black | Latinx | Asian  | Other | Total |
+|---------------------|-------|-------|--------|--------|-------|-------|
+| % in the population | 42.2% | 10.3%| 25.1%  | 17.1%   | 5.3% | 100%  |
+
+
+
+How do we determine the counts that are **expected** (**E**) under the assumption that selection was random?
+
+| Ethnicity      | White | Black | Latinx     | Asian      | Other | Total |
+|-----------------|-------|-------|------------|------------|-------|-------|
+| Expected count  |       |       |            |            |       | 2500  |
+
+
+### Jury Selection example
+
+| Ethnicity          | White | Black | Latinx | Asian  | Other | Total |
+|---------------------|-------|-------|--------|--------|-------|-------|
+| % in the population | 42.2% | 10.3%| 25.1%  | 17.1%   | 5.3% | 100%  |
+
+- To fill in the table, multiply the total size of the jury by the % of the
+population of each race/ethnicity:
+
+Expected counts under the assumption that selection is random from the county:
+
+| Ethnicity      | White       | Black     | Latinx     | Asian      | Other       | Total |
+|:---------------:|:-----------:|:-----------:|:----------:|:----------:|:-----------:|:-----:|
+| Expected count  | 2500 $\times$ 0.422 | 2500 $\times$ 0.103 | 2500 $\times$ 0.251 | 2500 $\times$ 0.171| 2500 $\times$ 0.053 | 2500  |
+| = | 1055  | 257.5 | 627.5      |  427.5     | 132.5 | 2500  |
+
+
+### Jury Selection example
+
+How far off does the **observed counts** of race/ethnicities in the sample differ
+from what we would expect if the jury had been selected randomly?
+
+### Jury Selection example
+
+Here are the counts we **observed** (**O**):
+
+| Ethnicity      | White | Black | Latinx     | Asian      | Other | Total |
+|-----------------|-------|-------|------------|------------|-------|-------|
+| Observed count  | 1920  | 347   | 19         | 84         | 130   | 2500  |
+
+Which we can compare to our **expected** (**E**):
+
+| Ethnicity      | White       | Black     | Latinx     | Asian      | Other       | Total |
+|:---------------:|:-----------:|:-----------:|:----------:|:----------:|:-----------:|:-----:|
+| Expected count  |  1055  | 257.5 | 627.5      |  427.5     | 132.5 | 2500  |
+
+
+
+### Jury Selection example
+
+What is the chance of deviations of these magnitudes (or larger) under the null
+hypothesis?
+
+```{r jury-plot, out.width="70%", fig.width=8, fig.height=3.6, fig.align='center', echo=FALSE}
+observed_counts <- c(1920, 347,   19,    84,    130)
+expected_counts <- c(1055, 257.5, 627.5, 427.5, 132.5)
+race <- c("White", "Black", "Latinx", "Asian", "Other")
+jury_data <- data.frame(observed_counts, expected_counts, race)
+
+ggplot(jury_data, aes(y = race, x = observed_counts)) +
+  geom_segment(aes(xend = expected_counts, yend = race)) +
+  geom_point(aes(col = "Observed"), size = 2.5) +
+  geom_point(aes(col = "Expected", x = expected_counts), size = 2.5) +
+  theme_minimal(base_size = 12) +
+  labs(x = "Number of jurors", y = "Race/ethnicity", col = NULL,
+       title = "Observed vs. expected number of jurors")
+```
+
+### Jury Selection example
+
+- Recall the usual form of the test statistic:
+
+$$\frac{estimate - null}{SE}$$
+
+- We want an estimate that somehow quantifies how different the observed counts ($O$)
+are from the expected counts ($E$) across the 5 race/ethnicities. 
+
+### The Chi-square test statistic
+
+The chi^2^ test statistic quantifies the magnitude of the difference between observed
+and expected counts under the null hypothesis. It looks like this:
+
+$$\chi^2 = \sum_{i=1}^k\frac{(O_i-E_i)^2}{E_i}$$
+
+- $k$ is the number of cells in the table. Here, $k$ is the number of race/ethnicity groups. That is, $k=5$
+- $O_i$ is the observed count for the $i^{th}$ group (here race/ethnicity)
+- $E_i$ is the expected count for the $i^{th}$ group 
+- $\chi^2$ is a distribution, like $t$ or Normal.
+
+### The Chi-square test statistic
+
+$$\chi^2 = \sum_{i=1}^k\frac{(O_i-E_i)^2}{E_i}$$
+
+- The numerator measures the squared deviations between the observed (O) and 
+expected (E) values. Bigger deviations will make the test statistic larger 
+(which means that its corresponding p-value will be smaller)
+
+- The denominator makes this magnitude *relative* to what we expect. This adjusts
+for the different magnitude of expected counts. For example, with our example, we
+would *expect* the number of white jurors to be close to 1055, but we would expect
+the number of Latinx jurors to be close to 628. Therefore, we divide by these
+expectations, so that a shortfall of 100 Latinx jurors counts for more than a
+shortfall of 100 white jurors.
+
+
+### Conditions to perform a chi-square test
+
+- Fixed $n$ of observations
+- All observations are independent of one another. What does this mean in our jury example?
+- Each observation falls into just one of the $k$ mutually exclusive categories
+- The probability of a given outcome is the same for each observation. 
+
+### Counts requirement
+
+- At least 80% of the cells have 5 or more expected observations ($E_i \geq 5$ for $\geq$ 80% of the cells)
+- All $k$ cells have expected counts > 1 ($E_i > 1$)
+
+
+## The Chi-Square distribution
+
+### The Chi-square distribution
+
+The chi-square distribution is a new distribution to us. Like the t-distribution,
+the chi-square distribution has a degrees of freedom parameter that changes the shape of the distribution. The degrees of freedom is equal to the number of groups (here, race/ethnicities) - 1.
+Or, $df=k-1$.
+
+```{r chisq-shapes, out.width="58%", fig.width=6.5, fig.height=3.6, fig.align='center', echo=FALSE}
+# the chi-square distribution at varying degrees of freedom
+df_levels <- c("df=2", "df=4", "df=9", "df=15")
+
+ggplot(data = data.frame(x = c(0.1, 30)), aes(x)) +
+  stat_function(fun = dchisq, n = 201, args = list(df = 2),
+                aes(col = factor("df=2", df_levels))) +
+  stat_function(fun = dchisq, n = 201, args = list(df = 4),
+                aes(col = factor("df=4", df_levels))) +
+  stat_function(fun = dchisq, n = 201, args = list(df = 9),
+                aes(col = factor("df=9", df_levels))) +
+  stat_function(fun = dchisq, n = 201, args = list(df = 15),
+                aes(col = factor("df=15", df_levels))) +
+  coord_cartesian(ylim = c(0, 0.25)) +
+  theme_minimal(base_size = 12) +
+  labs(x = NULL, y = "Density", col = NULL,
+       title = "Chi-squared distributions")
+```
+
+### The shape of the Chi-square
+- As the `df` is increased, the distribution's central tendency moves to the right.
+- This means that there will be more probability out in the right tail when the
+degrees of freedom is higher. 
+- The chi-square distribution is also positive. We only ever compute upper tail 
+probabilities for the chi-square test because there is only one form to the $H_a$.
+
+### Back to the jury example
+
+**State the null and alternative hypotheses.** 
+
+- The null hypothesis is that the proportions of each race/ethnicity in the jury 
+pool is the same as the proportion of each group in the county. That is:
+
+$H_0: p_{white} = 42.2\% \text{, }p_{black}=10.3\%\text{, }p_{latinx}=25.1\%\text{, }p_{asian}=17.1\%\text{, }p_{other}=5.3\%$
+
+$H_a:$ At least one of $p_k$ is different than specified in $H_0$, for k being 
+one of white, black, latinx, asian, or other.
+
+### Back to the jury example
+
+**Calculate the chi-square statistic using the jury data.**
+
+| Ethnicity      | White | Black | Latinx     | Asian      | Other | Total |
+|-----------------|-------|-------|------------|------------|-------|-------|
+| O               | 1920  | 347   | 19         | 84         | 130   | 2500  |
+| E               | 1055  | 257.5 | 627.5      | 427.5      | 132.5 | 2500  |
+
+$\chi^2 = \sum_{i=1}^k\frac{(O_i-E_i)^2}{E_i}$
+
+$\chi^2 = \frac{(1920-1055)^2}{1055} + \frac{(347-257.5)^2}{257.5} + \frac{(19-627.5)^2}{627.5} + \frac{(84-427.5)^2}{427.5} + \frac{(130-132.5)^2}{132.5}$
+
+$\chi^2 = 709.218 + 31.10777 + 590.0753 + 276.0053 + 0.04716981$
+
+$\chi^2 = 1606.454$
+
+### Back to the jury example
+
+**Calculate the p-value (what is the appropriate degrees of freedom?).**
+
+```{r jury-pvalue}
+pchisq(q = 1606.454, df = 4, lower.tail = FALSE)
+```
+
+The probability of seeing this pool of people chosen for jury duty under the 
+null hypothesis of random sampling from the county is so small that R rounded 
+the p-value to 0! 
+
+### Chi-square test in R
+
+**Run the chi-square test using the `chisq.test` command in R.**
+
+```{r jury-chisq}
+# x = observed counts, p = probabilities under the null
+chisq.test(x = c(1920, 347, 19, 84, 130),
+           p = c(.422, .103, .251, .171, .053))
+```
+
+### Interpretation
+
+- Which race/ethnicities appear to deviate the most from what was expected under
+the null hypothesis?
+    - Compare the proportion observed vs. proportion expected
+    - Compare the count observed vs. the count expected
+    - Compare the 5 contributions to the chi-square test from each race/ethnicity.
+    We see that whites, Latinx, and Asians contribute the most to the $\chi^2$
+    statistic. This agrees with what we saw in the data visualization in terms
+    of the size of the gaps between observed and expected counts.
+
+### The picture behind the test statistic
+
+The biggest gaps below are exactly the categories that contribute most to $\chi^2$.
+
+```{r jury-plot-again, echo=FALSE, out.width="70%", fig.width=8, fig.height=3.4, fig.align='center'}
+ggplot(jury_data, aes(y = race, x = observed_counts)) +
+  geom_segment(aes(xend = expected_counts, yend = race)) +
+  geom_point(aes(col = "Observed"), size = 2.5) +
+  geom_point(aes(col = "Expected", x = expected_counts), size = 2.5) +
+  theme_minimal(base_size = 12) +
+  labs(x = "Number of jurors", y = "Race/ethnicity", col = NULL,
+       title = "Observed vs. expected number of jurors")
+```
+
+## Statistics is Everywhere
+
+### COVID vaccine roll out
+
+```{r, fig.align='center', out.width="65%", echo=FALSE }
+knitr::include_graphics("bloomberg.PNG")
+```
+
+### COVID vaccine roll out
+One hypothesis in the article is that "Now that almost all adults in the U.S. are eligible for Covid vaccines, the racial and ethnic disparities among those getting shots should narrow."
+
+### Visualization by race/ethnicity
+
+```{r, fig.align='center', out.width="65%", echo=FALSE }
+knitr::include_graphics("bystate.PNG")
+```
+
+How do we know if the variability is due to chance?
+
+How could we see what the distribution is like for Alameda County?
+
+### From Alameda County Data website 16 April 2021
+
+```{r, fig.align='center', out.width="65%", echo=FALSE }
+knitr::include_graphics("vaccine.PNG")
+```
+
+### Example 2:  Alameda
+
+| Race/ethnicity   | Doses given | % of population |
+|:-----------------|------------:|----------------:|
+| White            |     209,299 |           30.6% |
+| Pacific Islander |       5,024 |            0.9% |
+| Native American  |       2,012 |            1.1% |
+| Multirace        |       6,617 |            5.4% |
+| Latinx           |      77,668 |           18.7% |
+| Asian            |     194,647 |           32.3% |
+| AA/Black         |      45,509 |           11.0% |
+| **Total**        | **540,776** |        **100%** |
+
+We remove "unknown" for now and subtract them from the total, leaving 540,776
+individuals vaccinated with known race/ethnicity.
+
+### Example 2:  Alameda
+
+Now compare the share of the population to the share of the doses:
+
+| Race/ethnicity   | % of population | % of doses |
+|:-----------------|----------------:|-----------:|
+| White            |           30.6% |      38.7% |
+| Pacific Islander |            0.9% |       0.9% |
+| Native American  |            1.1% |       0.4% |
+| Multirace        |            5.4% |       1.2% |
+| Latinx           |           18.7% |      14.4% |
+| Asian            |           32.3% |      36.0% |
+| AA/Black         |           11.0% |       8.4% |
+
+### Example 2:  Alameda Chi-square test in R
+
+**Run the chi-square test using the `chisq.test` command in R.**
+
+```{r alameda-chisq}
+doses <- c(209299, 5024, 2012, 6617, 77668, 194647, 45509)
+pop_p <- c(.306, .009, .011, .054, .187, .323, .110)
+chisq.test(x = doses, p = pop_p)
+```
+
+
+### Example 3:  cheating at dice?
+Suppose there is a game in which the objective is to roll as many sixes as
+possible using 3 dice. Over 100 rolls, one of the players seems to be winning
+quite often, and we see the following.
+
+| Number of 6s    | 0     | 1     | 2    | 3    | 
+|:---------------:|:-----:|:-----:|:----:|:----:|
+| Observed rolls  |  47   | 35    | 15   |  3   |
+
+We suspect they are using a loaded die or cheating in some way.  
+
+Are they cheating?  Or just lucky (within the bounds of chance)?
+
+Example derived from [this](http://www.stat.yale.edu/Courses/1997-98/101/chigf.htm) site
+
+### Example 3:  cheating at dice?
+What would we expect?  
+The rolls of dice should follow a binomial distribution (# of successes in # trials)
+
+
+$$P(X=k)={n\choose k}p^k(1-p)^{n-k}$$
+What is $p$ here?  What is $n$?
+
+### Example 3:  cheating at dice?
+Remember `dbinom`?
+
+`dbinom(x, size, prob)`
+
+This function calculates the probability of observing `x` successes when $X \sim Binom(n,p)$
+
+```{r binoms, echo=TRUE}
+Expected <- dbinom(0:3, size = 3, prob = 1/6)
+Expected
+```
+
+### Example 3:  cheating at dice?
+
+| Number of 6s    | 0     | 1     | 2    | 3    | 
+|:---------------:|:-----:|:-----:|:----:|:----:|
+| Observed rolls  |  47   | 35    | 15   |  3   |
+| Expected rolls  |  57.9 | 34.7  | 6.9  |  **0.46**|
+
+Keep an eye on that last expected count.
+
+
+### Example 3:  cheating at dice?
+```{r dice-chisq}
+chisq.test(x = c(47, 35, 15, 3), p = Expected)
+```
+
+### Example 3:  check the conditions!
+
+- R warned us. Look back at the expected counts. The "3 sixes" cell has
+$E_4 = 0.46$, which breaks our rule that every cell needs $E_i > 1$.
+- The usual fix is to **collapse** sparse categories. Here we combine "2 sixes"
+and "3 sixes" into a single "2 or more" category.
+
+```{r dice-collapsed}
+p_2plus <- 1 - dbinom(0, 3, 1/6) - dbinom(1, 3, 1/6)
+Expected2 <- c(dbinom(0:1, size = 3, prob = 1/6), p_2plus)
+chisq.test(x = c(47, 35, 18), p = Expected2)
+```
+
+- Now every expected count is above 5, and the conclusion is unchanged.
+
+
+
+### Parting humor, courtesy of the Comedian Erik Tanouye
+
+```{r parting, fig.align='center', out.width="65%", echo=FALSE }
+knitr::include_graphics("wildwild.jpg")
+```
+
+
+
+
+
+
