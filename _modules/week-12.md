@@ -12,7 +12,7 @@ days:
       "**No Lecture**{: .label .label-purple} **Holiday**":
   - date: 2026-11-13
     events:
-      "**Lecture 28**{: .label .label-lec} [The Chi-square test for two way tables](https://ph142-ucb.github.io/fa26/src/lec/l28-chi.pdf) [(Rmd)](https://ph142-ucb.github.io/fa26/src/lec/l28-chi.Rmd)":
+      "**Lecture 28**{: .label .label-lec} [The Chi-square test for two way tables](https://ph142-ucb.github.io/fa26/src/lec/l28-chi.pdf) [(Rmd)](https://raw.githubusercontent.com/ph142-ucb/fa26/main/src/lec/l28-chi.Rmd)":
         "Ch. 22"
   - date: 2026-11-14
     events:
