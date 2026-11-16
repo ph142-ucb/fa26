@@ -3,7 +3,7 @@ title: Week 13
 days:
   - date: 2026-11-16
     events:
-      "**Lecture 32**{: .label .label-lec} Inference for regression I":
+      "**Lecture 29**{: .label .label-lec} [Inference for regression I](https://ph142-ucb.github.io/fa26/src/lec/l29-reginf.pdf) [(Student code Rmd)](https://raw.githubusercontent.com/ph142-ucb/fa26/main/src/lec/l29-student-code.Rmd) [(Ch03_Manatee-deaths.csv)](https://ph142-ucb.github.io/fa26/src/lec/Ch03_Manatee-deaths.csv)":
       "**Lab 11**{: .label .label-lab} Regression Models and Checking Model Assumptions — Released":
       "**Homework 10**{: .label .label-hw} Released":
   - date: 2026-11-18

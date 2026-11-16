@@ -1,0 +1,555 @@
+---
+title: "L29: Inference for linear regression"
+output: html_document
+---
+
+```{r load-libraries, include=FALSE, message=FALSE, warning=FALSE}
+library(readr)
+library(dplyr)
+library(tidyr)
+library(tibble)
+library(ggplot2)
+library(broom)
+library(patchwork)
+knitr::opts_chunk$set(fig.align = "center", message = FALSE, warning = FALSE)
+options(width = 90)
+```
+
+Every calculation from L29 in one runnable place. In Part I you fitted a line and
+read off a slope. This lecture attaches uncertainty to that slope, using the same
+machinery (standard error, t distribution, confidence interval, p-value) that you
+have used all through Part III.
+
+The only external file you need is `Ch03_Manatee-deaths.csv`, which should sit in
+the same folder as this file. Everything else is created in the code below. Try
+the practice problems at the bottom before checking the answers.
+
+## The three broom functions
+
+Keep these straight by what each one gives *back*:
+
+| Function | Returns | Go there for |
+|----------|---------|--------------|
+| `tidy(your_lm)` | one row per coefficient | estimate, std.error, statistic, p.value |
+| `glance(your_lm)` | one row for the model | `r.squared`, `sigma` |
+| `augment(your_lm)` | one row per observation | `.fitted`, `.resid` (every diagnostic plot) |
+
+# Part I recap: the manatees
+
+Each row is one year. `powerboats` is the number of powerboats registered in
+Florida that year (in thousands), and `deaths` is the number of manatees killed
+by boats.
+
+```{r manatee-data}
+mana_data <- read_csv("Ch03_Manatee-deaths.csv")
+head(mana_data)
+```
+
+```{r manatee-scatter, out.width="60%"}
+mana_scatter <- ggplot(mana_data,
+                       aes(x = powerboats, y = deaths)) +
+  geom_point() +
+  theme_minimal(base_size = 15)
+
+mana_scatter
+```
+
+Correlation, then the line of best fit:
+
+```{r manatee-model}
+mana_cor <- mana_data %>%
+  summarize(corr_mana = cor(powerboats, deaths))
+mana_cor
+
+mana_lm <- lm(deaths ~ powerboats, mana_data)
+tidy(mana_lm)
+glance(mana_lm)
+```
+
+- **Intercept** (-46.8): the predicted deaths when zero powerboats are
+  registered. This is far outside the range of the data (which runs from 447 to
+  1027 thousand boats), so do not read anything biological into it.
+- **Slope** (0.136): one extra thousand boats registered is *associated with*
+  about 0.136 extra manatee deaths that year.
+
+With a single explanatory variable, r-squared really is the correlation squared:
+
+```{r corr-vs-rsq}
+mana_cor$corr_mana        # r
+mana_cor$corr_mana^2      # r squared by hand
+glance(mana_lm)$r.squared # r squared from the model
+```
+
+# The four assumptions
+
+Inference on a regression is only valid if:
+
+1. The relationship between x and y is **linear in the population**.
+2. y varies **Normally** about the line, i.e. the residuals are Normal.
+3. Observations are **independent** (this comes from the study design, no plot
+   can check it).
+4. The **standard deviation of the responses is the same for all values of x**.
+
+Assumptions 1, 2 and 4 are checked with the residuals, where
+
+$$\hat{e} = \text{observed} - \text{fitted} = y - (\hat{a} + \hat{b}x)$$
+
+The four diagnostic panels, and what each is for:
+
+| Panel | Plot | Checks |
+|-------|------|--------|
+| (a) | scatter plot with residual segments | linearity (assumption 1) |
+| (b) | QQ plot of the residuals | Normality (assumption 2) |
+| (c) | fitted values vs residuals | linearity **and** constant variance (1 and 4) |
+| (d) | boxplot of y vs boxplot of residuals | not an assumption, this measures usefulness |
+
+Panel (c) is the most useful of the four. A **smile or frown** means the truth was
+curved. A **megaphone** means the spread is not constant.
+
+## A reusable diagnostic function
+
+The four panels are always built the same way, so write it once:
+
+```{r diagnostic-function}
+diag_plots <- function(model, caption = "") {
+  aug <- augment(model)
+  yvar <- names(aug)[1]   # outcome
+  xvar <- names(aug)[2]   # predictor
+
+  p1 <- ggplot(aug, aes(x = .data[[xvar]], y = .data[[yvar]])) +
+    geom_smooth(method = "lm", se = FALSE) +
+    geom_point() +
+    geom_segment(aes(xend = .data[[xvar]], yend = .fitted), lty = 2) +
+    theme_minimal(base_size = 11) +
+    labs(title = "(a) Scatter plot")
+
+  p2 <- ggplot(aug, aes(sample = .resid)) +
+    geom_qq() +
+    geom_qq_line() +
+    theme_minimal(base_size = 11) +
+    labs(y = "Residuals", x = "Theoretical quantiles", title = "(b) QQplot")
+
+  p3 <- ggplot(aug, aes(y = .resid, x = .fitted)) +
+    geom_point() +
+    geom_hline(yintercept = 0) +
+    theme_minimal(base_size = 11) +
+    labs(y = "Residuals", x = "Fitted values",
+         title = "(c) Fitted vs. residuals")
+
+  p4 <- aug %>%
+    select(.resid, all_of(yvar)) %>%
+    gather(key = "type", value = "value") %>%
+    ggplot(aes(y = value)) +
+    geom_boxplot(aes(fill = type)) +
+    theme_minimal(base_size = 11) +
+    labs(title = "(d) Amount explained")
+
+  p1 + p2 + p3 + p4 + plot_layout(nrow = 2) +
+    plot_annotation(caption = caption)
+}
+```
+
+## Example 1: everything is fine
+
+```{r diag-example-1, out.width="85%"}
+set.seed(123)
+x <- seq(1, 10, length.out = 60)
+y <- 12 + 2.5 * x + rnorm(n = 60, mean = 0, sd = 2)
+dat1 <- data.frame(x, y)
+
+lm1 <- lm(y ~ x, data = dat1)
+diag_plots(lm1, "A good fit to the data")
+```
+
+Residuals fall on both sides of the line with no trend, the QQ plot is straight,
+panel (c) is a shapeless cloud, and the residual box is much shorter than the y
+box. Inference is allowed, and the model is useful.
+
+## Example 2: linearity is violated
+
+```{r diag-example-2, out.width="85%"}
+set.seed(456)
+x2 <- seq(1, 10, length.out = 60)
+# the truth is curved, but we fit a straight line to it
+y2 <- 12 + 2.5 * x2 + 1.2 * x2^2 + rnorm(n = 60, mean = 0, sd = 3)
+dat2 <- data.frame(x2, y2)
+
+lm2 <- lm(y2 ~ x2, data = dat2)
+diag_plots(lm2, "The linearity assumption does not hold")
+```
+
+Panel (a) looks passable, which is exactly why you must look at panel (c). That
+**U shape** is the fingerprint of a straight line fitted to something curved. The
+fix is a squared term, $\hat{y} = \hat{a} + \hat{b}x + \hat{c}x^2$.
+
+Note panel (d): the wrong model still explains a lot of the variation. *Useful*
+and *correctly specified* are two different questions.
+
+## Example 3: constant variance is violated
+
+```{r diag-example-3, out.width="85%"}
+set.seed(789)
+x3 <- seq(1, 10, length.out = 60)
+# the sd of the noise grows with x
+y3 <- 12 + 2.5 * x3 + rnorm(n = 60, mean = 0, sd = 2 * x3)
+dat3 <- data.frame(x3, y3)
+
+lm3 <- lm(y3 ~ x3, data = dat3)
+diag_plots(lm3, "The constant variance assumption does not hold")
+```
+
+Panel (c) **fans out**. This matters because all of the inference below uses a
+single number to describe the noise at every point on the line. When the noise is
+small at one end and large at the other, that single number is wrong everywhere.
+
+# The frog example
+
+Twenty frogs. `temp` is air temperature in degrees Celsius, `freq` is mating
+calls per minute.
+
+```{r frog-data}
+frog_data <- tibble(
+  id   = 1:20,
+  temp = c(19, 21, 22, 22, 23, 23, 23, 23, 23, 24,
+           24, 24, 24, 25, 25, 25, 25, 26, 26, 27),
+  freq = c(38, 42, 45, 45, 41, 45, 48, 50, 53, 51,
+           48, 53, 47, 53, 49, 56, 53, 55, 55, 54))
+```
+
+```{r frog-scatter, out.width="60%"}
+ggplot(frog_data, aes(x = temp, y = freq)) +
+  geom_point() +
+  theme_minimal(base_size = 15) +
+  labs(x = "Temperature (Celsius)",
+       y = "Frequency of mating calls")
+```
+
+```{r frog-model}
+frog_lm <- lm(formula = freq ~ temp, data = frog_data)
+tidy(frog_lm)
+```
+
+One extra degree Celsius is associated with about 2.33 extra calls per minute.
+
+## Diagnostics for the frog model
+
+`augment()` glues `.fitted` and `.resid` onto the original data frame:
+
+```{r frog-augment}
+frog_lm_augment <- augment(frog_lm)
+head(frog_lm_augment)
+```
+
+Panel (a), the fitted line with the residuals drawn in:
+
+```{r frog-panel-a, out.width="60%"}
+frog_resid <- ggplot(frog_lm_augment, aes(temp, freq)) +
+  geom_smooth(method = "lm", se = FALSE) +
+  geom_point(alpha = 0.5) +
+  geom_segment(aes(xend = temp, yend = .fitted),
+               lty = 2, alpha = 0.5) +
+  theme_minimal(base_size = 15) +
+  labs(title = "(a) Scatter plot")
+
+frog_resid
+```
+
+Panel (b), the QQ plot. Note the aesthetic is `sample = .resid`:
+
+```{r frog-panel-b, out.width="60%"}
+frog_qq <- ggplot(frog_lm_augment, aes(sample = .resid)) +
+  geom_qq() +
+  geom_qq_line() +
+  theme_minimal(base_size = 15) +
+  labs(y = "Residuals", x = "Theoretical quantiles",
+       title = "(b) QQplot")
+
+frog_qq
+```
+
+Panel (c), fitted vs residuals:
+
+```{r frog-panel-c, out.width="60%"}
+frog_fitresid <- ggplot(frog_lm_augment,
+                        aes(y = .resid, x = .fitted)) +
+  geom_point() +
+  geom_hline(yintercept = 0) +
+  theme_minimal(base_size = 15) +
+  labs(y = "Residuals", x = "Fitted values",
+       title = "(c) Fitted vs. residuals")
+
+frog_fitresid
+```
+
+Panel (d), amount explained:
+
+```{r frog-panel-d, out.width="60%"}
+frog_gather <- frog_lm_augment %>%
+  select(freq, .resid) %>%
+  gather(key = "type", value = "value", freq, .resid)
+
+frog_expl <- ggplot(frog_gather, aes(y = value)) +
+  geom_boxplot(aes(fill = type)) +
+  theme_minimal(base_size = 15) +
+  labs(title = "(d) Amount explained")
+
+frog_expl
+```
+
+No smile, no megaphone, the QQ plot is acceptable at n = 20, and the twenty frogs
+are independent by design. Inference is justified.
+
+# The regression standard error
+
+$$s = \sqrt{\frac{1}{n-2}\sum_{i=1}^{n}{(y-\hat{y})^2}}$$
+
+This is the standard deviation of the residuals. The denominator is $n-2$ because
+fitting a line costs two degrees of freedom, one for the intercept and one for
+the slope. R calls it `sigma`:
+
+```{r frog-sigma}
+glance(frog_lm)
+```
+
+`sigma` = 2.82 calls per minute. On average an actual frog's calling rate sits
+about 2.8 calls away from what the line predicted for it. You can see the same
+spread directly in the residuals:
+
+```{r frog-resid-summary}
+frog_lm_augment %>% summarise(min_resid  = min(.resid),
+                              q25_resid  = quantile(.resid, 0.25),
+                              mean_resid = mean(.resid),
+                              q75_resid  = quantile(.resid, 0.75),
+                              max_resid  = max(.resid))
+```
+
+The mean residual prints as something times $10^{-15}$, which is zero. Residuals
+from a fitted line always sum to zero by construction.
+
+# Hypothesis test for the slope
+
+$$H_0: b = 0 \qquad H_a: b \neq 0$$
+
+A slope of zero is a **flat line**: knowing x tells you nothing about y. The test
+statistic is signal over noise,
+
+$$t = \frac{\hat{b}}{SE_b}, \qquad SE_b = \frac{s}{\sqrt{\sum(x-\bar{x})^2}}$$
+
+with $n-2$ degrees of freedom. All four pieces are already in `tidy()`:
+
+```{r frog-test}
+tidy(frog_lm)
+```
+
+- `estimate` is $\hat{b}$ = 2.33 (the signal)
+- `std.error` is $SE_b$ = 0.347 (the noise)
+- `statistic` is $t = 2.330816 / 0.3467893 = 6.72$
+- `p.value` is the two sided p-value, on $n - 2 = 18$ degrees of freedom
+
+The p-value is an ordinary t distribution tail, doubled because the alternative
+is two sided:
+
+```{r frog-pvalue}
+pt(q = 6.7211302, df = 18, lower.tail = FALSE) * 2
+```
+
+We reject $H_0$. There is strong evidence of an association between temperature
+and calling frequency.
+
+# Confidence interval for the slope
+
+$$\hat{b} \pm t^{*}SE_b$$
+
+`qt()` works with area *to the left*, so for a 95% interval you enter 0.975, not
+0.95 (2.5% is left in each tail):
+
+```{r frog-ci}
+t_star <- qt(p = 0.975, df = 18)
+t_star
+
+2.330816 + c(-1, 1) * t_star * 0.3467893
+```
+
+Or let R do the whole thing:
+
+```{r frog-confint}
+confint(frog_lm)
+```
+
+**Interpretation.** Each extra degree Celsius is associated with 2.33 more calls
+per minute (95% CI: 1.60 to 3.06). We found this interval using a method that
+captures the true population slope 95% of the time. The interval excludes zero,
+which is the same conclusion the p-value gave.
+
+# Inference for prediction
+
+A point prediction at 21 degrees:
+
+$$\hat{y} = -6.190332 + 2.330816(21) = 42.8$$
+
+But a *prediction for the average frog* and a *prediction for one frog* carry
+different amounts of uncertainty:
+
+$$SE_{\hat{\mu}}=s\sqrt{\frac{1}{n} + \frac{(x^*-\bar{x})^2}{\sum(x-\bar{x})^2}}
+\qquad
+SE_{\hat{y}}=s\sqrt{1 + \frac{1}{n} + \frac{(x^*-\bar{x})^2}{\sum(x-\bar{x})^2}}$$
+
+The only difference is the extra `1` under the second square root. That is the
+variability of an individual frog around the line.
+
+```{r frog-predict}
+# the x value you want the prediction for
+newdata <- data.frame(temp = 21)
+
+# interval for a single new frog
+predict(frog_lm, newdata, interval = "predict")
+
+# interval for the mean response at temp = 21
+predict(frog_lm, newdata, interval = "confidence")
+```
+
+```{r frog-intervals-plot, out.width="90%", fig.width=9, fig.height=3.5}
+plot_a <- ggplot(frog_data, aes(x = temp, y = freq)) +
+  geom_smooth(method = "lm", se = FALSE) +
+  annotate("point", x = 21, y = 42.8, col = "orange", size = 3, pch = 4) +
+  annotate("segment", x = 21, xend = 21, y = 40.38472, yend = 45.12887,
+           col = "red", linewidth = 1) +
+  geom_point() +
+  theme_minimal(base_size = 13) +
+  labs(x = "Temperature (Celsius)", y = "Frequency of mating calls",
+       title = "95% Confidence Interval")
+
+plot_b <- ggplot(frog_data, aes(x = temp, y = freq)) +
+  geom_smooth(method = "lm", se = FALSE) +
+  annotate("point", x = 21, y = 42.8, col = "orange", size = 3, pch = 4) +
+  annotate("segment", x = 21, xend = 21, y = 36.37187, yend = 49.1473,
+           col = "orange", linewidth = 1) +
+  geom_point() +
+  theme_minimal(base_size = 13) +
+  labs(x = "Temperature (Celsius)", y = "Frequency of mating calls",
+       title = "95% Prediction Interval")
+
+plot_a + plot_b
+```
+
+The prediction interval is nearly three times wider. The confidence interval is
+only uncertain about **where the line is**. The prediction interval is uncertain
+about where the line is *and* about where one frog will land relative to it.
+
+Notice that plenty of real frogs fall outside the narrow red interval. That is
+correct. It was never meant to contain individuals.
+
+# Practice problems
+
+## Problem 1
+
+Using `mana_lm`, test whether the population slope is zero. Pull the test
+statistic out of `tidy()`, confirm it by hand from the estimate and its standard
+error, and get the p-value from `pt()`. How many degrees of freedom does this
+test have?
+
+*Hint: `nrow(mana_data)` gives you n.*
+
+## Problem 2
+
+Build a 95% confidence interval for the manatee slope, first by hand with `qt()`
+and then with `confint()`. Interpret it in a sentence a wildlife manager would
+understand.
+
+## Problem 3
+
+Florida expects 900 thousand registered powerboats next year.
+
+(a) Predict the number of manatee deaths.
+(b) Give a 95% interval for the *average* number of deaths in years with 900
+    thousand boats, and a 95% interval for the deaths in *one particular* such
+    year.
+(c) Which is wider, and why?
+(d) Should you trust a prediction at 1,500 thousand boats? Why or why not?
+
+## Problem 4
+
+Check the assumptions for `mana_lm`. Is the inference you did in problems 1 to 3
+justified?
+
+# Answers
+
+## Problem 1
+
+```{r answer-1}
+nrow(mana_data)          # n = 40, so df = n - 2 = 38
+tidy(mana_lm)
+
+# confirm the statistic by hand
+b_hat  <- 0.1358071
+se_b   <- 0.007640889
+t_stat <- b_hat / se_b
+t_stat
+
+pt(q = t_stat, df = 38, lower.tail = FALSE) * 2
+```
+
+The test has $n - 2 = 38$ degrees of freedom. The slope sits about 17.8 standard
+errors from zero, giving a p-value of about $5 \times 10^{-20}$. We reject $H_0$.
+There is very strong evidence of an association between powerboat registrations
+and manatee deaths.
+
+## Problem 2
+
+```{r answer-2}
+t_star_mana <- qt(p = 0.975, df = 38)
+t_star_mana
+
+0.1358071 + c(-1, 1) * t_star_mana * 0.007640889
+
+confint(mana_lm)
+```
+
+Each additional thousand registered powerboats is associated with about 0.136
+more manatee deaths per year (95% CI: 0.120 to 0.151). Scaled up to something a
+manager can act on, ten thousand extra boats is associated with roughly 1.2 to
+1.5 extra manatee deaths per year.
+
+## Problem 3
+
+```{r answer-3}
+new_boats <- data.frame(powerboats = 900)
+
+# (a) and (b)
+predict(mana_lm, new_boats, interval = "confidence")
+predict(mana_lm, new_boats, interval = "predict")
+```
+
+(a) The point prediction is about 75.5 deaths.
+
+(b) Confidence interval for the mean response: 72.0 to 79.0. Prediction interval
+for a single year: 57.3 to 93.7.
+
+(c) The prediction interval is much wider (about 36 deaths wide, versus 7). It
+has to account for two things rather than one, the uncertainty about where the
+true line sits *and* the year to year scatter of individual years around that
+line.
+
+(d) No. The data only cover 447 to 1027 thousand boats. At 1,500 you are
+extrapolating well outside the observed range, where you have no evidence that
+the relationship is still linear. Notice the $(x^*-\bar{x})^2$ term in the
+standard error formula also grows, so the model itself widens the interval as you
+move away from the centre of the data.
+
+## Problem 4
+
+```{r answer-4, out.width="85%"}
+diag_plots(mana_lm, "Manatee model diagnostics")
+```
+
+Panel (c) shows no smile and no clear megaphone, so linearity and constant
+variance are acceptable. The QQ plot in panel (b) is close to the line. Panel (d)
+shows the residual box is far shorter than the deaths box, matching the r-squared
+of 0.893.
+
+The assumption to worry about here is **independence**, and no plot can check it.
+These are 40 consecutive years from a single state, and both variables trend
+upward over time, so successive years are unlikely to be truly independent. The
+inference above is a reasonable first pass, but a careful analysis would account
+for the time structure, and nothing here establishes that boats *cause* the
+deaths.
