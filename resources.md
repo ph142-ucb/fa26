@@ -60,12 +60,9 @@ description: Resources for students
 |                | [Fa22 Midterm 2]({{ site.baseurl }}/src/resources/mt2/mt2_fa22.pdf) | [Fa22 Midterm 2 Solutions]({{ site.baseurl }}/src/resources/mt2/mt2_fa22_SOLUTIONS.pdf) | [Fa22 Midterm 2 Errata]({{ site.baseurl }}/errata/#mt2-fall-2022) |
 |                | [Fall 2025 Midterm II]({{ site.baseurl }}/src/resources/mt2/Midterm2_V1.pdf) | — | — |
 |                | [Spring 2026 Midterm II]({{ site.baseurl }}/src/resources/mt2/mt2_draft_3.pdf) | — | — |
-
-{% comment %}
-| Final          | [Fa19 Final]({{ site.baseurl }}/src/resources/final/final_fa19.pdf) | [Fa19 Final Solutions]({{ site.baseurl }}/src/resources/final/final_fa19_SOLUTIONS.pdf) | N/A |
-|                | [Fa20 Final]({{ site.baseurl }}/src/resources/final/final_fa20.pdf) | [Fa20 Final Solutions]({{ site.baseurl }}/src/resources/final/final_fa20_SOLUTIONS.pdf) | N/A |
-|                | [Sp21 Final Takehome]({{ site.baseurl }}/src/resources/final/final_sp21_takehome.pdf) | [Sp21 Final Takehome Solutions]({{ site.baseurl }}/src/resources/final/final_sp21_takehome_SOLUTIONS.pdf) | N/A |
-|                | [Sp21 Final Gradescope]({{ site.baseurl }}/src/resources/final/final_sp21_timed.pdf) | [Sp21 Final Gradescope Solutions]({{ site.baseurl }}/src/resources/final/final_sp21_timed_SOLUTIONS.pdf) | N/A |
-|                | [Fa21 Final]({{ site.baseurl }}/src/resources/final/final_fa21.pdf) | [Fa21 Final Solutions]({{ site.baseurl }}/src/resources/final/final_fa21_SOLUTIONS.pdf) | N/A |
-|                | [Fa23 Final]({{ site.baseurl }}/src/resources/final/Final_Fa2023.pdf) | [Fa23 Final Solutions]({{ site.baseurl }}/src/resources/final/Final_Fa2023_solutions.pdf) | N/A |
-{% endcomment %}
+| Final          | [Fa19 Final]({{ site.baseurl }}/src/resources/final/final_fa19.pdf) | [Fa19 Final Solutions]({{ site.baseurl }}/src/resources/final/final_fa19_SOLUTIONS.pdf) | [Final Exam Errata]({{ site.baseurl }}/errata/#final-exam) |
+|                | [Fa20 Final]({{ site.baseurl }}/src/resources/final/final_fa20.pdf) | [Fa20 Final Solutions]({{ site.baseurl }}/src/resources/final/final_fa20_SOLUTIONS.pdf) | [Final Exam Errata]({{ site.baseurl }}/errata/#final-exam) |
+|                | [Sp21 Final Takehome]({{ site.baseurl }}/src/resources/final/final_sp21_takehome.pdf) | [Sp21 Final Takehome Solutions]({{ site.baseurl }}/src/resources/final/final_sp21_takehome_SOLUTIONS.pdf) | [Final Exam Errata]({{ site.baseurl }}/errata/#final-exam) |
+|                | [Sp21 Final Gradescope]({{ site.baseurl }}/src/resources/final/final_sp21_timed.pdf) | [Sp21 Final Gradescope Solutions]({{ site.baseurl }}/src/resources/final/final_sp21_timed_SOLUTIONS.pdf) | [Final Exam Errata]({{ site.baseurl }}/errata/#final-exam) |
+|                | [Fa21 Final]({{ site.baseurl }}/src/resources/final/final_fa21.pdf) | [Fa21 Final Solutions]({{ site.baseurl }}/src/resources/final/final_fa21_SOLUTIONS.pdf) | [Final Exam Errata]({{ site.baseurl }}/errata/#final-exam) |
+|                | [Fa23 Final]({{ site.baseurl }}/src/resources/final/Final_Fa2023.pdf) | [Fa23 Final Solutions]({{ site.baseurl }}/src/resources/final/Final_Fa2023_solutions.pdf) | [Final Exam Errata]({{ site.baseurl }}/errata/#final-exam) |

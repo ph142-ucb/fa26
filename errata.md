@@ -95,8 +95,6 @@ Note: Students can show independence in multiple ways -- they can compare the pr
 
 Solution: The null value mu_0 = 4 is _not_ contained in the 95% confidence interval (6.5, 7.0), so we have evidence to reject the null hypothesis. The true mean counseling time is likely greater than 4 minutes. 
 
-{% comment %}
 ## Final Exam
 
 All solution PDFs for past final exams have been corrected as of 4/21/26. If you have questions about a solution, please post on Ed. 
-{% endcomment %}
