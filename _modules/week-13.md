@@ -12,8 +12,7 @@ days:
         "Ch. 23"
   - date: 2026-11-20
     events:
-      "**Lecture 34**{: .label .label-lec} Comparison of many means (ANOVA)":
-        "Ch. 24"
+      "**Lecture 30**{: .label .label-lec} [Categorical regression](https://ph142-ucb.github.io/fa26/src/lec/l30-categorical-regression.pdf) [(Rmd)](https://raw.githubusercontent.com/ph142-ucb/fa26/main/src/lec/l30-categorical-regression.Rmd)":
   - date: 2026-11-21
     events:
       "**Quiz 9**{: .label .label-quiz} Due at 11:59 PM":

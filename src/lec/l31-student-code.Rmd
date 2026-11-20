@@ -1,0 +1,395 @@
+---
+title: "L31: ANOVA"
+output: html_document
+---
+
+```{r load-libraries, include=FALSE, message=FALSE, warning=FALSE}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(forcats)
+library(broom)
+knitr::opts_chunk$set(fig.align = "center", message = FALSE, warning = FALSE)
+```
+
+Every calculation from L31 in one runnable place. This lecture extends the
+two-sample t test to **three or more** groups. Nothing here needs an external
+data file, all of the data is created in the code below. Try the practice
+problems at the bottom before checking the answers.
+
+## Why not just run a lot of t tests?
+
+With $k$ groups there are $\binom{k}{2}$ pairwise comparisons:
+
+```{r how-many-comparisons}
+choose(3, 2) # 3 groups
+choose(4, 2) # 4 groups
+choose(10, 2) # 10 groups
+```
+
+Each test carries its own chance of a false positive, and you end up with a pile
+of p-values instead of one answer. If the null is true everywhere and you run 6
+independent tests at $\alpha = 0.05$, the chance of at least one "significant"
+result is:
+
+```{r familywise}
+1 - (1 - 0.05)^6
+```
+
+ANOVA replaces all of them with **one** test of **one** null hypothesis:
+
+$$H_0: \mu_1 = \mu_2 = \dots = \mu_K \qquad
+H_a: \text{at least one } \mu \text{ differs}$$
+
+# Part 1. Seeing between-group vs. within-group variation
+
+The whole test is a ratio:
+
+$$F = \frac{\text{variation among group means}}{\text{variation among individuals in the same group}}$$
+
+The four plots below vary the numerator and the denominator on purpose. Each
+chunk uses `set.seed(1)`, so plot D draws the *same* standard Normal values as
+plot B, only rescaled to a larger standard deviation.
+
+A helper so we do not repeat the plotting code four times:
+
+```{r plot-helper}
+three_group_plot <- function(mu, sd) {
+  set.seed(1)
+  dat <- data.frame(group_1 = rnorm(10, mu[1], sd),
+                    group_2 = rnorm(10, mu[2], sd),
+                    group_3 = rnorm(10, mu[3], sd))
+
+  narrow <- dat %>%
+    pivot_longer(cols = group_1:group_3,
+                 names_to = "Group", values_to = "Measure")
+
+  means <- narrow %>%
+    group_by(Group) %>%
+    summarise(Measure = mean(Measure))
+
+  ggplot(narrow, aes(x = Group, y = Measure)) +
+    geom_point(aes(pch = "data")) +
+    geom_point(data = means, col = "red", size = 2,
+               aes(pch = "mean estimate")) +
+    geom_text(data = means, col = "red", size = 4,
+              aes(y = 40, label = paste("mean =", round(Measure, 2)))) +
+    scale_shape_manual(values = c(4, 20)) +
+    scale_y_continuous(limits = c(2, 42)) +
+    theme_minimal(base_size = 15)
+}
+```
+
+**Plot A.** All three population means are 15. Between-group variation is small,
+within-group variation is not.
+
+```{r plot-a}
+three_group_plot(mu = c(15, 15, 15), sd = 3)
+```
+
+**Plot B.** Means 15, 20, 27 with the same spread. Between-group variation is now
+large relative to within.
+
+```{r plot-b}
+three_group_plot(mu = c(15, 20, 27), sd = 3)
+```
+
+**Plot C.** Means 15, 20, 15. Only the middle group moves.
+
+```{r plot-c}
+three_group_plot(mu = c(15, 20, 15), sd = 3)
+```
+
+**Plot D.** The same means as plot B, but the standard deviation goes from 3 to
+7. The signal did not change, the noise did, and the difference is now much
+harder to see.
+
+```{r plot-d}
+three_group_plot(mu = c(15, 20, 27), sd = 7)
+```
+
+Run the ANOVA on the data behind plots B and D to see what that costs you:
+
+```{r ab-anova}
+make_data <- function(mu, sd) {
+  set.seed(1)
+  data.frame(group_1 = rnorm(10, mu[1], sd),
+             group_2 = rnorm(10, mu[2], sd),
+             group_3 = rnorm(10, mu[3], sd)) %>%
+    pivot_longer(cols = group_1:group_3,
+                 names_to = "Group", values_to = "Measure")
+}
+
+tidy(aov(Measure ~ Group, data = make_data(c(15, 20, 27), sd = 3)))
+tidy(aov(Measure ~ Group, data = make_data(c(15, 20, 27), sd = 7)))
+```
+
+Same means, much smaller $F$, much larger p-value.
+
+# Part 2. Descriptive plots for three or more groups
+
+```{r descriptive-data}
+diff_3_narrow <- make_data(c(15, 20, 27), sd = 7)
+```
+
+Option 1, a box plot per group with the points on top:
+
+```{r boxplot}
+ggplot(diff_3_narrow, aes(x = Group, y = Measure)) +
+  geom_boxplot() +
+  geom_point() +
+  theme_minimal(base_size = 15)
+```
+
+Option 2, a density plot per group:
+
+```{r density}
+ggplot(diff_3_narrow, aes(x = Measure)) +
+  geom_density(aes(fill = Group), alpha = 0.5) +
+  theme_minimal(base_size = 15)
+```
+
+Option 3, faceted histograms:
+
+```{r histogram}
+ggplot(diff_3_narrow, aes(x = Measure)) +
+  geom_histogram(aes(fill = Group), col = "white", binwidth = 2.5) +
+  facet_wrap(~ Group, nrow = 3) +
+  theme_minimal(base_size = 15)
+```
+
+# Part 3. The cancer example, end to end
+
+Mice with transplanted glioma cells were randomly assigned to one of four
+treatments, and tumor volume was measured after 21 days.
+
+```{r cancer-data}
+treatment <- c(rep("Irradiation", 4), rep("Cannabinoids", 5),
+               rep("Both", 6), rep("Neither", 7))
+
+tumor_volume <- c(30, 46, 46, 95,          # Irradiation
+                  12, 14, 16, 41, 47,      # Cannabinoids
+                  5, 4, 4, 4, 10, 9,       # Both
+                  24, 30, 43, 51, 62, 32, 96) # Neither
+
+cancer_data <- data.frame(treatment, tumor_volume)
+head(cancer_data)
+```
+
+`fct_relevel()` sets the order the groups appear in on the graph:
+
+```{r relevel}
+cancer_data <- cancer_data %>%
+  mutate(trt_order = fct_relevel(treatment, c("Neither", "Irradiation",
+                                              "Cannabinoids", "Both")))
+```
+
+## Step 1. Summary statistics
+
+```{r summary-stats}
+summary_stats <- cancer_data %>%
+  group_by(trt_order) %>%
+  summarise(mean_vol = mean(tumor_volume),
+            sd_vol = sd(tumor_volume),
+            samp_size = n())
+
+summary_stats
+```
+
+## Step 2. Check the conditions
+
+1. $k$ independent SRSs. Holds by design here, the mice were randomised.
+2. Each population Normal. Hard to judge with 4 to 7 mice, but ANOVA is robust
+to non-Normality.
+3. Equal population standard deviations. The rule of thumb is
+$s_{max}/s_{min} < 2$.
+
+```{r sd-ratio}
+summary_stats %>%
+  summarise(s_max = max(sd_vol), s_min = min(sd_vol),
+            ratio = max(sd_vol) / min(sd_vol))
+```
+
+The ratio is about 10, so condition 3 is **violated**. The group with the
+smallest mean also has the smallest spread, which is very common for a
+measurement that cannot go below zero. We run the ANOVA anyway because it is the
+tool this chapter teaches, but the caveat travels with the result.
+
+## Step 3. Plot before you test
+
+```{r cancer-plot}
+set.seed(42) # geom_jitter is random, so seed it to get the same picture twice
+ggplot(cancer_data, aes(x = trt_order, y = tumor_volume)) +
+  geom_jitter(pch = 4, width = 0.1) +
+  geom_point(data = summary_stats, aes(y = mean_vol, col = "Mean"), pch = 19) +
+  labs(y = "Tumor volume (mm cubed)", x = "Treatment", col = NULL) +
+  theme_minimal(base_size = 15)
+```
+
+## Step 4. Run the ANOVA
+
+```{r cancer-anova}
+cancer_anova <- aov(tumor_volume ~ treatment, data = cancer_data)
+tidy(cancer_anova)
+```
+
+`statistic` is $F$ and `p.value` is the p-value. $F = 6.70$ says the variation
+between the group means is about 7 times the variation within the groups.
+
+## Step 5. Confirm the p-value by hand
+
+$F$ has $k - 1$ numerator and $N_{Total} - k$ denominator degrees of freedom, and
+the p-value is always the **upper** tail:
+
+```{r pf}
+k <- 4
+n_total <- nrow(cancer_data)
+n_total
+
+pf(6.699489, df1 = k - 1, df2 = n_total - k, lower.tail = FALSE)
+```
+
+# Part 4. After a significant ANOVA
+
+A significant $F$ says the means are not all equal. It does not say which pair
+differs. Two ways to follow up.
+
+## Bonferroni
+
+Divide $\alpha$ by the number of comparisons and use that as the bar for every
+individual test:
+
+```{r alpha-star}
+alpha_star <- 0.05 / choose(4, 2)
+alpha_star
+```
+
+Pull each group out as a vector, then run the six pairwise t tests:
+
+```{r pairwise-tests}
+both <- cancer_data %>% filter(treatment == "Both") %>% pull(tumor_volume)
+neither <- cancer_data %>% filter(treatment == "Neither") %>% pull(tumor_volume)
+can <- cancer_data %>% filter(treatment == "Cannabinoids") %>% pull(tumor_volume)
+irr <- cancer_data %>% filter(treatment == "Irradiation") %>% pull(tumor_volume)
+
+n_b <- t.test(neither, both)
+c_b <- t.test(can, both)
+i_b <- t.test(irr, both)
+n_c <- t.test(neither, can)
+n_i <- t.test(neither, irr)
+c_i <- t.test(can, irr)
+
+p_values <- c(n_b$p.value, c_b$p.value, i_b$p.value,
+              n_c$p.value, n_i$p.value, c_i$p.value)
+names(p_values) <- c("n_b", "c_b", "i_b", "n_c", "n_i", "c_i")
+round(p_values, 4)
+```
+
+Which of them clear the adjusted bar?
+
+```{r bonferroni-decision}
+p_values < alpha_star
+```
+
+Only Neither vs. Both. Note that Irradiation vs. Both had p = 0.0413, which would
+have passed at 0.05 but does **not** pass at 0.0083. That is the price of
+protecting the overall error rate.
+
+## Tukey's HSD
+
+Tukey holds the error rate at 5% for the **whole family** of comparisons, so
+`conf.level` stays at 0.95:
+
+```{r tukey}
+diffs <- TukeyHSD(cancer_anova, conf.level = 0.95) %>% tidy()
+diffs %>% select(contrast, estimate, conf.low, conf.high, adj.p.value)
+```
+
+Two things to notice.
+
+- The p-values are **adjusted**. Cannabinoids vs. Both was 0.054 unadjusted and
+is 0.378 here.
+- The intervals are adjusted too, so they are *simultaneous* 95% intervals for
+the family. Interval and adjusted p-value therefore agree. An interval that
+excludes 0 goes with an adjusted p-value below 0.05.
+
+```{r tukey-decision}
+diffs %>%
+  mutate(excludes_zero = (conf.low > 0) | (conf.high < 0),
+         significant = adj.p.value < 0.05) %>%
+  select(contrast, excludes_zero, significant)
+```
+
+Tukey flags Irradiation vs. Both **and** Neither vs. Both, one more pair than
+Bonferroni did. Tukey is more powerful here because it pools all four groups into
+a single estimate of within-group variance with 18 degrees of freedom, while each
+separate t test only had a handful.
+
+## Visualising the pairwise differences
+
+```{r tukey-plot}
+ggplot(diffs, aes(x = contrast, y = estimate)) +
+  geom_point() +
+  geom_segment(aes(y = conf.low, yend = conf.high, xend = contrast)) +
+  geom_hline(aes(yintercept = 0), lty = 2) +
+  geom_text(aes(label = paste0("p-value:\n ", round(adj.p.value, 3))),
+            nudge_x = 0.35, size = 3.5) +
+  labs(y = "Estimated difference", x = "") +
+  scale_x_discrete(expand = expansion(add = c(0.5, 0.9))) +
+  theme_minimal(base_size = 13) +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1))
+```
+
+Any interval that misses the dashed line at 0 is a difference Tukey calls real.
+
+# Practice problems
+
+**1.** You compare 5 groups. How many pairwise comparisons is that, and what
+Bonferroni-adjusted $\alpha$ would you use to keep the overall type I error rate
+at 0.05?
+
+**2.** An ANOVA on 5 groups with 8 observations each returns $F = 3.1$. How many
+degrees of freedom does the numerator have? The denominator? What is the p-value?
+
+**3.** Four groups have sample standard deviations 3.1, 4.0, 5.8, and 7.2. Does
+condition 3 hold?
+
+**4.** A Tukey comparison reports an estimated difference of 12.4 with a 95%
+simultaneous interval of 1.8 to 23.0. Without looking at the p-value column, is
+this comparison significant at the family-wise 5% level?
+
+## Answers
+
+**1.**
+
+```{r ans-1}
+n_comparisons <- choose(5, 2)
+n_comparisons
+
+0.05 / n_comparisons
+```
+
+**2.** $k = 5$ so the numerator has $k - 1 = 4$ df. $N_{Total} = 5 \times 8 = 40$
+so the denominator has $N_{Total} - k = 35$ df.
+
+```{r ans-2}
+pf(3.1, df1 = 4, df2 = 35, lower.tail = FALSE)
+```
+
+p is about 0.028, below 0.05, so at least one mean differs.
+
+**3.**
+
+```{r ans-3}
+sds <- c(3.1, 4.0, 5.8, 7.2)
+max(sds) / min(sds)
+```
+
+The ratio is about 2.3, above the rule of thumb of 2, so condition 3 is
+questionable. With equal sample sizes of a decent size ANOVA is fairly forgiving,
+but flag it.
+
+**4.** Yes. The Tukey interval is already family-wise adjusted, so an interval
+that excludes 0 corresponds to an adjusted p-value below 0.05. This is **not**
+true of an unadjusted interval, so only reason this way when the interval and the
+p-value come from the same adjusted procedure.
